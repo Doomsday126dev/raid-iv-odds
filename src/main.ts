@@ -70,8 +70,10 @@ const elements = {
   atkInput: byId<HTMLInputElement>("atkInput"),
   defInput: byId<HTMLInputElement>("defInput"),
   staInput: byId<HTMLInputElement>("staInput"),
-  floorInput: byId<HTMLInputElement>("floorInput"),
+  floorInput: byId<HTMLSelectElement>("floorInput"),
+  floorHint: byId<HTMLElement>("floorHint"),
   bonusInput: byId<HTMLInputElement>("bonusInput"),
+  bonusHint: byId<HTMLElement>("bonusHint"),
   showDetails: byId<HTMLInputElement>("showDetails"),
   watchFilter: byId<HTMLSelectElement>("watchFilter"),
   densitySelect: byId<HTMLSelectElement>("densitySelect"),
@@ -312,6 +314,7 @@ function render(): void {
   renderHundoHints(settings.baseStats);
   renderCpValidation(summaries, settings);
   renderPrimaryInsight(summaries, settings);
+  renderAssumptionHints(settings);
   renderDataHint();
   elements.resultsGrid.innerHTML = summaries.map(renderResultPanel).join("");
   elements.watchlistGrid.innerHTML = summaries.map(renderWatchlistPanel).join("");
@@ -321,18 +324,21 @@ function render(): void {
 }
 
 function renderQuickButtons(baseStats: BaseStats): void {
-  elements.normalMaxButton.textContent = `L20 hundo ${maxCpFor(baseStats, RAID_LEVELS[0])}`;
-  elements.boostedMaxButton.textContent = `L25 boosted hundo ${maxCpFor(baseStats, RAID_LEVELS[1])}`;
+  elements.normalMaxButton.textContent = `Use non-weather hundo ${maxCpFor(baseStats, RAID_LEVELS[0])}`;
+  elements.boostedMaxButton.textContent = `Use weather-boosted hundo ${maxCpFor(baseStats, RAID_LEVELS[1])}`;
 }
 
 function renderHundoHints(baseStats: BaseStats): void {
   elements.hundoHints.innerHTML = `
     <span class="hundo-hint-label">Selected boss hundo CPs</span>
-    <span class="hundo-hint-values">
-      <strong>${maxCpFor(baseStats, RAID_LEVELS[0])}</strong> L20
-      <span aria-hidden="true">/</span>
-      <strong>${maxCpFor(baseStats, RAID_LEVELS[1])}</strong> boosted
-    </span>
+    <span class="hundo-hint-values"><span>Non-weather</span> <strong>${maxCpFor(
+      baseStats,
+      RAID_LEVELS[0],
+    )}</strong></span>
+    <span class="hundo-hint-values"><span>Weather boosted</span> <strong>${maxCpFor(
+      baseStats,
+      RAID_LEVELS[1],
+    )}</strong></span>
   `;
 }
 
@@ -393,9 +399,17 @@ function renderDataHint(): void {
   elements.dataHint.innerHTML = `Seeded list: ${POKEMON.length} bosses/forms, reviewed ${DATA_LAST_REVIEWED}. Use manual stats for brand-new or missing forms.`;
 }
 
+function renderAssumptionHints(settings: { raidFloor: number; purifyBonus: number }): void {
+  const threshold = purifiedThreshold(settings.purifyBonus);
+  const floorLabel = `${settings.raidFloor}/${settings.raidFloor}/${settings.raidFloor}`;
+  const targetLabel = `${threshold}/${threshold}/${threshold}+`;
+  elements.floorHint.textContent = `Counts every spread from ${floorLabel} through 15/15/15.`;
+  elements.bonusHint.textContent = `With +${settings.purifyBonus}, pre-purify ${targetLabel} reaches a hundo.`;
+}
+
 function renderPrimaryInsight(
   summaries: CpSummary[],
-  settings: { baseStats: BaseStats; cp: number; purifyBonus: number },
+  settings: { baseStats: BaseStats; cp: number; raidFloor: number; purifyBonus: number },
 ): void {
   const eligible = summaries.filter((summary) => summary.total && summary.good);
   const possible = summaries.filter((summary) => summary.total);
@@ -427,6 +441,7 @@ function renderPrimaryInsight(
   elements.contextStrip.innerHTML = `
     <div class="context-card"><span>Pokemon</span><strong>${escapeHtml(pokemon.name)}</strong></div>
     <button class="context-card context-button" type="button" data-focus-cp><span>Analyzing CP</span><strong>${settings.cp}</strong><em>Tap to edit</em></button>
+    <div class="context-card"><span>IV floor</span><strong>${settings.raidFloor}/${settings.raidFloor}/${settings.raidFloor}</strong></div>
     <div class="context-card"><span>Pre-purify target</span><strong>${threshold}/${threshold}/${threshold}+</strong></div>
     <div class="context-card"><span>Base stats</span><strong>${settings.baseStats.atk}/${settings.baseStats.def}/${settings.baseStats.sta}</strong></div>
   `;
@@ -557,10 +572,9 @@ function renderWatchlistPanel(summary: CpSummary): string {
   const filteredRows = filterWatchlist(summary.watchlist);
   const guaranteed = filteredRows.filter((row) => row.good === row.total).length;
   const rows = filteredRows.map(renderWatchlistRow).join("");
-  const open = summary.total ? "open" : "";
 
   return `
-    <details class="watch-panel" data-testid="${summary.raidLevel.key}-watchlist" ${open}>
+    <details class="watch-panel" data-testid="${summary.raidLevel.key}-watchlist">
       <summary class="watch-head">
         <div>
           <h2>${summary.raidLevel.label} Watchlist</h2>

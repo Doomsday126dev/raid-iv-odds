@@ -58,3 +58,16 @@ test("keeps mixed CP collisions in the watchlist", () => {
 
   assert.equal(hasMixedCollision, true);
 });
+
+test("recalculates odds when the raid IV floor changes", () => {
+  assert.ok(mewtwo);
+  assert.ok(normal);
+
+  const defaultFloor = summarizeCp(mewtwo, normal, 2200, 6, 2);
+  const lowerFloor = summarizeCp(mewtwo, normal, 2200, 3, 2);
+
+  assert.equal(defaultFloor.total, 0);
+  assert.equal(defaultFloor.good, 0);
+  assert.equal(lowerFloor.total, 5);
+  assert.equal(lowerFloor.good, 0);
+});

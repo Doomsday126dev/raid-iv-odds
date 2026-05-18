@@ -270,10 +270,17 @@ h3 {
 }
 
 .hundo-hint-values {
-  display: block;
+  align-items: baseline;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(118px, 1fr) auto;
   font-size: 0.96rem;
   font-weight: 850;
   margin-top: 4px;
+}
+
+.hundo-hint-values span {
+  color: var(--muted);
 }
 
 .hundo-hint-values strong {
