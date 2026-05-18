@@ -893,6 +893,28 @@ h3 {
   padding: 16px;
 }
 
+.legal-footer {
+  color: var(--muted);
+  display: grid;
+  gap: 8px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  margin: 18px 0 0;
+  padding: 0 4px 12px;
+}
+
+.legal-footer p {
+  margin: 0;
+}
+
+.legal-footer a {
+  color: var(--accent);
+  font-weight: 850;
+  min-height: 44px;
+  place-content: center start;
+  width: max-content;
+}
+
 html[data-density="compact"] .app-shell {
   max-width: 1320px;
 }
