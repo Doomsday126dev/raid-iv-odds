@@ -66,6 +66,7 @@ const DEFAULT_PREFS: Preferences = {
 const TEXT = {
   en: {
     skipToResults: "Skip to results",
+    displayOptions: "Display options",
     eyebrow: "Unofficial raid IV tool",
     appTitle: "Purified Hundo Odds",
     themeLabel: "Theme",
@@ -75,8 +76,12 @@ const TEXT = {
     languageLabel: "Language",
     accentLabel: "Accent",
     pokemonLabel: "Pokemon",
+    pokemonSearchHelp: "Type a boss name in English or Japanese.",
     observedCpLabel: "Observed CP",
+    decreaseCp: "Decrease CP",
+    increaseCp: "Increase CP",
     manualBaseStats: "Manual base stats",
+    resetAll: "Reset all",
     baseAttack: "Base attack",
     baseDefense: "Base defense",
     baseStamina: "Base stamina",
@@ -113,13 +118,9 @@ const TEXT = {
     useNonWeatherHundo: "Use non-weather hundo {cp}",
     useWeatherHundo: "Use weather-boosted hundo {cp}",
     cpResult: "CP result",
-    cpNotPossibleTitle: "CP not possible",
-    cpNotPossibleCopy: "No level 20 or level 25 IV spread can produce CP {cp} for this Pokemon.",
-    chanceTitle: "{odds} chance",
-    scenarioCopy: "{scenario}: {good}/{total} matching IV spreads purify to 15/15/15.",
-    zeroChanceTitle: "0% chance",
-    possibleButZero:
-      "{scenarios} can produce this CP, but none of the matching spreads purify to 15/15/15.",
+    cpNotPossibleTitle: "CP not possible for this boss",
+    cpNotPossibleCopy:
+      "No exact level 20 or level 25 IV spread can produce CP {cp} with the selected boss and IV floor.",
     pokemonContext: "Pokemon",
     analyzingCp: "Analyzing CP",
     tapToEdit: "Tap to edit",
@@ -159,11 +160,22 @@ const TEXT = {
     tryNearest: " Try {chips}",
     floorHint: "Counts every spread from {floor}/{floor}/{floor} through 15/15/15.",
     bonusHint: "With +{bonus}, pre-purify {target}/{target}/{target}+ reaches a hundo.",
-    dataHint:
-      "Seeded list: {count} bosses/forms, reviewed {date}. Use manual stats for brand-new or missing forms.",
+    dataHint: "Pokemon data last updated: {date}. Seeded list: {count} bosses/forms.",
+    languageChanged: "Language changed to English.",
+    guaranteedChanceTitle: "Guaranteed purified hundo",
+    mixedChanceTitle: "{odds} purified-hundo chance",
+    zeroChanceTitle: "Possible CP, 0% purified hundo",
+    guaranteedInsight: "{scenario}: all {total} matching IV spreads purify to 15/15/15.",
+    mixedInsight: "{scenario}: {good} of {total} matching IV spreads purify to 15/15/15.",
+    zeroInsight: "{scenarios} can produce this CP, but 0 matching spreads purify to 15/15/15.",
+    spreadSummary: "{total} spreads • {good} purify to 100%",
+    comboTitle: "{original} purifies to {purified}",
+    hundoMarker: " -> 100%",
+    watchTableLabel: "{scenario} eligible CPs",
   },
   ja: {
     skipToResults: "結果へスキップ",
+    displayOptions: "表示設定",
     eyebrow: "非公式レイド個体値ツール",
     appTitle: "リトレーン100%個体値の確率",
     themeLabel: "テーマ",
@@ -173,8 +185,12 @@ const TEXT = {
     languageLabel: "言語",
     accentLabel: "カラー",
     pokemonLabel: "レイドボス",
+    pokemonSearchHelp: "日本語名・英語名のどちらでも検索できます。",
     observedCpLabel: "確認したCP",
+    decreaseCp: "CPを1下げる",
+    increaseCp: "CPを1上げる",
     manualBaseStats: "種族値を手入力",
+    resetAll: "すべてリセット",
     baseAttack: "攻撃種族値",
     baseDefense: "防御種族値",
     baseStamina: "HP種族値",
@@ -211,12 +227,8 @@ const TEXT = {
     useNonWeatherHundo: "通常時100%CP {cp}",
     useWeatherHundo: "天候ブースト100%CP {cp}",
     cpResult: "CP判定",
-    cpNotPossibleTitle: "存在しないCP",
-    cpNotPossibleCopy: "このポケモンでは、CP {cp} をレベル20/25の個体値候補で作れません。",
-    chanceTitle: "{odds}の確率",
-    scenarioCopy: "{scenario}: {total}候補中{good}候補がリトレーン後15/15/15になります。",
-    zeroChanceTitle: "0%の確率",
-    possibleButZero: "{scenarios}ではこのCPが出ますが、リトレーン後100%になる候補はありません。",
+    cpNotPossibleTitle: "このボスでは該当しないCP",
+    cpNotPossibleCopy: "選択中のボスと個体値最低値では、CP {cp} はレベル20/25の候補に一致しません。",
     pokemonContext: "ポケモン",
     analyzingCp: "判定中CP",
     tapToEdit: "タップして編集",
@@ -255,19 +267,33 @@ const TEXT = {
     tryNearest: " 近い候補: {chips}",
     floorHint: "{floor}/{floor}/{floor}から15/15/15までの全候補を数えます。",
     bonusHint: "+{bonus}の場合、リトレーン前{target}/{target}/{target}+が100%になります。",
-    dataHint:
-      "収録ボス/フォーム: {count}件。確認日: {date}。未収録や新フォームは種族値の手入力を使ってください。",
+    dataHint: "ポケモンデータ最終更新: {date}。収録ボス/フォーム: {count}件。",
+    languageChanged: "表示言語を日本語に切り替えました。",
+    guaranteedChanceTitle: "リトレーン後100%確定",
+    mixedChanceTitle: "リトレーン後100%の確率 {odds}",
+    zeroChanceTitle: "存在するCPですが100%化は0%",
+    guaranteedInsight: "{scenario}: 該当する{total}候補すべてがリトレーン後15/15/15になります。",
+    mixedInsight: "{scenario}: 該当する{total}候補中{good}候補がリトレーン後15/15/15になります。",
+    zeroInsight: "{scenarios}ではこのCPが出ますが、リトレーン後15/15/15になる候補は0件です。",
+    spreadSummary: "{total}候補・{good}候補が100%化",
+    comboTitle: "{original} はリトレーン後 {purified}",
+    hundoMarker: " → 100%",
+    watchTableLabel: "{scenario}の対象CP",
   },
 } as const;
 
 type TextKey = keyof typeof TEXT.en;
 
 const elements = {
-  pokemonSelect: byId<HTMLSelectElement>("pokemonSelect"),
+  pokemonInput: byId<HTMLInputElement>("pokemonInput"),
+  pokemonOptions: byId<HTMLDataListElement>("pokemonOptions"),
+  pokemonSelect: byId<HTMLInputElement>("pokemonSelect"),
+  pokemonHelp: byId<HTMLElement>("pokemonHelp"),
   cpInput: byId<HTMLInputElement>("cpInput"),
   cpValidation: byId<HTMLElement>("cpValidation"),
   normalMaxButton: byId<HTMLButtonElement>("normalMaxButton"),
   boostedMaxButton: byId<HTMLButtonElement>("boostedMaxButton"),
+  resetButton: byId<HTMLButtonElement>("resetButton"),
   manualStats: byId<HTMLInputElement>("manualStats"),
   atkInput: byId<HTMLInputElement>("atkInput"),
   defInput: byId<HTMLInputElement>("defInput"),
@@ -286,6 +312,7 @@ const elements = {
   resultsGrid: byId<HTMLElement>("resultsGrid"),
   watchlistGrid: byId<HTMLElement>("watchlistGrid"),
   dataHint: byId<HTMLElement>("dataHint"),
+  languageStatus: byId<HTMLElement>("languageStatus"),
   themeButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-theme-choice]")),
   languageButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-language-choice]")),
   accentButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-accent-choice]")),
@@ -297,7 +324,7 @@ let prefs: Preferences = { ...DEFAULT_PREFS };
 let deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
 
 function init(): void {
-  populatePokemonSelect();
+  renderPokemonOptions();
   restoreState();
   applyAppearance();
   bindEvents();
@@ -305,12 +332,14 @@ function init(): void {
   render();
 }
 
-function populatePokemonSelect(): void {
+function renderPokemonOptions(): void {
   const selectedValue = elements.pokemonSelect.value || "Mewtwo";
-  elements.pokemonSelect.innerHTML = POKEMON.map(
-    (pokemon) => `<option value="${escapeHtml(pokemon.name)}">${escapeHtml(pokemonDisplayName(pokemon))}</option>`,
+  elements.pokemonOptions.innerHTML = sortedPokemon().map(
+    (pokemon) =>
+      `<option value="${escapeHtml(pokemonInputValue(pokemon))}" label="${escapeHtml(pokemon.name)}"></option>`,
   ).join("");
   elements.pokemonSelect.value = POKEMON.some((pokemon) => pokemon.name === selectedValue) ? selectedValue : "Mewtwo";
+  syncPokemonInputToSelected();
 }
 
 function restoreState(): void {
@@ -358,9 +387,16 @@ function restoreState(): void {
 }
 
 function bindEvents(): void {
-  elements.pokemonSelect.addEventListener("change", () => {
-    syncStatsToSelected();
-    render();
+  elements.pokemonInput.addEventListener("input", () => {
+    commitPokemonInput(false);
+  });
+
+  elements.pokemonInput.addEventListener("change", () => {
+    commitPokemonInput(true);
+  });
+
+  elements.pokemonInput.addEventListener("blur", () => {
+    commitPokemonInput(true);
   });
 
   elements.manualStats.addEventListener("change", () => {
@@ -404,6 +440,8 @@ function bindEvents(): void {
     render();
   });
 
+  elements.resetButton.addEventListener("click", resetAll);
+
   elements.cpStepButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const delta = Number(button.dataset.cpStep);
@@ -423,7 +461,10 @@ function bindEvents(): void {
 
   elements.languageButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      prefs.language = button.dataset.languageChoice as LanguageChoice;
+      const nextLanguage = button.dataset.languageChoice as LanguageChoice;
+      if (nextLanguage === prefs.language) return;
+      prefs.language = nextLanguage;
+      announceLanguageChange();
       render();
     });
   });
@@ -477,6 +518,43 @@ function bindEvents(): void {
 
 function selectedPokemon(): Pokemon {
   return POKEMON.find((pokemon) => pokemon.name === elements.pokemonSelect.value) || POKEMON[0];
+}
+
+function commitPokemonInput(forceMatch: boolean): void {
+  const match = resolvePokemonInput(elements.pokemonInput.value, forceMatch ? "exact" : "unique-prefix");
+
+  if (!match) {
+    if (forceMatch) syncPokemonInputToSelected();
+    return;
+  }
+
+  if (match.name === elements.pokemonSelect.value) {
+    if (forceMatch) syncPokemonInputToSelected();
+    return;
+  }
+
+  elements.pokemonSelect.value = match.name;
+  syncStatsToSelected();
+  render();
+}
+
+function syncPokemonInputToSelected(): void {
+  elements.pokemonInput.value = pokemonInputValue(selectedPokemon());
+}
+
+function resetAll(): void {
+  prefs = { ...DEFAULT_PREFS };
+  elements.pokemonSelect.value = "Mewtwo";
+  elements.manualStats.checked = false;
+  elements.floorInput.value = "6";
+  elements.bonusInput.value = "2";
+  elements.showDetails.checked = DEFAULT_PREFS.showDetails;
+  elements.watchFilter.value = DEFAULT_PREFS.watchFilter;
+  elements.densitySelect.value = DEFAULT_PREFS.density;
+  syncStatsToSelected();
+  elements.cpInput.value = String(maxCpFor(readBaseStats(), RAID_LEVELS[0]));
+  applyAppearance();
+  render();
 }
 
 function syncStatsToSelected(): void {
@@ -538,14 +616,20 @@ function render(): void {
 }
 
 function renderStaticText(): void {
-  document.documentElement.lang = prefs.language;
+  document.documentElement.lang = prefs.language === "ja" ? "ja" : "en";
   document.title = prefs.language === "ja" ? "シャドウレイド リトレーン100%個体値の確率" : "Shadow Raid Purified Hundo Odds";
-  populatePokemonSelect();
+  renderPokemonOptions();
 
   document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((element) => {
     const key = element.dataset.i18n as TextKey | undefined;
     if (!key) return;
     element.textContent = copy(key);
+  });
+
+  document.querySelectorAll<HTMLElement>("[data-i18n-aria-label]").forEach((element) => {
+    const key = element.dataset.i18nAriaLabel as TextKey | undefined;
+    if (!key) return;
+    element.setAttribute("aria-label", copy(key));
   });
 
   document.querySelectorAll<HTMLOptionElement>("[data-floor-custom]").forEach((option) => {
@@ -636,7 +720,10 @@ function nearestPossibleCpButtons(summary: CpSummary, cp: number): string[] {
 }
 
 function renderDataHint(): void {
-  elements.dataHint.textContent = formatCopy("dataHint", { count: POKEMON.length, date: DATA_LAST_REVIEWED });
+  elements.dataHint.textContent = formatCopy("dataHint", {
+    count: POKEMON.length,
+    date: formatReviewedDate(DATA_LAST_REVIEWED),
+  });
 }
 
 function renderAssumptionHints(settings: { raidFloor: number; purifyBonus: number }): void {
@@ -658,15 +745,18 @@ function renderPrimaryInsight(
 
   if (best) {
     state = best.odds === 1 ? "good" : "mixed";
-    title = formatCopy("chanceTitle", { odds: formatPercent(best.odds) });
-    body = formatCopy("scenarioCopy", {
+    title =
+      best.odds === 1
+        ? copy("guaranteedChanceTitle")
+        : formatCopy("mixedChanceTitle", { odds: formatPercent(best.odds) });
+    body = formatCopy(best.odds === 1 ? "guaranteedInsight" : "mixedInsight", {
       scenario: scenarioLabel(best),
       good: best.good,
       total: best.total,
     });
   } else if (possible.length) {
     title = copy("zeroChanceTitle");
-    body = formatCopy("possibleButZero", {
+    body = formatCopy("zeroInsight", {
       scenarios: possible.map(scenarioLabel).join(prefs.language === "ja" ? "と" : " and "),
     });
   }
@@ -704,6 +794,10 @@ function renderResultPanel(summary: CpSummary): string {
             min: summary.minCp,
             max: summary.maxCp,
           })}</p>
+          <p class="spread-summary">${formatCopy("spreadSummary", {
+            total: summary.total,
+            good: summary.good,
+          })}</p>
         </div>
         <div class="odds-badge ${badgeClass}">
           <span class="odds-value">${formatPercent(summary.odds)}</span>
@@ -714,7 +808,7 @@ function renderResultPanel(summary: CpSummary): string {
       <div class="odds-meter" aria-hidden="true"><span style="width: ${Math.max(0, summary.odds * 100)}%"></span></div>
       <p class="status-line ${state.kind}">${state.message}${nearest}</p>
 
-      <div class="stat-row" aria-label="${summary.raidLevel.label} CP details">
+      <div class="stat-row" aria-label="${formatCopy("watchTableLabel", { scenario: scenarioLabel(summary) })}">
         <div class="stat-item">
           <span>${copy("matchingSpreads")}</span>
           <strong>${summary.total}</strong>
@@ -807,9 +901,10 @@ function renderCombos(summary: CpSummary): string {
 function renderComboPill(combo: IvCombo): string {
   const original = `${combo.a}/${combo.d}/${combo.s}`;
   const purified = `${combo.purified.a}/${combo.purified.d}/${combo.purified.s}`;
+  const title = formatCopy("comboTitle", { original, purified });
   return `
-    <span class="combo-pill ${combo.good ? "good" : "bad"}" title="${original} purifies to ${purified}">
-      ${original}${combo.good ? " -> 100%" : ""}
+    <span class="combo-pill ${combo.good ? "good" : "bad"}" title="${escapeHtml(title)}">
+      ${original}${combo.good ? copy("hundoMarker") : ""}
     </span>
   `;
 }
@@ -836,7 +931,9 @@ function renderWatchlistPanel(summary: CpSummary): string {
       </summary>
       ${
         rows
-          ? `<div class="watch-table" role="table" aria-label="${summary.raidLevel.label} eligible CPs">
+          ? `<div class="watch-table" role="table" aria-label="${escapeHtml(
+              formatCopy("watchTableLabel", { scenario: scenarioLabel(summary) }),
+            )}">
               <div class="watch-table-head" role="row">
                 <span>${copy("tableCp")}</span>
                 <span>${copy("tableChance")}</span>
@@ -1005,13 +1102,58 @@ function scenarioLabel(summary: Pick<CpSummary, "raidLevel">): string {
   return summary.raidLevel.key === "normal" ? copy("nonWeather") : copy("weatherBoosted");
 }
 
+function sortedPokemon(): Pokemon[] {
+  const locale = prefs.language === "ja" ? "ja" : "en";
+  return POKEMON.slice().sort((left, right) =>
+    pokemonDisplayName(left).localeCompare(pokemonDisplayName(right), locale),
+  );
+}
+
 function pokemonDisplayName(pokemon: Pokemon): string {
   return prefs.language === "ja" ? pokemon.nameJa : pokemon.name;
 }
 
+function pokemonInputValue(pokemon: Pokemon): string {
+  // Keep English visible in Japanese mode so native datalist search still accepts English boss names.
+  return prefs.language === "ja" ? `${pokemon.nameJa} (${pokemon.name})` : pokemon.name;
+}
+
 function pokemonNameMatches(pokemon: Pokemon, value: string): boolean {
-  const normalized = value.trim().toLowerCase();
-  return pokemon.name.toLowerCase() === normalized || pokemon.nameJa.toLowerCase() === normalized;
+  return pokemonSearchTokens(pokemon).some((token) => normalizeSearch(token) === normalizeSearch(value));
+}
+
+function resolvePokemonInput(value: string, mode: "exact" | "unique-prefix"): Pokemon | null {
+  const exact = POKEMON.find((pokemon) => pokemonNameMatches(pokemon, value));
+  if (exact || mode === "exact") return exact ?? null;
+
+  const normalized = normalizeSearch(value);
+  if (!normalized) return null;
+
+  const matches = POKEMON.filter((pokemon) =>
+    pokemonSearchTokens(pokemon).some((token) => normalizeSearch(token).startsWith(normalized)),
+  );
+
+  return matches.length === 1 ? matches[0] : null;
+}
+
+function pokemonSearchTokens(pokemon: Pokemon): string[] {
+  return [pokemon.name, pokemon.nameJa, pokemonInputValue(pokemon)];
+}
+
+function normalizeSearch(value: string): string {
+  return value.trim().normalize("NFKC").toLowerCase();
+}
+
+function formatReviewedDate(value: string): string {
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  return new Intl.DateTimeFormat(prefs.language === "ja" ? "ja-JP" : "en-US", {
+    dateStyle: "long",
+  }).format(date);
+}
+
+function announceLanguageChange(): void {
+  elements.languageStatus.textContent = copy("languageChanged");
 }
 
 function validateOption<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {

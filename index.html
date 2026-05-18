@@ -21,7 +21,7 @@
     <link rel="icon" href="/raid-iv-odds/assets/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" sizes="180x180" href="/raid-iv-odds/assets/apple-touch-icon.png" />
     <link rel="stylesheet" href="./styles.css" />
-    <script type="module" src="/src/main.js?v=7"></script>
+    <script type="module" src="/src/main.js?v=8"></script>
   </head>
   <body>
     <a class="skip-link" href="#resultsGrid" data-i18n="skipToResults">Skip to results</a>
@@ -35,25 +35,25 @@
           </div>
         </div>
 
-        <div class="appearance-panel" aria-label="Display options">
+        <div class="appearance-panel" aria-label="Display options" data-i18n-aria-label="displayOptions">
+          <div class="appearance-group">
+            <span class="appearance-label"><span aria-hidden="true">🌐</span> <span data-i18n="languageLabel">Language</span></span>
+            <div class="segmented language-segment" aria-label="Language" data-i18n-aria-label="languageLabel">
+              <button type="button" data-language-choice="en">EN</button>
+              <button type="button" data-language-choice="ja">日本語</button>
+            </div>
+          </div>
           <div class="appearance-group">
             <span class="appearance-label" data-i18n="themeLabel">Theme</span>
-            <div class="segmented" aria-label="Theme">
+            <div class="segmented" aria-label="Theme" data-i18n-aria-label="themeLabel">
               <button type="button" data-theme-choice="system" data-i18n="themeSystem">System</button>
               <button type="button" data-theme-choice="light" data-i18n="themeLight">Light</button>
               <button type="button" data-theme-choice="dark" data-i18n="themeDark">Dark</button>
             </div>
           </div>
           <div class="appearance-group">
-            <span class="appearance-label" data-i18n="languageLabel">Language</span>
-            <div class="segmented language-segment" aria-label="Language">
-              <button type="button" data-language-choice="en">EN</button>
-              <button type="button" data-language-choice="ja">日本語</button>
-            </div>
-          </div>
-          <div class="appearance-group">
             <span class="appearance-label" data-i18n="accentLabel">Accent</span>
-            <div class="segmented palette-segment" aria-label="Accent color">
+            <div class="segmented palette-segment" aria-label="Accent color" data-i18n-aria-label="accentLabel">
               <button type="button" data-accent-choice="aqua">Aqua</button>
               <button type="button" data-accent-choice="mystic">Mystic</button>
               <button type="button" data-accent-choice="valor">Valor</button>
@@ -61,6 +61,7 @@
             </div>
           </div>
         </div>
+        <div class="sr-only" id="languageStatus" aria-live="polite"></div>
 
         <div class="hundo-hints" id="hundoHints" aria-live="polite"></div>
       </section>
@@ -72,16 +73,21 @@
 
       <section class="control-surface" aria-label="Raid inputs">
         <div class="field pokemon-field">
-          <label for="pokemonSelect" data-i18n="pokemonLabel">Pokemon</label>
-          <select id="pokemonSelect"></select>
+          <label for="pokemonInput" data-i18n="pokemonLabel">Pokemon</label>
+          <input id="pokemonInput" list="pokemonOptions" autocomplete="off" spellcheck="false" />
+          <datalist id="pokemonOptions"></datalist>
+          <input id="pokemonSelect" type="hidden" value="Mewtwo" />
+          <p class="field-help" id="pokemonHelp" data-i18n="pokemonSearchHelp">
+            Type a boss name in English or Japanese.
+          </p>
         </div>
 
         <div class="field cp-field">
           <label for="cpInput" data-i18n="observedCpLabel">Observed CP</label>
           <div class="cp-stepper">
-            <button class="stepper-button" type="button" data-cp-step="-1" aria-label="Decrease CP">-</button>
+            <button class="stepper-button" type="button" data-cp-step="-1" aria-label="Decrease CP" data-i18n-aria-label="decreaseCp">-</button>
             <input id="cpInput" inputmode="numeric" min="10" type="number" />
-            <button class="stepper-button" type="button" data-cp-step="1" aria-label="Increase CP">+</button>
+            <button class="stepper-button" type="button" data-cp-step="1" aria-label="Increase CP" data-i18n-aria-label="increaseCp">+</button>
           </div>
           <p class="field-help cp-validation" id="cpValidation" aria-live="polite"></p>
         </div>
@@ -95,6 +101,8 @@
           <input id="manualStats" type="checkbox" />
           <span data-i18n="manualBaseStats">Manual base stats</span>
         </label>
+
+        <button class="secondary-button reset-button" id="resetButton" type="button" data-i18n="resetAll">Reset all</button>
       </section>
 
       <section class="stats-surface" aria-label="Base stats and assumptions">

@@ -141,6 +141,16 @@ a:focus-visible {
   padding: 24px;
 }
 
+.sr-only {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 .topline,
 .insight-surface,
 .control-surface,
@@ -221,19 +231,21 @@ h3 {
 .appearance-panel {
   display: grid;
   gap: 8px;
+  min-width: 340px;
 }
 
 .appearance-group {
   align-items: center;
   display: grid;
   gap: 6px;
-  grid-template-columns: 72px minmax(0, 1fr);
+  grid-template-columns: 88px minmax(0, 1fr);
 }
 
 .appearance-label {
   color: var(--muted);
   font-size: 0.72rem;
   font-weight: 850;
+  min-width: 0;
   text-transform: uppercase;
 }
 
@@ -315,7 +327,7 @@ h3 {
   background: var(--surface-muted);
   border: 1px solid var(--line);
   border-radius: 8px;
-  min-height: 112px;
+  min-height: 136px;
   padding: 16px;
 }
 
@@ -353,6 +365,7 @@ h3 {
 .insight-copy {
   color: var(--muted);
   font-size: 0.9rem;
+  min-height: 3.9em;
   margin: 8px 0 0;
 }
 
@@ -409,7 +422,7 @@ h3 {
 
 .control-surface {
   align-items: end;
-  grid-template-columns: minmax(220px, 2fr) minmax(190px, 1.2fr) minmax(280px, 1.5fr) auto;
+  grid-template-columns: minmax(220px, 2fr) minmax(190px, 1.2fr) minmax(280px, 1.5fr) auto auto;
 }
 
 .stats-surface {
@@ -442,6 +455,10 @@ h3 {
   min-height: 46px;
   padding: 10px 12px;
   width: 100%;
+}
+
+.pokemon-field input {
+  padding-right: 12px;
 }
 
 .field-help {
@@ -567,6 +584,10 @@ h3 {
   display: none;
 }
 
+.reset-button {
+  min-width: 108px;
+}
+
 .results-grid,
 .watchlist-grid {
   display: grid;
@@ -617,7 +638,16 @@ h3 {
 .scenario-copy {
   color: var(--muted);
   font-size: 0.88rem;
+  min-height: 2.8em;
   margin: 4px 0 0;
+}
+
+.spread-summary {
+  color: var(--ink);
+  font-size: 0.84rem;
+  font-weight: 850;
+  margin: 7px 0 0;
+  min-height: 1.4em;
 }
 
 .odds-badge {
@@ -686,6 +716,7 @@ h3 {
 .status-line {
   border-radius: 7px;
   font-size: 0.9rem;
+  min-height: 56px;
   margin: 0;
   padding: 10px 12px;
 }
@@ -1033,6 +1064,7 @@ html[data-density="compact"] .watch-row {
 
   .appearance-panel {
     align-items: start;
+    min-width: 0;
   }
 
   .hundo-hints {

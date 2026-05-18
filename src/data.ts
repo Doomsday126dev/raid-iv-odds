@@ -6,7 +6,7 @@ export type Pokemon = {
   sta: number;
 };
 
-export const DATA_LAST_REVIEWED = "May 18, 2026";
+export const DATA_LAST_REVIEWED = "2026-05-18";
 
 const pokemon: Pokemon[] = [
   { name: "Articuno", nameJa: "フリーザー", atk: 192, def: 236, sta: 207 },
