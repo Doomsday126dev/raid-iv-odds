@@ -148,27 +148,30 @@
       </section>
 
       <section class="utility-bar" aria-label="View controls">
-        <label class="toggle-row" for="showDetails">
-          <input id="showDetails" type="checkbox" checked />
-          <span data-i18n="showIvSpreads">Show IV spreads</span>
-        </label>
-        <label class="field compact-field" for="watchFilter">
-          <span data-i18n="watchlistFilter">Watchlist filter</span>
+        <div class="utility-control">
+          <span class="utility-label">&nbsp;</span>
+          <label class="toggle-row" for="showDetails">
+            <input id="showDetails" type="checkbox" checked />
+            <span data-i18n="showIvSpreads">Show IV spreads</span>
+          </label>
+        </div>
+        <div class="field compact-field utility-control">
+          <label for="watchFilter" data-i18n="watchlistFilter">Watchlist filter</label>
           <select id="watchFilter">
             <option value="all" data-i18n="filterAll">All eligible CPs</option>
             <option value="partial" data-i18n="filterPartial">Mixed odds only</option>
             <option value="strong" data-i18n="filterStrong">50% or better</option>
             <option value="guaranteed" data-i18n="filterGuaranteed">Guaranteed only</option>
           </select>
-        </label>
-        <label class="field compact-field" for="densitySelect">
-          <span data-i18n="layoutLabel">Layout</span>
+        </div>
+        <div class="field compact-field utility-control">
+          <label for="densitySelect" data-i18n="layoutLabel">Layout</label>
           <select id="densitySelect">
             <option value="comfortable" data-i18n="layoutDetailed">Detailed</option>
             <option value="compact" data-i18n="layoutFast">Fast scan</option>
           </select>
-          <small class="field-help" data-i18n="layoutHelp">Fast scan keeps the same math and shows more rows at once.</small>
-        </label>
+        </div>
+        <p class="field-help utility-help" data-i18n="layoutHelp">Fast scan keeps the same math and shows more rows at once.</p>
         <button class="secondary-button install-button" id="installButton" type="button" hidden>
           <span data-i18n="installApp">Install app</span>
         </button>

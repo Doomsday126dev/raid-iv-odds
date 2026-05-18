@@ -490,8 +490,24 @@ h3 {
 }
 
 .utility-bar {
-  align-items: end;
-  grid-template-columns: auto minmax(180px, 1fr) minmax(150px, 0.7fr) auto;
+  align-items: start;
+  grid-template-columns: minmax(180px, auto) minmax(220px, 1fr) minmax(170px, 0.7fr) auto;
+}
+
+.utility-control {
+  display: grid;
+  gap: 6px;
+}
+
+.utility-label {
+  display: block;
+  min-height: 0.74rem;
+}
+
+.utility-help {
+  align-self: end;
+  margin: 0;
+  max-width: 440px;
 }
 
 .field label,
@@ -627,11 +643,12 @@ h3 {
   align-items: center;
   border: 1px solid var(--line);
   border-radius: 7px;
-  display: inline-flex;
+  display: flex;
   gap: 10px;
-  min-height: 46px;
+  min-height: 48px;
   padding: 10px 12px;
   white-space: nowrap;
+  width: 100%;
 }
 
 .toggle-row input {
@@ -1139,6 +1156,12 @@ html[data-density="compact"] .watch-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .utility-help {
+    align-self: start;
+    grid-column: 1 / -1;
+    max-width: none;
+  }
+
   .stats-surface {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -1165,6 +1188,10 @@ html[data-density="compact"] .watch-row {
   .stats-surface,
   .utility-bar {
     grid-template-columns: 1fr;
+  }
+
+  .utility-label {
+    display: none;
   }
 
   .brand-block {
