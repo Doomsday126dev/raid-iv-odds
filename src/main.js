@@ -1,5 +1,5 @@
 import { DATA_LAST_REVIEWED, POKEMON } from "./data.js";
-import { MAX_IV, MIN_CP, RAID_LEVELS, clampInt, combinationTotals, formatPercent, formatRatio, maxCpFor, purifiedThreshold, summarizeCp } from "./math.js";
+import { MAX_IV, MIN_CP, RAID_LEVELS, clampInt, formatPercent, formatRatio, maxCpFor, purifiedThreshold, summarizeCp } from "./math.js";
 const STORAGE_KEY = "raidIvOdds:v4";
 const DEFAULT_PREFS = {
     theme: "system",
@@ -24,7 +24,7 @@ const elements = {
     watchFilter: byId("watchFilter"),
     densitySelect: byId("densitySelect"),
     installButton: byId("installButton"),
-    baselineOdds: byId("baselineOdds"),
+    hundoHints: byId("hundoHints"),
     primaryInsight: byId("primaryInsight"),
     contextStrip: byId("contextStrip"),
     resultsGrid: byId("resultsGrid"),
@@ -101,7 +101,6 @@ function restoreState() {
 function bindEvents() {
     elements.pokemonSelect.addEventListener("change", ()=>{
         syncStatsToSelected();
-        trackEvent("Pokemon selected");
         render();
     });
     elements.manualStats.addEventListener("change", ()=>{
@@ -165,7 +164,6 @@ function bindEvents() {
         const button = event.target.closest("[data-cp]");
         if (!button) return;
         elements.cpInput.value = button.dataset.cp ?? String(MIN_CP);
-        trackEvent("Watchlist CP tapped");
         render();
         elements.resultsGrid.scrollIntoView({
             block: "start",
@@ -187,7 +185,6 @@ function bindEvents() {
     elements.installButton.addEventListener("click", async ()=>{
         if (!deferredInstallPrompt) return;
         await deferredInstallPrompt.prompt();
-        trackEvent("Install prompt opened");
         await deferredInstallPrompt.userChoice;
         deferredInstallPrompt = null;
         elements.installButton.hidden = true;
@@ -234,7 +231,7 @@ function render() {
     const settings = readSettings();
     const summaries = RAID_LEVELS.map((raidLevel)=>summarizeCp(settings.baseStats, raidLevel, settings.cp, settings.raidFloor, settings.purifyBonus));
     renderQuickButtons(settings.baseStats);
-    renderBaseline(settings.raidFloor, settings.purifyBonus);
+    renderHundoHints(settings.baseStats);
     renderCpValidation(summaries, settings);
     renderPrimaryInsight(summaries, settings);
     renderDataHint();
@@ -245,14 +242,17 @@ function render() {
     syncUrl(settings);
 }
 function renderQuickButtons(baseStats) {
-    elements.normalMaxButton.textContent = `Use L20 hundo ${maxCpFor(baseStats, RAID_LEVELS[0])}`;
-    elements.boostedMaxButton.textContent = `Use L25 hundo ${maxCpFor(baseStats, RAID_LEVELS[1])}`;
+    elements.normalMaxButton.textContent = `L20 hundo ${maxCpFor(baseStats, RAID_LEVELS[0])}`;
+    elements.boostedMaxButton.textContent = `L25 boosted hundo ${maxCpFor(baseStats, RAID_LEVELS[1])}`;
 }
-function renderBaseline(raidFloor, purifyBonus) {
-    const totals = combinationTotals(raidFloor, purifyBonus);
-    elements.baselineOdds.innerHTML = `
-    <span class="baseline-value">${formatPercent(totals.odds)}</span>
-    <span class="baseline-copy">Before CP: ${totals.good}/${totals.total} IV spreads (${formatRatio(totals.good, totals.total)})</span>
+function renderHundoHints(baseStats) {
+    elements.hundoHints.innerHTML = `
+    <span class="hundo-hint-label">Selected boss hundo CPs</span>
+    <span class="hundo-hint-values">
+      <strong>${maxCpFor(baseStats, RAID_LEVELS[0])}</strong> L20
+      <span aria-hidden="true">/</span>
+      <strong>${maxCpFor(baseStats, RAID_LEVELS[1])}</strong> boosted
+    </span>
   `;
 }
 function renderCpValidation(summaries, settings) {
@@ -294,19 +294,19 @@ function renderPrimaryInsight(summaries, settings) {
     const possible = summaries.filter((summary)=>summary.total);
     const best = eligible.slice().sort((left, right)=>right.odds - left.odds)[0];
     let state = "none";
-    let title = "No purified hundo match";
-    let copy = `CP ${settings.cp} is not eligible in either catch scenario.`;
+    let title = "CP not possible";
+    let copy = `No level 20 or level 25 IV spread can produce CP ${settings.cp} for this Pokemon.`;
     if (best) {
         state = best.odds === 1 ? "good" : "mixed";
-        title = best.odds === 1 ? "Guaranteed if this scenario applies" : `${formatPercent(best.odds)} best chance`;
+        title = `${formatPercent(best.odds)} chance`;
         copy = `${best.raidLevel.label}: ${best.good}/${best.total} matching IV spreads purify to 15/15/15.`;
     } else if (possible.length) {
-        title = "Possible CP, but not a purified hundo";
+        title = "0% chance";
         copy = `${possible.map((summary)=>summary.raidLevel.label).join(" and ")} can produce this CP, but none of the matching spreads purify to 15/15/15.`;
     }
     elements.primaryInsight.className = `primary-insight ${state}`;
     elements.primaryInsight.innerHTML = `
-    <span class="insight-label">Current read</span>
+    <span class="insight-label">CP result</span>
     <span class="insight-title">${title}</span>
     <p class="insight-copy">${copy}</p>
   `;
@@ -383,7 +383,7 @@ function resultState(summary) {
     }
     return {
         kind: "mixed",
-        message: `CP ${summary.cp} is a collision: ${summary.good} of ${summary.total} matching spreads purify to 100%.`
+        message: `CP ${summary.cp} has ${summary.total} possible IV spreads; ${summary.good} purif${summary.good === 1 ? "ies" : "y"} to 100%.`
     };
 }
 function renderNearest(summary) {
@@ -418,30 +418,37 @@ function renderWatchlistPanel(summary) {
     const filteredRows = filterWatchlist(summary.watchlist);
     const guaranteed = filteredRows.filter((row)=>row.good === row.total).length;
     const rows = filteredRows.map(renderWatchlistRow).join("");
+    const open = summary.total ? "open" : "";
     return `
-    <article class="watch-panel" data-testid="${summary.raidLevel.key}-watchlist">
-      <div class="watch-head">
+    <details class="watch-panel" data-testid="${summary.raidLevel.key}-watchlist" ${open}>
+      <summary class="watch-head">
         <div>
           <h2>${summary.raidLevel.label} Watchlist</h2>
-          <p>CPs with at least one pre-purification spread that reaches 15/15/15.</p>
+          <p>Tap to view CPs that have at least one spread that purifies to 15/15/15.</p>
         </div>
         <span class="watch-summary">${filteredRows.length}/${summary.watchlist.length} CPs, ${guaranteed} guaranteed</span>
-      </div>
-      ${rows ? `<div class="watchlist-scroll" tabindex="0" aria-label="${summary.raidLevel.label} eligible CP buttons">
-              <div class="watchlist-cards">${rows}</div>
+      </summary>
+      ${rows ? `<div class="watch-table" role="table" aria-label="${summary.raidLevel.label} eligible CPs">
+              <div class="watch-table-head" role="row">
+                <span>CP</span>
+                <span>Chance</span>
+                <span>Good/Total</span>
+                <span>Good IVs</span>
+              </div>
+              <div class="watch-table-body">${rows}</div>
             </div>` : `<p class="empty-state">No CPs match this watchlist filter.</p>`}
-    </article>
+    </details>
   `;
 }
 function renderWatchlistRow(row) {
     const oddsClass = row.good === row.total ? "full" : "partial";
     const comboPreview = previewGoodCombos(row.goodCombos);
     return `
-    <button class="watch-card" type="button" data-cp="${row.cp}" aria-label="Analyze CP ${row.cp}, ${formatPercent(row.odds)} odds">
-      <span class="watch-card-cp">${row.cp}</span>
+    <button class="watch-row" type="button" data-cp="${row.cp}" role="row" aria-label="Analyze CP ${row.cp}, ${formatPercent(row.odds)} chance">
+      <span class="watch-row-cp">${row.cp}</span>
       <span class="odds-token ${oddsClass}">${formatPercent(row.odds)}</span>
-      <span class="watch-card-ratio">${row.good}/${row.total}</span>
-      <span class="watch-card-combos">${escapeHtml(comboPreview)}</span>
+      <span class="watch-row-ratio">${row.good}/${row.total}</span>
+      <span class="watch-row-combos">${escapeHtml(comboPreview)}</span>
     </button>
   `;
 }
@@ -540,12 +547,6 @@ function registerServiceWorker() {
     navigator.serviceWorker.register(`${baseUrl}sw.js`, {
         scope: baseUrl
     }).catch(()=>{});
-}
-function trackEvent(name, props) {
-    const plausible = window.plausible;
-    plausible?.(name, props ? {
-        props
-    } : undefined);
 }
 function validateOption(value, allowed, fallback) {
     return typeof value === "string" && allowed.includes(value) ? value : fallback;

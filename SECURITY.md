@@ -18,7 +18,7 @@ Raid IV Odds is a static, client-side calculator. It does not have user accounts
 - Calculator inputs are processed in the browser.
 - The app does not ask for login credentials or personal information.
 - Local display preferences can be stored in the visitor's browser.
-- Analytics should remain cookie-free and should not include entered CP values, selected Pokemon, IV spreads, or other calculator inputs.
+- Analytics are not loaded by default. If analytics are added later, they should remain privacy-friendly and should not include entered CP values, selected Pokemon, IV spreads, or other calculator inputs.
 
 ## Reporting Issues
 
@@ -43,4 +43,4 @@ In scope:
 Out of scope:
 
 - Pokemon GO game mechanics, account security, or raid availability.
-- Third-party platform outages or bugs in GitHub Pages, GitHub Actions, or Plausible.
+- Third-party platform outages or bugs in GitHub Pages, GitHub Actions, or any optional analytics provider.

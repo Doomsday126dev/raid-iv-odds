@@ -47,20 +47,20 @@ npm run dev
 - Adds persistent display preferences, dark mode, accent themes, a fast-scan layout, CP steppers, watchlist filtering, and an at-a-glance verdict.
 - Supports shareable URLs like `?pokemon=Mewtwo&cp=2387`.
 - Adds PWA starter files: `public/manifest.webmanifest`, `public/sw.js`, an app icon, and a privacy page.
-- Includes a Plausible Analytics script for visit counts and broad feature-use events. Add `doomsday126dev.github.io` in Plausible to view the private dashboard.
+- Does not load analytics by default. `docs/FREE_ANALYTICS_SETUP.md` covers free options if analytics are added later.
 - Adds `capacitor.config.ts` for future App Store and Play Store wrappers.
 
 ## Privacy, Security, And Disclaimer
 
 - The hosted app is a static GitHub Pages site. Visitors can use it, but cannot edit or deploy the live code.
 - Keep repository write access limited to trusted collaborators and protect the `main` branch before adding collaborators.
-- Calculator inputs run in the browser. Analytics should remain cookie-free and must not include entered CPs, selected Pokemon, or IV results.
+- Calculator inputs run in the browser. If analytics are added later, they should remain privacy-friendly and must not include entered CPs, selected Pokemon, or IV results.
 - Unofficial fan-made calculator. Not affiliated with, sponsored by, endorsed by, or approved by Niantic, Scopely, The Pokemon Company, Nintendo, Creatures, or GAME FREAK. Pokemon and related names are trademarks of their respective owners.
 
 More detail:
 
 - `SECURITY.md`
-- `docs/PLAUSIBLE_SETUP.md`
+- `docs/FREE_ANALYTICS_SETUP.md`
 
 ## Production Path
 
