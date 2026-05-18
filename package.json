@@ -4,9 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "generate:js": "node scripts/build-browser-modules.mjs",
-    "dev": "npm run generate:js && vite --host 127.0.0.1 --port 4173",
-    "build": "npm run generate:js && tsc --noEmit && vite build",
+    "dev": "vite --host 127.0.0.1 --port 4173",
+    "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "cap:sync": "npm run build && cap sync",
@@ -14,13 +13,13 @@
     "cap:open:android": "cap open android"
   },
   "dependencies": {
-    "@capacitor/android": "latest",
-    "@capacitor/core": "latest",
-    "@capacitor/ios": "latest"
+    "@capacitor/android": "8.3.4",
+    "@capacitor/core": "8.3.4",
+    "@capacitor/ios": "8.3.4"
   },
   "devDependencies": {
-    "@capacitor/cli": "latest",
-    "typescript": "latest",
-    "vite": "latest"
+    "@capacitor/cli": "8.3.4",
+    "typescript": "6.0.3",
+    "vite": "8.0.13"
   }
 }
