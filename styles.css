@@ -397,7 +397,7 @@ h3 {
   font-weight: 850;
 }
 
-.context-card span {
+.context-label {
   color: var(--muted);
   display: block;
   font-size: 0.72rem;
@@ -418,6 +418,7 @@ h3 {
   min-height: 44px;
   min-width: 0;
   padding: 7px 9px;
+  touch-action: manipulation;
   width: 100%;
 }
 

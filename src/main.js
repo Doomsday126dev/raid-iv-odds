@@ -352,7 +352,7 @@ function bindEvents() {
         elements.staInput,
         elements.floorInput,
         elements.bonusInput
-    ].forEach((input)=>input.addEventListener("input", render));
+    ].forEach((input)=>input.addEventListener("input", ()=>render()));
     elements.showDetails.addEventListener("change", ()=>{
         prefs.showDetails = elements.showDetails.checked;
         render();
@@ -460,7 +460,6 @@ function commitPokemonInput(forceMatch) {
 function handleSummaryEdit(event) {
     if (!(event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement)) return;
     const control = event.target.dataset.summaryControl;
-    const shouldRender = event.type === "change" || control === "pokemon" || control === "floor" || control === "manual";
     if (control === "pokemon") {
         elements.pokemonSelect.value = event.target.value;
         syncStatsToSelected();
@@ -478,14 +477,23 @@ function handleSummaryEdit(event) {
     if (control === "atk") elements.atkInput.value = event.target.value;
     if (control === "def") elements.defInput.value = event.target.value;
     if (control === "sta") elements.staInput.value = event.target.value;
-    if (shouldRender) render();
+    if (control === "manual") {
+        render();
+        return;
+    }
+    updateSummaryTargetHint();
+    render({
+        preserveContext: true
+    });
 }
 function handleSummaryKeydown(event) {
     if (event.key !== "Enter") return;
     if (!(event.target instanceof HTMLInputElement)) return;
     if (!event.target.dataset.summaryControl) return;
     event.preventDefault();
-    render();
+    render({
+        preserveContext: true
+    });
     elements.contextStrip.querySelector(`[data-summary-control="${event.target.dataset.summaryControl}"]`)?.focus();
 }
 function syncPokemonInputToSelected() {
@@ -536,14 +544,14 @@ function readSettings() {
         purifyBonus: clampInt(elements.bonusInput.value, 0, MAX_IV, 2)
     };
 }
-function render() {
+function render(options = {}) {
     const settings = readSettings();
     const summaries = RAID_LEVELS.map((raidLevel)=>summarizeCp(settings.baseStats, raidLevel, settings.cp, settings.raidFloor, settings.purifyBonus));
     renderStaticText();
     renderQuickButtons(settings.baseStats);
     renderHundoHints(settings.baseStats);
     renderCpValidation(summaries, settings);
-    renderPrimaryInsight(summaries, settings);
+    renderPrimaryInsight(summaries, settings, !options.preserveContext);
     renderAssumptionHints(settings);
     renderDataHint();
     elements.resultsGrid.innerHTML = summaries.map(renderResultPanel).join("");
@@ -646,7 +654,7 @@ function renderAssumptionHints(settings) {
         target: threshold
     });
 }
-function renderPrimaryInsight(summaries, settings) {
+function renderPrimaryInsight(summaries, settings, renderContext = true) {
     const eligible = summaries.filter((summary)=>summary.total && summary.good);
     const possible = summaries.filter((summary)=>summary.total);
     const best = eligible.slice().sort((left, right)=>right.odds - left.odds)[0];
@@ -677,30 +685,31 @@ function renderPrimaryInsight(summaries, settings) {
     <span class="insight-title">${title}</span>
     <p class="insight-copy">${body}</p>
   `;
+    if (!renderContext) return;
     const threshold = purifiedThreshold(settings.purifyBonus);
     const pokemon = selectedPokemon();
     elements.contextStrip.innerHTML = `
-    <label class="context-card context-edit">
-      <span>${copy("pokemonContext")}</span>
-      <select class="summary-value" data-summary-control="pokemon">${renderPokemonSelectOptions(pokemon.name)}</select>
-    </label>
-    <label class="context-card context-edit">
-      <span>${copy("analyzingCp")}</span>
-      <input class="summary-value" data-summary-control="cp" inputmode="numeric" min="${MIN_CP}" type="number" value="${settings.cp}" />
-    </label>
-    <label class="context-card context-edit">
-      <span>${copy("ivFloor")}</span>
-      <select class="summary-value" data-summary-control="floor">${renderIvFloorOptions(settings.raidFloor)}</select>
-    </label>
-    <label class="context-card context-edit">
-      <span>${copy("purifyBonus")}</span>
-      <input class="summary-value" data-summary-control="bonus" inputmode="numeric" max="${MAX_IV}" min="0" type="number" value="${settings.purifyBonus}" />
-      <em>${copy("prePurifyTarget")}: ${threshold}/${threshold}/${threshold}+</em>
-    </label>
     <div class="context-card context-edit">
-      <span>${copy("baseStats")}</span>
-      <label class="mini-toggle">
-        <input data-summary-control="manual" type="checkbox" ${elements.manualStats.checked ? "checked" : ""} />
+      <label class="context-label" for="summaryPokemonControl">${copy("pokemonContext")}</label>
+      <select id="summaryPokemonControl" class="summary-value" data-summary-control="pokemon">${renderPokemonSelectOptions(pokemon.name)}</select>
+    </div>
+    <div class="context-card context-edit">
+      <label class="context-label" for="summaryCpControl">${copy("analyzingCp")}</label>
+      <input id="summaryCpControl" class="summary-value" data-summary-control="cp" inputmode="numeric" min="${MIN_CP}" type="number" value="${settings.cp}" />
+    </div>
+    <div class="context-card context-edit">
+      <label class="context-label" for="summaryFloorControl">${copy("ivFloor")}</label>
+      <select id="summaryFloorControl" class="summary-value" data-summary-control="floor">${renderIvFloorOptions(settings.raidFloor)}</select>
+    </div>
+    <div class="context-card context-edit">
+      <label class="context-label" for="summaryBonusControl">${copy("purifyBonus")}</label>
+      <input id="summaryBonusControl" class="summary-value" data-summary-control="bonus" inputmode="numeric" max="${MAX_IV}" min="0" type="number" value="${settings.purifyBonus}" />
+      <em data-summary-target>${copy("prePurifyTarget")}: ${threshold}/${threshold}/${threshold}+</em>
+    </div>
+    <div class="context-card context-edit">
+      <span class="context-label">${copy("baseStats")}</span>
+      <label class="mini-toggle" for="summaryManualControl">
+        <input id="summaryManualControl" data-summary-control="manual" type="checkbox" ${elements.manualStats.checked ? "checked" : ""} />
         ${copy("manualBaseStats")}
       </label>
       ${renderSummaryStats(settings.baseStats)}
@@ -777,18 +786,24 @@ function renderSummaryStats(baseStats) {
     <div class="mini-stat-grid">
       <label>
         <span>${copy("attackShort")}</span>
-        <input data-summary-control="atk" inputmode="numeric" min="1" type="number" value="${baseStats.atk}" ${disabled} />
+        <input data-summary-control="atk" inputmode="numeric" min="1" type="number" value="${baseStats.atk}" ${disabled} aria-label="${copy("baseAttack")}" />
       </label>
       <label>
         <span>${copy("defenseShort")}</span>
-        <input data-summary-control="def" inputmode="numeric" min="1" type="number" value="${baseStats.def}" ${disabled} />
+        <input data-summary-control="def" inputmode="numeric" min="1" type="number" value="${baseStats.def}" ${disabled} aria-label="${copy("baseDefense")}" />
       </label>
       <label>
         <span>${copy("staminaShort")}</span>
-        <input data-summary-control="sta" inputmode="numeric" min="1" type="number" value="${baseStats.sta}" ${disabled} />
+        <input data-summary-control="sta" inputmode="numeric" min="1" type="number" value="${baseStats.sta}" ${disabled} aria-label="${copy("baseStamina")}" />
       </label>
     </div>
   `;
+}
+function updateSummaryTargetHint() {
+    const target = elements.contextStrip.querySelector("[data-summary-target]");
+    if (!target) return;
+    const threshold = purifiedThreshold(clampInt(elements.bonusInput.value, 0, MAX_IV, 2));
+    target.textContent = `${copy("prePurifyTarget")}: ${threshold}/${threshold}/${threshold}+`;
 }
 function resultState(summary) {
     if (!summary.total) {
