@@ -40,32 +40,48 @@
 
 @media (min-width: 1081px) {
   .control-surface {
-    align-items: end;
-    grid-template-columns: minmax(260px, 1.45fr) minmax(200px, 0.95fr) minmax(300px, 1.25fr) minmax(190px, 0.85fr);
+    align-items: start;
+    grid-template-columns: minmax(280px, 1.5fr) minmax(210px, 1fr) minmax(300px, 1.15fr) minmax(210px, 0.85fr) minmax(120px, 0.5fr);
   }
 
+  .control-surface > * {
+    min-width: 0;
+  }
+
+  .control-surface .quick-actions,
+  .control-surface > .toggle-row,
   .control-surface > .reset-button {
-    grid-column: 4;
-    justify-self: stretch;
+    align-self: start;
+    margin-top: 26px;
+  }
+
+  .control-surface .quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .control-surface .quick-actions .secondary-button,
+  .control-surface > .toggle-row,
+  .control-surface > .reset-button {
+    min-height: 78px;
   }
 
   .control-surface > .toggle-row {
     justify-content: center;
   }
 
-  .control-surface .quick-actions .secondary-button,
-  .control-surface > .toggle-row,
   .control-surface > .reset-button {
-    min-height: 54px;
-  }
-
-  .control-surface .quick-actions {
-    align-self: end;
     min-width: 0;
   }
+}
 
-  .control-surface > * {
-    min-width: 0;
+@media (min-width: 1081px) and (max-width: 1350px) {
+  .control-surface {
+    grid-template-columns: minmax(280px, 1.3fr) minmax(210px, 1fr) minmax(280px, 1.15fr) minmax(250px, 1fr);
+  }
+
+  .control-surface > .reset-button {
+    grid-column: 4;
+    margin-top: 10px;
   }
 }
 
