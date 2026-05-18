@@ -108,12 +108,6 @@
     order: 2;
   }
 
-  .control-surface {
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
   .insight-surface {
     margin-top: 12px;
   }
