@@ -24,22 +24,26 @@
     <script type="module" src="/src/main.js?v=6"></script>
   </head>
   <body>
-    <a class="skip-link" href="#resultsGrid">Skip to results</a>
+    <a class="skip-link" href="#resultsGrid" data-i18n="skipToResults">Skip to results</a>
     <main class="app-shell">
       <section class="topline" aria-labelledby="pageTitle">
         <div class="brand-block">
           <div class="app-mark" aria-hidden="true">IV</div>
           <div>
-            <p class="eyebrow">Unofficial raid IV tool</p>
-            <h1 id="pageTitle">Purified Hundo Odds</h1>
+            <p class="eyebrow" data-i18n="eyebrow">Unofficial raid IV tool</p>
+            <h1 id="pageTitle" data-i18n="appTitle">Purified Hundo Odds</h1>
           </div>
         </div>
 
         <div class="appearance-panel" aria-label="Display options">
           <div class="segmented" aria-label="Theme">
-            <button type="button" data-theme-choice="system">System</button>
-            <button type="button" data-theme-choice="light">Light</button>
-            <button type="button" data-theme-choice="dark">Dark</button>
+            <button type="button" data-theme-choice="system" data-i18n="themeSystem">System</button>
+            <button type="button" data-theme-choice="light" data-i18n="themeLight">Light</button>
+            <button type="button" data-theme-choice="dark" data-i18n="themeDark">Dark</button>
+          </div>
+          <div class="segmented language-segment" aria-label="Language">
+            <button type="button" data-language-choice="en">EN</button>
+            <button type="button" data-language-choice="ja">日本語</button>
           </div>
           <div class="segmented palette-segment" aria-label="Accent color">
             <button type="button" data-accent-choice="aqua">Aqua</button>
@@ -59,12 +63,12 @@
 
       <section class="control-surface" aria-label="Raid inputs">
         <div class="field pokemon-field">
-          <label for="pokemonSelect">Pokemon</label>
+          <label for="pokemonSelect" data-i18n="pokemonLabel">Pokemon</label>
           <select id="pokemonSelect"></select>
         </div>
 
         <div class="field cp-field">
-          <label for="cpInput">Observed CP</label>
+          <label for="cpInput" data-i18n="observedCpLabel">Observed CP</label>
           <div class="cp-stepper">
             <button class="stepper-button" type="button" data-cp-step="-1" aria-label="Decrease CP">-</button>
             <input id="cpInput" inputmode="numeric" min="10" type="number" />
@@ -80,47 +84,47 @@
 
         <label class="toggle-row" for="manualStats">
           <input id="manualStats" type="checkbox" />
-          <span>Manual base stats</span>
+          <span data-i18n="manualBaseStats">Manual base stats</span>
         </label>
       </section>
 
       <section class="stats-surface" aria-label="Base stats and assumptions">
         <div class="field">
-          <label for="atkInput">Base attack</label>
+          <label for="atkInput" data-i18n="baseAttack">Base attack</label>
           <input id="atkInput" inputmode="numeric" min="1" type="number" />
         </div>
         <div class="field">
-          <label for="defInput">Base defense</label>
+          <label for="defInput" data-i18n="baseDefense">Base defense</label>
           <input id="defInput" inputmode="numeric" min="1" type="number" />
         </div>
         <div class="field">
-          <label for="staInput">Base stamina</label>
+          <label for="staInput" data-i18n="baseStamina">Base stamina</label>
           <input id="staInput" inputmode="numeric" min="1" type="number" />
         </div>
         <div class="field">
-          <label for="floorInput">Raid IV floor</label>
+          <label for="floorInput" data-i18n="raidIvFloor">Raid IV floor</label>
           <select id="floorInput">
-            <option value="6">Shadow raid: 6/6/6</option>
-            <option value="10">Standard raid: 10/10/10</option>
-            <option value="0">Wild/no floor: 0/0/0</option>
-            <option value="1">Custom: 1/1/1</option>
-            <option value="2">Custom: 2/2/2</option>
-            <option value="3">Custom: 3/3/3</option>
-            <option value="4">Custom: 4/4/4</option>
-            <option value="5">Custom: 5/5/5</option>
-            <option value="7">Custom: 7/7/7</option>
-            <option value="8">Custom: 8/8/8</option>
-            <option value="9">Custom: 9/9/9</option>
-            <option value="11">Custom: 11/11/11</option>
-            <option value="12">Custom: 12/12/12</option>
-            <option value="13">Custom: 13/13/13</option>
-            <option value="14">Custom: 14/14/14</option>
-            <option value="15">Custom: 15/15/15</option>
+            <option value="6" data-i18n="floorShadow">Shadow raid: 6/6/6</option>
+            <option value="10" data-i18n="floorStandard">Standard raid: 10/10/10</option>
+            <option value="0" data-i18n="floorWild">Wild/no floor: 0/0/0</option>
+            <option value="1" data-floor-custom>Custom: 1/1/1</option>
+            <option value="2" data-floor-custom>Custom: 2/2/2</option>
+            <option value="3" data-floor-custom>Custom: 3/3/3</option>
+            <option value="4" data-floor-custom>Custom: 4/4/4</option>
+            <option value="5" data-floor-custom>Custom: 5/5/5</option>
+            <option value="7" data-floor-custom>Custom: 7/7/7</option>
+            <option value="8" data-floor-custom>Custom: 8/8/8</option>
+            <option value="9" data-floor-custom>Custom: 9/9/9</option>
+            <option value="11" data-floor-custom>Custom: 11/11/11</option>
+            <option value="12" data-floor-custom>Custom: 12/12/12</option>
+            <option value="13" data-floor-custom>Custom: 13/13/13</option>
+            <option value="14" data-floor-custom>Custom: 14/14/14</option>
+            <option value="15" data-floor-custom>Custom: 15/15/15</option>
           </select>
           <small class="field-help" id="floorHint"></small>
         </div>
         <div class="field">
-          <label for="bonusInput">Purify bonus</label>
+          <label for="bonusInput" data-i18n="purifyBonus">Purify bonus</label>
           <input id="bonusInput" inputmode="numeric" max="15" min="0" type="number" value="2" />
           <small class="field-help" id="bonusHint"></small>
         </div>
@@ -129,27 +133,27 @@
       <section class="utility-bar" aria-label="View controls">
         <label class="toggle-row" for="showDetails">
           <input id="showDetails" type="checkbox" checked />
-          <span>Show IV spreads</span>
+          <span data-i18n="showIvSpreads">Show IV spreads</span>
         </label>
         <label class="field compact-field" for="watchFilter">
-          <span>Watchlist filter</span>
+          <span data-i18n="watchlistFilter">Watchlist filter</span>
           <select id="watchFilter">
-            <option value="all">All eligible CPs</option>
-            <option value="partial">Mixed odds only</option>
-            <option value="strong">50% or better</option>
-            <option value="guaranteed">Guaranteed only</option>
+            <option value="all" data-i18n="filterAll">All eligible CPs</option>
+            <option value="partial" data-i18n="filterPartial">Mixed odds only</option>
+            <option value="strong" data-i18n="filterStrong">50% or better</option>
+            <option value="guaranteed" data-i18n="filterGuaranteed">Guaranteed only</option>
           </select>
         </label>
         <label class="field compact-field" for="densitySelect">
-          <span>Layout</span>
+          <span data-i18n="layoutLabel">Layout</span>
           <select id="densitySelect">
-            <option value="comfortable">Detailed</option>
-            <option value="compact">Fast scan</option>
+            <option value="comfortable" data-i18n="layoutDetailed">Detailed</option>
+            <option value="compact" data-i18n="layoutFast">Fast scan</option>
           </select>
-          <small class="field-help">Fast scan keeps the same math and shows more rows at once.</small>
+          <small class="field-help" data-i18n="layoutHelp">Fast scan keeps the same math and shows more rows at once.</small>
         </label>
         <button class="secondary-button install-button" id="installButton" type="button" hidden>
-          Install app
+          <span data-i18n="installApp">Install app</span>
         </button>
       </section>
 
@@ -158,26 +162,34 @@
       <section class="watchlist-grid" id="watchlistGrid" aria-label="CP watchlists"></section>
 
       <section class="notes-panel" aria-label="Calculation notes">
-        <h2>Calculation Notes</h2>
+        <h2 data-i18n="calculationNotes">Calculation Notes</h2>
         <div class="note-list">
-          <p>Each IV spread from the raid floor through 15/15/15 is counted once.</p>
-          <p>A spread purifies to a hundo when each IV plus the purify bonus reaches 15.</p>
-          <p>Shadow battle modifiers do not change the catch CP calculation.</p>
+          <p data-i18n="noteFloor">Each IV spread from the raid floor through 15/15/15 is counted once.</p>
+          <p data-i18n="notePurify">A spread purifies to a hundo when each IV plus the purify bonus reaches 15.</p>
+          <p data-i18n="noteShadow">Shadow battle modifiers do not change the catch CP calculation.</p>
           <p id="dataHint">The seeded list is a convenience list; manual stats cover missing or future forms.</p>
         </div>
       </section>
 
       <footer class="legal-footer">
-        <p>
+        <p data-i18n="legalDisclaimer">
           Unofficial fan-made calculator. Not affiliated with, sponsored by, endorsed by, or approved by
           Niantic, Scopely, The Pokemon Company, Nintendo, Creatures, or GAME FREAK. Pokemon and related
           names are trademarks of their respective owners.
         </p>
-        <p>
+        <p data-i18n="legalAccuracy">
           This tool is informational only and depends on current game data and assumptions. Always verify
           important raid decisions in-game.
         </p>
-        <a href="/raid-iv-odds/privacy.html">Privacy</a>
+        <div class="footer-links">
+          <a href="/raid-iv-odds/privacy.html" data-i18n="privacyLink">Privacy</a>
+          <a
+            href="https://github.com/doomsday126dev/raid-iv-odds/issues/new?template=feedback.yml"
+            rel="noopener noreferrer"
+            target="_blank"
+            data-i18n="feedbackLink"
+          >Feedback</a>
+        </div>
       </footer>
     </main>
   </body>

@@ -971,8 +971,15 @@ h3 {
   margin: 0;
 }
 
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .legal-footer a {
   color: var(--accent);
+  display: inline-grid;
   font-weight: 850;
   min-height: 44px;
   place-content: center start;
@@ -1110,7 +1117,7 @@ html[data-density="compact"] .watch-row {
   }
 
   .watch-row-ratio::before {
-    content: "Good/total ";
+    content: attr(data-label) " ";
   }
 
   .watch-row-combos {

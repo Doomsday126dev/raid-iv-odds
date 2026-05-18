@@ -5,8 +5,187 @@ const DEFAULT_PREFS = {
     theme: "system",
     accent: "aqua",
     density: "comfortable",
+    language: "en",
     showDetails: true,
     watchFilter: "all"
+};
+const TEXT = {
+    en: {
+        skipToResults: "Skip to results",
+        eyebrow: "Unofficial raid IV tool",
+        appTitle: "Purified Hundo Odds",
+        themeSystem: "System",
+        themeLight: "Light",
+        themeDark: "Dark",
+        pokemonLabel: "Pokemon",
+        observedCpLabel: "Observed CP",
+        manualBaseStats: "Manual base stats",
+        baseAttack: "Base attack",
+        baseDefense: "Base defense",
+        baseStamina: "Base stamina",
+        raidIvFloor: "Raid IV floor",
+        floorShadow: "Shadow raid: 6/6/6",
+        floorStandard: "Standard raid: 10/10/10",
+        floorWild: "Wild/no floor: 0/0/0",
+        floorCustom: "Custom",
+        purifyBonus: "Purify bonus",
+        showIvSpreads: "Show IV spreads",
+        watchlistFilter: "Watchlist filter",
+        filterAll: "All eligible CPs",
+        filterPartial: "Mixed odds only",
+        filterStrong: "50% or better",
+        filterGuaranteed: "Guaranteed only",
+        layoutLabel: "Layout",
+        layoutDetailed: "Detailed",
+        layoutFast: "Fast scan",
+        layoutHelp: "Fast scan keeps the same math and shows more rows at once.",
+        installApp: "Install app",
+        calculationNotes: "Calculation Notes",
+        noteFloor: "Each IV spread from the raid floor through 15/15/15 is counted once.",
+        notePurify: "A spread purifies to a hundo when each IV plus the purify bonus reaches 15.",
+        noteShadow: "Shadow battle modifiers do not change the catch CP calculation.",
+        legalDisclaimer: "Unofficial fan-made calculator. Not affiliated with, sponsored by, endorsed by, or approved by Niantic, Scopely, The Pokemon Company, Nintendo, Creatures, or GAME FREAK. Pokemon and related names are trademarks of their respective owners.",
+        legalAccuracy: "This tool is informational only and depends on current game data and assumptions. Always verify important raid decisions in-game.",
+        privacyLink: "Privacy",
+        feedbackLink: "Feedback",
+        selectedBossHundoCps: "Selected boss hundo CPs",
+        nonWeather: "Non-weather",
+        weatherBoosted: "Weather boosted",
+        useNonWeatherHundo: "Use non-weather hundo {cp}",
+        useWeatherHundo: "Use weather-boosted hundo {cp}",
+        cpResult: "CP result",
+        cpNotPossibleTitle: "CP not possible",
+        cpNotPossibleCopy: "No level 20 or level 25 IV spread can produce CP {cp} for this Pokemon.",
+        chanceTitle: "{odds} chance",
+        scenarioCopy: "{scenario}: {good}/{total} matching IV spreads purify to 15/15/15.",
+        zeroChanceTitle: "0% chance",
+        possibleButZero: "{scenarios} can produce this CP, but none of the matching spreads purify to 15/15/15.",
+        pokemonContext: "Pokemon",
+        analyzingCp: "Analyzing CP",
+        tapToEdit: "Tap to edit",
+        ivFloor: "IV floor",
+        prePurifyTarget: "Pre-purify target",
+        baseStats: "Base stats",
+        catchLevelRange: "Catch level {level}; CP range {min}-{max}",
+        matchingSpreads: "Matching spreads",
+        purifyHundos: "Purify hundos",
+        misses: "Misses",
+        reducedOdds: "Reduced odds",
+        impossibleAtLevel: "CP {cp} is not possible for this Pokemon at level {level} with the current IV floor. ",
+        possibleNoGood: "CP {cp} is possible, but none of its {total} IV spread{plural} purify to 100%. ",
+        guaranteedResult: "Every IV spread that can produce CP {cp} purifies to 100%.",
+        mixedResult: "CP {cp} has {total} possible IV spreads; {good} purify to 100%.",
+        closestEligible: "Closest eligible CPs:",
+        noEligible: "No eligible CPs exist under these settings.",
+        matchingIvSpreads: "Matching IV spreads",
+        goodMiss: "{good} good / {bad} miss",
+        watchlistTitle: "{scenario} Watchlist",
+        watchlistHint: "Tap to view CPs that have at least one spread that purifies to 15/15/15.",
+        watchSummary: "{shown}/{total} CPs, {guaranteed} guaranteed",
+        tableCp: "CP",
+        tableChance: "Chance",
+        tableGoodTotal: "Good/Total",
+        tableGoodIvs: "Good IVs",
+        analyzeCp: "Analyze CP {cp}, {odds} chance",
+        emptyWatchlist: "No CPs match this watchlist filter.",
+        validMatchGood: "{scenario} match. {good}/{total} purify to hundo ({odds}).",
+        validMatchZero: "{scenario} match. possible CP, but no matching spread purifies to hundo.",
+        rareOverlap: "Rare overlap: this CP appears in {scenarios} tables. Check the raid weather state.",
+        exactNoSpread: "Within the selected boss range, but no IV spread lands exactly on {cp}.",
+        outsideRange: "Outside the selected boss catch ranges. {ranges}.",
+        tryNearest: " Try {chips}",
+        floorHint: "Counts every spread from {floor}/{floor}/{floor} through 15/15/15.",
+        bonusHint: "With +{bonus}, pre-purify {target}/{target}/{target}+ reaches a hundo.",
+        dataHint: "Seeded list: {count} bosses/forms, reviewed {date}. Use manual stats for brand-new or missing forms."
+    },
+    ja: {
+        skipToResults: "結果へスキップ",
+        eyebrow: "非公式レイド個体値ツール",
+        appTitle: "リトレーン100%個体値の確率",
+        themeSystem: "端末設定",
+        themeLight: "ライト",
+        themeDark: "ダーク",
+        pokemonLabel: "レイドボス",
+        observedCpLabel: "確認したCP",
+        manualBaseStats: "種族値を手入力",
+        baseAttack: "攻撃種族値",
+        baseDefense: "防御種族値",
+        baseStamina: "HP種族値",
+        raidIvFloor: "レイド個体値の最低値",
+        floorShadow: "シャドウレイド: 6/6/6",
+        floorStandard: "通常レイド: 10/10/10",
+        floorWild: "野生/最低値なし: 0/0/0",
+        floorCustom: "カスタム",
+        purifyBonus: "リトレーン加算",
+        showIvSpreads: "個体値候補を表示",
+        watchlistFilter: "ウォッチリスト絞り込み",
+        filterAll: "対象CPすべて",
+        filterPartial: "分岐ありのみ",
+        filterStrong: "50%以上",
+        filterGuaranteed: "確定のみ",
+        layoutLabel: "表示",
+        layoutDetailed: "詳細",
+        layoutFast: "一覧重視",
+        layoutHelp: "一覧重視でも計算は同じで、より多くの行を表示します。",
+        installApp: "アプリを追加",
+        calculationNotes: "計算メモ",
+        noteFloor: "個体値の最低値から15/15/15までの全候補を1回ずつ数えます。",
+        notePurify: "各個体値にリトレーン加算を足して15になれば100%個体値になります。",
+        noteShadow: "シャドウ補正は捕獲時CPの計算には影響しません。",
+        legalDisclaimer: "非公式のファンメイド計算ツールです。Niantic、Scopely、The Pokemon Company、Nintendo、Creatures、GAME FREAKとは提携・後援・承認関係にありません。Pokemonおよび関連名称は各権利者の商標です。",
+        legalAccuracy: "このツールは参考情報です。ゲームデータや前提条件に依存するため、重要なレイド判断はゲーム内でも確認してください。",
+        privacyLink: "プライバシー",
+        feedbackLink: "フィードバック",
+        selectedBossHundoCps: "選択中ボスの100%CP",
+        nonWeather: "通常時",
+        weatherBoosted: "天候ブースト",
+        useNonWeatherHundo: "通常時100%CP {cp}",
+        useWeatherHundo: "天候ブースト100%CP {cp}",
+        cpResult: "CP判定",
+        cpNotPossibleTitle: "存在しないCP",
+        cpNotPossibleCopy: "このポケモンでは、CP {cp} をレベル20/25の個体値候補で作れません。",
+        chanceTitle: "{odds}の確率",
+        scenarioCopy: "{scenario}: {total}候補中{good}候補がリトレーン後15/15/15になります。",
+        zeroChanceTitle: "0%の確率",
+        possibleButZero: "{scenarios}ではこのCPが出ますが、リトレーン後100%になる候補はありません。",
+        pokemonContext: "ポケモン",
+        analyzingCp: "判定中CP",
+        tapToEdit: "タップして編集",
+        ivFloor: "個体値最低値",
+        prePurifyTarget: "リトレーン前の目安",
+        baseStats: "種族値",
+        catchLevelRange: "捕獲レベル {level}; CP範囲 {min}-{max}",
+        matchingSpreads: "該当候補",
+        purifyHundos: "100%化候補",
+        misses: "対象外",
+        reducedOdds: "約分後",
+        impossibleAtLevel: "現在の個体値最低値では、レベル{level}でCP {cp} は出ません。 ",
+        possibleNoGood: "CP {cp} は存在しますが、該当する{total}候補はどれも100%化しません。 ",
+        guaranteedResult: "CP {cp} の該当候補はすべてリトレーン後100%になります。",
+        mixedResult: "CP {cp} には{total}個の個体値候補があり、そのうち{good}個が100%化します。",
+        closestEligible: "近い対象CP:",
+        noEligible: "この設定では対象CPがありません。",
+        matchingIvSpreads: "該当する個体値候補",
+        goodMiss: "対象 {good} / 対象外 {bad}",
+        watchlistTitle: "{scenario}ウォッチリスト",
+        watchlistHint: "リトレーン後15/15/15になる候補を含むCPを表示します。",
+        watchSummary: "{shown}/{total} CP、確定 {guaranteed}",
+        tableCp: "CP",
+        tableChance: "確率",
+        tableGoodTotal: "対象/合計",
+        tableGoodIvs: "対象個体値",
+        analyzeCp: "CP {cp} を判定、確率 {odds}",
+        emptyWatchlist: "この条件に合うCPはありません。",
+        validMatchGood: "{scenario}に一致。{total}候補中{good}候補が100%化します（{odds}）。",
+        validMatchZero: "{scenario}に一致。存在するCPですが、100%化する候補はありません。",
+        rareOverlap: "まれな重複: このCPは{scenarios}の両方にあります。レイド時の天候を確認してください。",
+        exactNoSpread: "選択中ボスのCP範囲内ですが、CP {cp} ぴったりの候補はありません。",
+        outsideRange: "選択中ボスの捕獲CP範囲外です。{ranges}。",
+        tryNearest: " 近い候補: {chips}",
+        floorHint: "{floor}/{floor}/{floor}から15/15/15までの全候補を数えます。",
+        bonusHint: "+{bonus}の場合、リトレーン前{target}/{target}/{target}+が100%になります。",
+        dataHint: "収録ボス/フォーム: {count}件。確認日: {date}。未収録や新フォームは種族値の手入力を使ってください。"
+    }
 };
 const elements = {
     pokemonSelect: byId("pokemonSelect"),
@@ -33,6 +212,7 @@ const elements = {
     watchlistGrid: byId("watchlistGrid"),
     dataHint: byId("dataHint"),
     themeButtons: Array.from(document.querySelectorAll("[data-theme-choice]")),
+    languageButtons: Array.from(document.querySelectorAll("[data-language-choice]")),
     accentButtons: Array.from(document.querySelectorAll("[data-accent-choice]")),
     cpStepButtons: Array.from(document.querySelectorAll("[data-cp-step]")),
     themeMeta: document.querySelector('meta[name="theme-color"]')
@@ -75,6 +255,10 @@ function restoreState() {
             "comfortable",
             "compact"
         ], DEFAULT_PREFS.density),
+        language: validateOption(saved.language, [
+            "en",
+            "ja"
+        ], DEFAULT_PREFS.language),
         showDetails: typeof saved.showDetails === "boolean" ? saved.showDetails : DEFAULT_PREFS.showDetails,
         watchFilter: validateOption(saved.watchFilter, [
             "all",
@@ -151,6 +335,12 @@ function bindEvents() {
         button.addEventListener("click", ()=>{
             prefs.theme = button.dataset.themeChoice;
             applyAppearance();
+            render();
+        });
+    });
+    elements.languageButtons.forEach((button)=>{
+        button.addEventListener("click", ()=>{
+            prefs.language = button.dataset.languageChoice;
             render();
         });
     });
@@ -232,6 +422,7 @@ function readSettings() {
 function render() {
     const settings = readSettings();
     const summaries = RAID_LEVELS.map((raidLevel)=>summarizeCp(settings.baseStats, raidLevel, settings.cp, settings.raidFloor, settings.purifyBonus));
+    renderStaticText();
     renderQuickButtons(settings.baseStats);
     renderHundoHints(settings.baseStats);
     renderCpValidation(summaries, settings);
@@ -244,87 +435,133 @@ function render() {
     saveState(settings);
     syncUrl(settings);
 }
+function renderStaticText() {
+    document.documentElement.lang = prefs.language;
+    document.title = prefs.language === "ja" ? "シャドウレイド リトレーン100%個体値の確率" : "Shadow Raid Purified Hundo Odds";
+    document.querySelectorAll("[data-i18n]").forEach((element)=>{
+        const key = element.dataset.i18n;
+        if (!key) return;
+        element.textContent = copy(key);
+    });
+    document.querySelectorAll("[data-floor-custom]").forEach((option)=>{
+        option.textContent = `${copy("floorCustom")}: ${option.value}/${option.value}/${option.value}`;
+    });
+}
 function renderQuickButtons(baseStats) {
-    elements.normalMaxButton.textContent = `Use non-weather hundo ${maxCpFor(baseStats, RAID_LEVELS[0])}`;
-    elements.boostedMaxButton.textContent = `Use weather-boosted hundo ${maxCpFor(baseStats, RAID_LEVELS[1])}`;
+    elements.normalMaxButton.textContent = formatCopy("useNonWeatherHundo", {
+        cp: maxCpFor(baseStats, RAID_LEVELS[0])
+    });
+    elements.boostedMaxButton.textContent = formatCopy("useWeatherHundo", {
+        cp: maxCpFor(baseStats, RAID_LEVELS[1])
+    });
 }
 function renderHundoHints(baseStats) {
     elements.hundoHints.innerHTML = `
-    <span class="hundo-hint-label">Selected boss hundo CPs</span>
-    <span class="hundo-hint-values"><span>Non-weather</span> <strong>${maxCpFor(baseStats, RAID_LEVELS[0])}</strong></span>
-    <span class="hundo-hint-values"><span>Weather boosted</span> <strong>${maxCpFor(baseStats, RAID_LEVELS[1])}</strong></span>
+    <span class="hundo-hint-label">${copy("selectedBossHundoCps")}</span>
+    <span class="hundo-hint-values"><span>${copy("nonWeather")}</span> <strong>${maxCpFor(baseStats, RAID_LEVELS[0])}</strong></span>
+    <span class="hundo-hint-values"><span>${copy("weatherBoosted")}</span> <strong>${maxCpFor(baseStats, RAID_LEVELS[1])}</strong></span>
   `;
 }
 function renderCpValidation(summaries, settings) {
     const possible = summaries.filter((summary)=>summary.total > 0);
     const inRange = summaries.filter((summary)=>settings.cp >= summary.minCp && settings.cp <= summary.maxCp);
-    const ranges = summaries.map((summary)=>`${summary.raidLevel.label}: ${summary.minCp}-${summary.maxCp}`).join(" · ");
+    const ranges = summaries.map((summary)=>`${scenarioLabel(summary)}: ${summary.minCp}-${summary.maxCp}`).join(" · ");
     const possibleClass = possible.length ? "is-valid" : "is-invalid";
     elements.cpInput.min = String(Math.min(...summaries.map((summary)=>summary.minCp)));
     elements.cpInput.max = String(Math.max(...summaries.map((summary)=>summary.maxCp)));
     elements.cpInput.setAttribute("aria-invalid", String(!possible.length));
     if (possible.length === 1) {
         const match = possible[0];
-        const outcome = match.good ? `${match.good}/${match.total} purify to hundo (${formatPercent(match.odds)}).` : "possible CP, but no matching spread purifies to hundo.";
         elements.cpInput.setCustomValidity("");
         elements.cpValidation.className = `field-help cp-validation ${possibleClass}`;
-        elements.cpValidation.textContent = `${match.raidLevel.label} match. ${outcome}`;
+        elements.cpValidation.textContent = match.good ? formatCopy("validMatchGood", {
+            scenario: scenarioLabel(match),
+            good: match.good,
+            total: match.total,
+            odds: formatPercent(match.odds)
+        }) : formatCopy("validMatchZero", {
+            scenario: scenarioLabel(match)
+        });
         return;
     }
     if (possible.length > 1) {
         elements.cpInput.setCustomValidity("");
         elements.cpValidation.className = `field-help cp-validation ${possibleClass}`;
-        elements.cpValidation.textContent = `Rare overlap: this CP appears in ${possible.map((summary)=>summary.raidLevel.label.toLowerCase()).join(" and ")} tables. Check the raid weather state.`;
+        elements.cpValidation.textContent = formatCopy("rareOverlap", {
+            scenarios: possible.map(scenarioLabel).join(prefs.language === "ja" ? "と" : " and ")
+        });
         return;
     }
     const nearest = summaries.flatMap((summary)=>nearestPossibleCpButtons(summary, settings.cp)).slice(0, 3).join(" ");
-    const message = inRange.length ? `Within the selected boss range, but no IV spread lands exactly on ${settings.cp}.` : `Outside the selected boss catch ranges. ${ranges}.`;
+    const message = inRange.length ? formatCopy("exactNoSpread", {
+        cp: settings.cp
+    }) : formatCopy("outsideRange", {
+        ranges
+    });
     elements.cpInput.setCustomValidity(message);
     elements.cpValidation.className = `field-help cp-validation ${possibleClass}`;
-    elements.cpValidation.innerHTML = `${escapeHtml(message)}${nearest ? ` Try ${nearest}` : ""}`;
+    elements.cpValidation.innerHTML = `${escapeHtml(message)}${nearest ? formatCopy("tryNearest", {
+        chips: nearest
+    }) : ""}`;
 }
 function nearestPossibleCpButtons(summary, cp) {
     return Array.from(summary.buckets.keys()).sort((left, right)=>Math.abs(left - cp) - Math.abs(right - cp) || right - left).slice(0, 2).map((candidate)=>`<button class="inline-cp-button" type="button" data-cp="${candidate}">${candidate}</button>`);
 }
 function renderDataHint() {
-    elements.dataHint.innerHTML = `Seeded list: ${POKEMON.length} bosses/forms, reviewed ${DATA_LAST_REVIEWED}. Use manual stats for brand-new or missing forms.`;
+    elements.dataHint.textContent = formatCopy("dataHint", {
+        count: POKEMON.length,
+        date: DATA_LAST_REVIEWED
+    });
 }
 function renderAssumptionHints(settings) {
     const threshold = purifiedThreshold(settings.purifyBonus);
-    const floorLabel = `${settings.raidFloor}/${settings.raidFloor}/${settings.raidFloor}`;
-    const targetLabel = `${threshold}/${threshold}/${threshold}+`;
-    elements.floorHint.textContent = `Counts every spread from ${floorLabel} through 15/15/15.`;
-    elements.bonusHint.textContent = `With +${settings.purifyBonus}, pre-purify ${targetLabel} reaches a hundo.`;
+    elements.floorHint.textContent = formatCopy("floorHint", {
+        floor: settings.raidFloor
+    });
+    elements.bonusHint.textContent = formatCopy("bonusHint", {
+        bonus: settings.purifyBonus,
+        target: threshold
+    });
 }
 function renderPrimaryInsight(summaries, settings) {
     const eligible = summaries.filter((summary)=>summary.total && summary.good);
     const possible = summaries.filter((summary)=>summary.total);
     const best = eligible.slice().sort((left, right)=>right.odds - left.odds)[0];
     let state = "none";
-    let title = "CP not possible";
-    let copy = `No level 20 or level 25 IV spread can produce CP ${settings.cp} for this Pokemon.`;
+    let title = copy("cpNotPossibleTitle");
+    let body = formatCopy("cpNotPossibleCopy", {
+        cp: settings.cp
+    });
     if (best) {
         state = best.odds === 1 ? "good" : "mixed";
-        title = `${formatPercent(best.odds)} chance`;
-        copy = `${best.raidLevel.label}: ${best.good}/${best.total} matching IV spreads purify to 15/15/15.`;
+        title = formatCopy("chanceTitle", {
+            odds: formatPercent(best.odds)
+        });
+        body = formatCopy("scenarioCopy", {
+            scenario: scenarioLabel(best),
+            good: best.good,
+            total: best.total
+        });
     } else if (possible.length) {
-        title = "0% chance";
-        copy = `${possible.map((summary)=>summary.raidLevel.label).join(" and ")} can produce this CP, but none of the matching spreads purify to 15/15/15.`;
+        title = copy("zeroChanceTitle");
+        body = formatCopy("possibleButZero", {
+            scenarios: possible.map(scenarioLabel).join(prefs.language === "ja" ? "と" : " and ")
+        });
     }
     elements.primaryInsight.className = `primary-insight ${state}`;
     elements.primaryInsight.innerHTML = `
-    <span class="insight-label">CP result</span>
+    <span class="insight-label">${copy("cpResult")}</span>
     <span class="insight-title">${title}</span>
-    <p class="insight-copy">${copy}</p>
+    <p class="insight-copy">${body}</p>
   `;
     const threshold = purifiedThreshold(settings.purifyBonus);
     const pokemon = selectedPokemon();
     elements.contextStrip.innerHTML = `
-    <div class="context-card"><span>Pokemon</span><strong>${escapeHtml(pokemon.name)}</strong></div>
-    <button class="context-card context-button" type="button" data-focus-cp><span>Analyzing CP</span><strong>${settings.cp}</strong><em>Tap to edit</em></button>
-    <div class="context-card"><span>IV floor</span><strong>${settings.raidFloor}/${settings.raidFloor}/${settings.raidFloor}</strong></div>
-    <div class="context-card"><span>Pre-purify target</span><strong>${threshold}/${threshold}/${threshold}+</strong></div>
-    <div class="context-card"><span>Base stats</span><strong>${settings.baseStats.atk}/${settings.baseStats.def}/${settings.baseStats.sta}</strong></div>
+    <div class="context-card"><span>${copy("pokemonContext")}</span><strong>${escapeHtml(pokemon.name)}</strong></div>
+    <button class="context-card context-button" type="button" data-focus-cp><span>${copy("analyzingCp")}</span><strong>${settings.cp}</strong><em>${copy("tapToEdit")}</em></button>
+    <div class="context-card"><span>${copy("ivFloor")}</span><strong>${settings.raidFloor}/${settings.raidFloor}/${settings.raidFloor}</strong></div>
+    <div class="context-card"><span>${copy("prePurifyTarget")}</span><strong>${threshold}/${threshold}/${threshold}+</strong></div>
+    <div class="context-card"><span>${copy("baseStats")}</span><strong>${settings.baseStats.atk}/${settings.baseStats.def}/${settings.baseStats.sta}</strong></div>
   `;
 }
 function renderResultPanel(summary) {
@@ -335,8 +572,12 @@ function renderResultPanel(summary) {
     <article class="result-panel is-${state.kind}" data-testid="${summary.raidLevel.key}-result">
       <div class="result-head">
         <div>
-          <h2>${summary.raidLevel.label}</h2>
-          <p class="scenario-copy">Catch level ${summary.raidLevel.level}; CP range ${summary.minCp}-${summary.maxCp}</p>
+          <h2>${scenarioLabel(summary)}</h2>
+          <p class="scenario-copy">${formatCopy("catchLevelRange", {
+        level: summary.raidLevel.level,
+        min: summary.minCp,
+        max: summary.maxCp
+    })}</p>
         </div>
         <div class="odds-badge ${badgeClass}">
           <span class="odds-value">${formatPercent(summary.odds)}</span>
@@ -349,19 +590,19 @@ function renderResultPanel(summary) {
 
       <div class="stat-row" aria-label="${summary.raidLevel.label} CP details">
         <div class="stat-item">
-          <span>Matching spreads</span>
+          <span>${copy("matchingSpreads")}</span>
           <strong>${summary.total}</strong>
         </div>
         <div class="stat-item">
-          <span>Purify hundos</span>
+          <span>${copy("purifyHundos")}</span>
           <strong>${summary.good}</strong>
         </div>
         <div class="stat-item">
-          <span>Misses</span>
+          <span>${copy("misses")}</span>
           <strong>${summary.bad}</strong>
         </div>
         <div class="stat-item">
-          <span>Reduced odds</span>
+          <span>${copy("reducedOdds")}</span>
           <strong>${formatRatio(summary.good, summary.total)}</strong>
         </div>
       </div>
@@ -374,31 +615,44 @@ function resultState(summary) {
     if (!summary.total) {
         return {
             kind: "none",
-            message: `CP ${summary.cp} is not possible for this Pokemon at level ${summary.raidLevel.level} with the current IV floor. `
+            message: formatCopy("impossibleAtLevel", {
+                cp: summary.cp,
+                level: summary.raidLevel.level
+            })
         };
     }
     if (!summary.good) {
         return {
             kind: "none",
-            message: `CP ${summary.cp} is possible, but none of its ${summary.total} IV spread${summary.total === 1 ? "" : "s"} purify to 100%. `
+            message: formatCopy("possibleNoGood", {
+                cp: summary.cp,
+                total: summary.total,
+                plural: summary.total === 1 ? "" : "s"
+            })
         };
     }
     if (summary.good === summary.total) {
         return {
             kind: "good",
-            message: `Every IV spread that can produce CP ${summary.cp} purifies to 100%.`
+            message: formatCopy("guaranteedResult", {
+                cp: summary.cp
+            })
         };
     }
     return {
         kind: "mixed",
-        message: `CP ${summary.cp} has ${summary.total} possible IV spreads; ${summary.good} purif${summary.good === 1 ? "ies" : "y"} to 100%.`
+        message: formatCopy("mixedResult", {
+            cp: summary.cp,
+            total: summary.total,
+            good: summary.good
+        })
     };
 }
 function renderNearest(summary) {
     if (summary.total && summary.good) return "";
-    if (!summary.nearestEligible.length) return "No eligible CPs exist under these settings.";
+    if (!summary.nearestEligible.length) return copy("noEligible");
     const chips = summary.nearestEligible.map((row)=>`<button class="chip-button" type="button" data-cp="${row.cp}">${row.cp} (${formatPercent(row.odds)})</button>`).join("");
-    return `<span class="nearest-list">Closest eligible CPs: ${chips}</span>`;
+    return `<span class="nearest-list">${copy("closestEligible")} ${chips}</span>`;
 }
 function renderCombos(summary) {
     if (!summary.total) return "";
@@ -406,8 +660,11 @@ function renderCombos(summary) {
     return `
     <div class="combo-area" ${prefs.showDetails ? "" : "hidden"}>
       <div class="combo-head">
-        <span>Matching IV spreads</span>
-        <span>${summary.good} good / ${summary.bad} miss</span>
+        <span>${copy("matchingIvSpreads")}</span>
+        <span>${formatCopy("goodMiss", {
+        good: summary.good,
+        bad: summary.bad
+    })}</span>
       </div>
       <div class="combo-list">${combos}</div>
     </div>
@@ -430,20 +687,26 @@ function renderWatchlistPanel(summary) {
     <details class="watch-panel" data-testid="${summary.raidLevel.key}-watchlist">
       <summary class="watch-head">
         <div>
-          <h2>${summary.raidLevel.label} Watchlist</h2>
-          <p>Tap to view CPs that have at least one spread that purifies to 15/15/15.</p>
+          <h2>${formatCopy("watchlistTitle", {
+        scenario: scenarioLabel(summary)
+    })}</h2>
+          <p>${copy("watchlistHint")}</p>
         </div>
-        <span class="watch-summary">${filteredRows.length}/${summary.watchlist.length} CPs, ${guaranteed} guaranteed</span>
+        <span class="watch-summary">${formatCopy("watchSummary", {
+        shown: filteredRows.length,
+        total: summary.watchlist.length,
+        guaranteed
+    })}</span>
       </summary>
       ${rows ? `<div class="watch-table" role="table" aria-label="${summary.raidLevel.label} eligible CPs">
               <div class="watch-table-head" role="row">
-                <span>CP</span>
-                <span>Chance</span>
-                <span>Good/Total</span>
-                <span>Good IVs</span>
+                <span>${copy("tableCp")}</span>
+                <span>${copy("tableChance")}</span>
+                <span>${copy("tableGoodTotal")}</span>
+                <span>${copy("tableGoodIvs")}</span>
               </div>
               <div class="watch-table-body">${rows}</div>
-            </div>` : `<p class="empty-state">No CPs match this watchlist filter.</p>`}
+            </div>` : `<p class="empty-state">${copy("emptyWatchlist")}</p>`}
     </details>
   `;
 }
@@ -451,10 +714,13 @@ function renderWatchlistRow(row) {
     const oddsClass = row.good === row.total ? "full" : "partial";
     const comboPreview = previewGoodCombos(row.goodCombos);
     return `
-    <button class="watch-row" type="button" data-cp="${row.cp}" role="row" aria-label="Analyze CP ${row.cp}, ${formatPercent(row.odds)} chance">
+    <button class="watch-row" type="button" data-cp="${row.cp}" role="row" aria-label="${formatCopy("analyzeCp", {
+        cp: row.cp,
+        odds: formatPercent(row.odds)
+    })}">
       <span class="watch-row-cp">${row.cp}</span>
       <span class="odds-token ${oddsClass}">${formatPercent(row.odds)}</span>
-      <span class="watch-row-ratio">${row.good}/${row.total}</span>
+      <span class="watch-row-ratio" data-label="${copy("tableGoodTotal")}">${row.good}/${row.total}</span>
       <span class="watch-row-combos">${escapeHtml(comboPreview)}</span>
     </button>
   `;
@@ -479,6 +745,7 @@ function applyAppearance() {
     document.documentElement.dataset.mode = prefs.theme;
     document.documentElement.dataset.accent = prefs.accent;
     document.documentElement.dataset.density = prefs.density;
+    document.documentElement.dataset.language = prefs.language;
     const themeColor = resolvedTheme === "dark" ? "#101417" : accentThemeColor(prefs.accent);
     elements.themeMeta?.setAttribute("content", themeColor);
     updateControlState();
@@ -486,6 +753,9 @@ function applyAppearance() {
 function updateControlState() {
     elements.themeButtons.forEach((button)=>{
         button.setAttribute("aria-pressed", String(button.dataset.themeChoice === prefs.theme));
+    });
+    elements.languageButtons.forEach((button)=>{
+        button.setAttribute("aria-pressed", String(button.dataset.languageChoice === prefs.language));
     });
     elements.accentButtons.forEach((button)=>{
         button.setAttribute("aria-pressed", String(button.dataset.accentChoice === prefs.accent));
@@ -505,6 +775,7 @@ function saveState(settings) {
         theme: prefs.theme,
         accent: prefs.accent,
         density: prefs.density,
+        language: prefs.language,
         showDetails: prefs.showDetails,
         watchFilter: prefs.watchFilter
     };
@@ -554,6 +825,15 @@ function registerServiceWorker() {
     navigator.serviceWorker.register(`${baseUrl}sw.js`, {
         scope: baseUrl
     }).catch(()=>{});
+}
+function copy(key) {
+    return TEXT[prefs.language][key] || TEXT.en[key];
+}
+function formatCopy(key, values) {
+    return copy(key).replaceAll(/\{(\w+)\}/g, (_match, token)=>String(values[token] ?? ""));
+}
+function scenarioLabel(summary) {
+    return summary.raidLevel.key === "normal" ? copy("nonWeather") : copy("weatherBoosted");
 }
 function validateOption(value, allowed, fallback) {
     return typeof value === "string" && allowed.includes(value) ? value : fallback;

@@ -10,6 +10,12 @@ Public app URL:
 https://doomsday126dev.github.io/raid-iv-odds/
 ```
 
+Feedback link:
+
+```text
+https://github.com/doomsday126dev/raid-iv-odds/issues/new?template=feedback.yml
+```
+
 ## What Is A PWA?
 
 A PWA, or Progressive Web App, is a website that can behave like a lightweight app on your phone. It can have an app icon, open in a standalone full-screen window, cache files for offline use, and later share most of the same code with a native wrapper.
@@ -46,6 +52,8 @@ npm run dev
 - Keeps manual base stats for missing or future Pokemon/forms.
 - Adds persistent display preferences, dark mode, accent themes, a fast-scan layout, CP steppers, watchlist filtering, and an at-a-glance verdict.
 - Supports shareable URLs like `?pokemon=Mewtwo&cp=2387`.
+- Includes an English/Japanese language toggle for the main calculator UI.
+- Provides a GitHub feedback form for corrections, suggestions, and missing boss reports.
 - Adds PWA starter files: `public/manifest.webmanifest`, `public/sw.js`, an app icon, and a privacy page.
 - Does not load analytics by default. `docs/FREE_ANALYTICS_SETUP.md` covers free options if analytics are added later.
 - Adds `capacitor.config.ts` for future App Store and Play Store wrappers.

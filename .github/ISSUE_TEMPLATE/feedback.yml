@@ -1,0 +1,43 @@
+name: Feedback or suggestion
+description: Share an idea, correction, or usability note for Raid IV Odds.
+title: "[Feedback]: "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Raid IV Odds. Please do not include Pokemon GO account details or personal information.
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Feedback
+      description: What should be improved, corrected, or added?
+      placeholder: Tell me what felt confusing or what would make the calculator more useful.
+    validations:
+      required: true
+  - type: input
+    id: boss
+    attributes:
+      label: Boss or form, if relevant
+      placeholder: Mewtwo, Lugia, etc.
+  - type: input
+    id: cp
+    attributes:
+      label: CP or scenario, if relevant
+      placeholder: 2372 non-weather, weather boosted, IV floor, etc.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Calculation / odds
+        - Boss stats or missing boss
+        - Mobile UI / PWA
+        - Japanese translation
+        - Spreadsheet
+        - Other
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or links
+      description: Optional, but helpful for UI issues.
