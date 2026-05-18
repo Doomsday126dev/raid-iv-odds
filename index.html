@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shadow Raid Purified Hundo Odds</title>
+    <meta
+      name="description"
+      content="A mobile-friendly Shadow Raid IV calculator for checking purified hundo odds from catch CP."
+    />
+    <meta name="theme-color" content="#0a7775" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Raid IV Odds" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/icon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="/src/main.js?v=5"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#resultsGrid">Skip to results</a>
+    <main class="app-shell">
+      <section class="topline" aria-labelledby="pageTitle">
+        <div class="brand-block">
+          <div class="app-mark" aria-hidden="true">IV</div>
+          <div>
+            <p class="eyebrow">Unofficial raid IV tool</p>
+            <h1 id="pageTitle">Purified Hundo Odds</h1>
+          </div>
+        </div>
+
+        <div class="appearance-panel" aria-label="Display options">
+          <div class="segmented" aria-label="Theme">
+            <button type="button" data-theme-choice="system">System</button>
+            <button type="button" data-theme-choice="light">Light</button>
+            <button type="button" data-theme-choice="dark">Dark</button>
+          </div>
+          <div class="segmented palette-segment" aria-label="Accent color">
+            <button type="button" data-accent-choice="aqua">Aqua</button>
+            <button type="button" data-accent-choice="mystic">Mystic</button>
+            <button type="button" data-accent-choice="valor">Valor</button>
+            <button type="button" data-accent-choice="instinct">Instinct</button>
+          </div>
+        </div>
+
+        <div class="baseline" id="baselineOdds" aria-live="polite"></div>
+      </section>
+
+      <section class="insight-surface" aria-label="Current verdict">
+        <div class="primary-insight" id="primaryInsight"></div>
+        <div class="context-strip" id="contextStrip"></div>
+      </section>
+
+      <section class="control-surface" aria-label="Raid inputs">
+        <div class="field pokemon-field">
+          <label for="pokemonSelect">Pokemon</label>
+          <select id="pokemonSelect"></select>
+        </div>
+
+        <div class="field cp-field">
+          <label for="cpInput">Observed CP</label>
+          <div class="cp-stepper">
+            <button class="stepper-button" type="button" data-cp-step="-1" aria-label="Decrease CP">-</button>
+            <input id="cpInput" inputmode="numeric" min="10" type="number" />
+            <button class="stepper-button" type="button" data-cp-step="1" aria-label="Increase CP">+</button>
+          </div>
+        </div>
+
+        <div class="quick-actions" aria-label="Quick CP choices">
+          <button class="secondary-button" id="normalMaxButton" type="button"></button>
+          <button class="secondary-button" id="boostedMaxButton" type="button"></button>
+        </div>
+
+        <label class="toggle-row" for="manualStats">
+          <input id="manualStats" type="checkbox" />
+          <span>Manual base stats</span>
+        </label>
+      </section>
+
+      <section class="stats-surface" aria-label="Base stats and assumptions">
+        <div class="field">
+          <label for="atkInput">Base attack</label>
+          <input id="atkInput" inputmode="numeric" min="1" type="number" />
+        </div>
+        <div class="field">
+          <label for="defInput">Base defense</label>
+          <input id="defInput" inputmode="numeric" min="1" type="number" />
+        </div>
+        <div class="field">
+          <label for="staInput">Base stamina</label>
+          <input id="staInput" inputmode="numeric" min="1" type="number" />
+        </div>
+        <div class="field">
+          <label for="floorInput">Raid IV floor</label>
+          <input id="floorInput" inputmode="numeric" max="15" min="0" type="number" value="6" />
+        </div>
+        <div class="field">
+          <label for="bonusInput">Purify bonus</label>
+          <input id="bonusInput" inputmode="numeric" max="15" min="0" type="number" value="2" />
+        </div>
+      </section>
+
+      <section class="utility-bar" aria-label="View controls">
+        <label class="toggle-row" for="showDetails">
+          <input id="showDetails" type="checkbox" checked />
+          <span>Show IV spreads</span>
+        </label>
+        <label class="field compact-field" for="watchFilter">
+          <span>Watchlist filter</span>
+          <select id="watchFilter">
+            <option value="all">All eligible CPs</option>
+            <option value="partial">Mixed odds only</option>
+            <option value="strong">50% or better</option>
+            <option value="guaranteed">Guaranteed only</option>
+          </select>
+        </label>
+        <label class="field compact-field" for="densitySelect">
+          <span>Density</span>
+          <select id="densitySelect">
+            <option value="comfortable">Comfortable</option>
+            <option value="compact">Compact</option>
+          </select>
+        </label>
+        <button class="secondary-button install-button" id="installButton" type="button" hidden>
+          Install app
+        </button>
+      </section>
+
+      <section class="results-grid" id="resultsGrid" aria-live="polite"></section>
+
+      <section class="watchlist-grid" id="watchlistGrid" aria-label="CP watchlists"></section>
+
+      <section class="notes-panel" aria-label="Calculation notes">
+        <h2>Calculation Notes</h2>
+        <div class="note-list">
+          <p>Each IV spread from the raid floor through 15/15/15 is counted once.</p>
+          <p>A spread purifies to a hundo when each IV plus the purify bonus reaches 15.</p>
+          <p>Shadow battle modifiers do not change the catch CP calculation.</p>
+          <p>The seeded list is a convenience list; manual stats cover missing or future forms.</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

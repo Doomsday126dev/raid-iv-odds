@@ -1,0 +1,654 @@
+import { POKEMON, type Pokemon } from "./data";
+import {
+  MAX_IV,
+  MIN_CP,
+  RAID_LEVELS,
+  clampInt,
+  combinationTotals,
+  formatPercent,
+  formatRatio,
+  maxCpFor,
+  purifiedThreshold,
+  summarizeCp,
+  type BaseStats,
+  type CpSummary,
+  type IvCombo,
+  type WatchlistRow,
+} from "./math";
+
+const STORAGE_KEY = "raidIvOdds:v4";
+
+type ThemeChoice = "system" | "light" | "dark";
+type AccentChoice = "aqua" | "mystic" | "valor" | "instinct";
+type DensityChoice = "comfortable" | "compact";
+type WatchFilter = "all" | "partial" | "strong" | "guaranteed";
+type ResultTone = "good" | "mixed" | "none";
+
+type Preferences = {
+  theme: ThemeChoice;
+  accent: AccentChoice;
+  density: DensityChoice;
+  showDetails: boolean;
+  watchFilter: WatchFilter;
+};
+
+type SavedState = Partial<
+  Preferences & {
+    selectedName: string;
+    cp: number;
+    manualStats: boolean;
+    stats: BaseStats;
+    raidFloor: number;
+    purifyBonus: number;
+  }
+>;
+
+type ResultState = {
+  kind: ResultTone;
+  message: string;
+};
+
+type BeforeInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<unknown>;
+};
+
+const DEFAULT_PREFS: Preferences = {
+  theme: "system",
+  accent: "aqua",
+  density: "comfortable",
+  showDetails: true,
+  watchFilter: "all",
+};
+
+const elements = {
+  pokemonSelect: byId<HTMLSelectElement>("pokemonSelect"),
+  cpInput: byId<HTMLInputElement>("cpInput"),
+  normalMaxButton: byId<HTMLButtonElement>("normalMaxButton"),
+  boostedMaxButton: byId<HTMLButtonElement>("boostedMaxButton"),
+  manualStats: byId<HTMLInputElement>("manualStats"),
+  atkInput: byId<HTMLInputElement>("atkInput"),
+  defInput: byId<HTMLInputElement>("defInput"),
+  staInput: byId<HTMLInputElement>("staInput"),
+  floorInput: byId<HTMLInputElement>("floorInput"),
+  bonusInput: byId<HTMLInputElement>("bonusInput"),
+  showDetails: byId<HTMLInputElement>("showDetails"),
+  watchFilter: byId<HTMLSelectElement>("watchFilter"),
+  densitySelect: byId<HTMLSelectElement>("densitySelect"),
+  installButton: byId<HTMLButtonElement>("installButton"),
+  baselineOdds: byId<HTMLElement>("baselineOdds"),
+  primaryInsight: byId<HTMLElement>("primaryInsight"),
+  contextStrip: byId<HTMLElement>("contextStrip"),
+  resultsGrid: byId<HTMLElement>("resultsGrid"),
+  watchlistGrid: byId<HTMLElement>("watchlistGrid"),
+  themeButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-theme-choice]")),
+  accentButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-accent-choice]")),
+  cpStepButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-cp-step]")),
+  themeMeta: document.querySelector<HTMLMetaElement>('meta[name="theme-color"]'),
+};
+
+let prefs: Preferences = { ...DEFAULT_PREFS };
+let deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
+
+function init(): void {
+  populatePokemonSelect();
+  restoreState();
+  applyAppearance();
+  bindEvents();
+  registerServiceWorker();
+  render();
+}
+
+function populatePokemonSelect(): void {
+  elements.pokemonSelect.innerHTML = POKEMON.map(
+    (pokemon) => `<option value="${escapeHtml(pokemon.name)}">${escapeHtml(pokemon.name)}</option>`,
+  ).join("");
+}
+
+function restoreState(): void {
+  const saved = loadSavedState();
+  const savedPokemon =
+    typeof saved.selectedName === "string" && POKEMON.some((pokemon) => pokemon.name === saved.selectedName)
+      ? saved.selectedName
+      : "Mewtwo";
+
+  prefs = {
+    ...DEFAULT_PREFS,
+    theme: validateOption(saved.theme, ["system", "light", "dark"], DEFAULT_PREFS.theme),
+    accent: validateOption(saved.accent, ["aqua", "mystic", "valor", "instinct"], DEFAULT_PREFS.accent),
+    density: validateOption(saved.density, ["comfortable", "compact"], DEFAULT_PREFS.density),
+    showDetails: typeof saved.showDetails === "boolean" ? saved.showDetails : DEFAULT_PREFS.showDetails,
+    watchFilter: validateOption(
+      saved.watchFilter,
+      ["all", "partial", "strong", "guaranteed"],
+      DEFAULT_PREFS.watchFilter,
+    ),
+  };
+
+  elements.pokemonSelect.value = savedPokemon;
+  elements.manualStats.checked = Boolean(saved.manualStats);
+
+  if (elements.manualStats.checked && saved.stats) {
+    elements.atkInput.value = String(clampInt(saved.stats.atk, 1, 999, selectedPokemon().atk));
+    elements.defInput.value = String(clampInt(saved.stats.def, 1, 999, selectedPokemon().def));
+    elements.staInput.value = String(clampInt(saved.stats.sta, 1, 999, selectedPokemon().sta));
+    syncManualState();
+  } else {
+    syncStatsToSelected();
+  }
+
+  elements.floorInput.value = String(clampInt(saved.raidFloor, 0, MAX_IV, 6));
+  elements.bonusInput.value = String(clampInt(saved.purifyBonus, 0, MAX_IV, 2));
+  elements.cpInput.value =
+    Number.isFinite(Number(saved.cp)) && Number(saved.cp) >= MIN_CP
+      ? String(clampInt(saved.cp, MIN_CP, 99999, MIN_CP))
+      : String(maxCpFor(readBaseStats(), RAID_LEVELS[0]));
+  elements.showDetails.checked = prefs.showDetails;
+  elements.watchFilter.value = prefs.watchFilter;
+  elements.densitySelect.value = prefs.density;
+}
+
+function bindEvents(): void {
+  elements.pokemonSelect.addEventListener("change", () => {
+    syncStatsToSelected();
+    elements.cpInput.value = String(maxCpFor(readBaseStats(), RAID_LEVELS[0]));
+    render();
+  });
+
+  elements.manualStats.addEventListener("change", () => {
+    if (!elements.manualStats.checked) syncStatsToSelected();
+    syncManualState();
+    render();
+  });
+
+  [
+    elements.cpInput,
+    elements.atkInput,
+    elements.defInput,
+    elements.staInput,
+    elements.floorInput,
+    elements.bonusInput,
+  ].forEach((input) => input.addEventListener("input", render));
+
+  elements.showDetails.addEventListener("change", () => {
+    prefs.showDetails = elements.showDetails.checked;
+    render();
+  });
+
+  elements.watchFilter.addEventListener("change", () => {
+    prefs.watchFilter = elements.watchFilter.value as WatchFilter;
+    render();
+  });
+
+  elements.densitySelect.addEventListener("change", () => {
+    prefs.density = elements.densitySelect.value as DensityChoice;
+    applyAppearance();
+    render();
+  });
+
+  elements.normalMaxButton.addEventListener("click", () => {
+    elements.cpInput.value = String(maxCpFor(readBaseStats(), RAID_LEVELS[0]));
+    render();
+  });
+
+  elements.boostedMaxButton.addEventListener("click", () => {
+    elements.cpInput.value = String(maxCpFor(readBaseStats(), RAID_LEVELS[1]));
+    render();
+  });
+
+  elements.cpStepButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const delta = Number(button.dataset.cpStep);
+      elements.cpInput.value = String(clampInt(elements.cpInput.value, MIN_CP, 99999, MIN_CP) + delta);
+      render();
+    });
+  });
+
+  elements.themeButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      prefs.theme = button.dataset.themeChoice as ThemeChoice;
+      applyAppearance();
+      render();
+    });
+  });
+
+  elements.accentButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      prefs.accent = button.dataset.accentChoice as AccentChoice;
+      applyAppearance();
+      render();
+    });
+  });
+
+  const handleCpButtonClick = (event: MouseEvent): void => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest<HTMLButtonElement>("[data-cp]");
+    if (!button) return;
+    elements.cpInput.value = button.dataset.cp ?? String(MIN_CP);
+    render();
+    elements.resultsGrid.scrollIntoView({ block: "start", behavior: "smooth" });
+  };
+
+  elements.resultsGrid.addEventListener("click", handleCpButtonClick);
+  elements.watchlistGrid.addEventListener("click", handleCpButtonClick);
+
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event as BeforeInstallPromptEvent;
+    elements.installButton.hidden = false;
+  });
+
+  elements.installButton.addEventListener("click", async () => {
+    if (!deferredInstallPrompt) return;
+    await deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    elements.installButton.hidden = true;
+  });
+
+  const systemThemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+  const handleSystemThemeChange = (): void => {
+    if (prefs.theme === "system") applyAppearance();
+  };
+
+  systemThemeQuery.addEventListener("change", handleSystemThemeChange);
+}
+
+function selectedPokemon(): Pokemon {
+  return POKEMON.find((pokemon) => pokemon.name === elements.pokemonSelect.value) || POKEMON[0];
+}
+
+function syncStatsToSelected(): void {
+  const pokemon = selectedPokemon();
+  elements.atkInput.value = String(pokemon.atk);
+  elements.defInput.value = String(pokemon.def);
+  elements.staInput.value = String(pokemon.sta);
+  syncManualState();
+}
+
+function syncManualState(): void {
+  const disabled = !elements.manualStats.checked;
+  elements.atkInput.disabled = disabled;
+  elements.defInput.disabled = disabled;
+  elements.staInput.disabled = disabled;
+}
+
+function readBaseStats(): BaseStats {
+  const selected = selectedPokemon();
+  return {
+    atk: clampInt(elements.atkInput.value, 1, 999, selected.atk),
+    def: clampInt(elements.defInput.value, 1, 999, selected.def),
+    sta: clampInt(elements.staInput.value, 1, 999, selected.sta),
+  };
+}
+
+function readSettings(): {
+  baseStats: BaseStats;
+  cp: number;
+  raidFloor: number;
+  purifyBonus: number;
+} {
+  return {
+    baseStats: readBaseStats(),
+    cp: clampInt(elements.cpInput.value, MIN_CP, 99999, MIN_CP),
+    raidFloor: clampInt(elements.floorInput.value, 0, MAX_IV, 6),
+    purifyBonus: clampInt(elements.bonusInput.value, 0, MAX_IV, 2),
+  };
+}
+
+function render(): void {
+  const settings = readSettings();
+  const summaries = RAID_LEVELS.map((raidLevel) =>
+    summarizeCp(settings.baseStats, raidLevel, settings.cp, settings.raidFloor, settings.purifyBonus),
+  );
+
+  renderQuickButtons(settings.baseStats);
+  renderBaseline(settings.raidFloor, settings.purifyBonus);
+  renderPrimaryInsight(summaries, settings);
+  elements.resultsGrid.innerHTML = summaries.map(renderResultPanel).join("");
+  elements.watchlistGrid.innerHTML = summaries.map(renderWatchlistPanel).join("");
+  updateControlState();
+  saveState(settings);
+}
+
+function renderQuickButtons(baseStats: BaseStats): void {
+  elements.normalMaxButton.textContent = `L20 max ${maxCpFor(baseStats, RAID_LEVELS[0])}`;
+  elements.boostedMaxButton.textContent = `L25 max ${maxCpFor(baseStats, RAID_LEVELS[1])}`;
+}
+
+function renderBaseline(raidFloor: number, purifyBonus: number): void {
+  const totals = combinationTotals(raidFloor, purifyBonus);
+  elements.baselineOdds.innerHTML = `
+    <span class="baseline-value">${formatPercent(totals.odds)}</span>
+    <span class="baseline-copy">Before CP: ${totals.good}/${totals.total} IV spreads (${formatRatio(
+      totals.good,
+      totals.total,
+    )})</span>
+  `;
+}
+
+function renderPrimaryInsight(
+  summaries: CpSummary[],
+  settings: { baseStats: BaseStats; cp: number; purifyBonus: number },
+): void {
+  const eligible = summaries.filter((summary) => summary.total && summary.good);
+  const possible = summaries.filter((summary) => summary.total);
+  const best = eligible.slice().sort((left, right) => right.odds - left.odds)[0];
+  let state: ResultTone = "none";
+  let title = "No purified hundo match";
+  let copy = `CP ${settings.cp} is not eligible in either catch scenario.`;
+
+  if (best) {
+    state = best.odds === 1 ? "good" : "mixed";
+    title = best.odds === 1 ? "Guaranteed if this scenario applies" : `${formatPercent(best.odds)} best chance`;
+    copy = `${best.raidLevel.label}: ${best.good}/${best.total} matching IV spreads purify to 15/15/15.`;
+  } else if (possible.length) {
+    title = "Possible CP, but not a purified hundo";
+    copy = `${possible
+      .map((summary) => summary.raidLevel.label)
+      .join(" and ")} can produce this CP, but none of the matching spreads purify to 15/15/15.`;
+  }
+
+  elements.primaryInsight.className = `primary-insight ${state}`;
+  elements.primaryInsight.innerHTML = `
+    <span class="insight-label">Current read</span>
+    <span class="insight-title">${title}</span>
+    <p class="insight-copy">${copy}</p>
+  `;
+
+  const threshold = purifiedThreshold(settings.purifyBonus);
+  const pokemon = selectedPokemon();
+  elements.contextStrip.innerHTML = `
+    <div class="context-card"><span>Pokemon</span><strong>${escapeHtml(pokemon.name)}</strong></div>
+    <div class="context-card"><span>Observed CP</span><strong>${settings.cp}</strong></div>
+    <div class="context-card"><span>Pre-purify target</span><strong>${threshold}/${threshold}/${threshold}+</strong></div>
+    <div class="context-card"><span>Base stats</span><strong>${settings.baseStats.atk}/${settings.baseStats.def}/${settings.baseStats.sta}</strong></div>
+  `;
+}
+
+function renderResultPanel(summary: CpSummary): string {
+  const state = resultState(summary);
+  const badgeClass = summary.good === summary.total && summary.total ? "is-full" : summary.good ? "" : "is-zero";
+  const nearest = renderNearest(summary);
+
+  return `
+    <article class="result-panel is-${state.kind}" data-testid="${summary.raidLevel.key}-result">
+      <div class="result-head">
+        <div>
+          <h2>${summary.raidLevel.label}</h2>
+          <p class="scenario-copy">Catch level ${summary.raidLevel.level}; CP range ${summary.minCp}-${summary.maxCp}</p>
+        </div>
+        <div class="odds-badge ${badgeClass}">
+          <span class="odds-value">${formatPercent(summary.odds)}</span>
+          <span class="odds-ratio">${summary.total ? `${summary.good}/${summary.total}` : "0/0"}</span>
+        </div>
+      </div>
+
+      <div class="odds-meter" aria-hidden="true"><span style="width: ${Math.max(0, summary.odds * 100)}%"></span></div>
+      <p class="status-line ${state.kind}">${state.message}${nearest}</p>
+
+      <div class="stat-row" aria-label="${summary.raidLevel.label} CP details">
+        <div class="stat-item">
+          <span>Matching spreads</span>
+          <strong>${summary.total}</strong>
+        </div>
+        <div class="stat-item">
+          <span>Purify hundos</span>
+          <strong>${summary.good}</strong>
+        </div>
+        <div class="stat-item">
+          <span>Misses</span>
+          <strong>${summary.bad}</strong>
+        </div>
+        <div class="stat-item">
+          <span>Reduced odds</span>
+          <strong>${formatRatio(summary.good, summary.total)}</strong>
+        </div>
+      </div>
+
+      ${renderCombos(summary)}
+    </article>
+  `;
+}
+
+function resultState(summary: CpSummary): ResultState {
+  if (!summary.total) {
+    return {
+      kind: "none",
+      message: `CP ${summary.cp} is not possible for this Pokemon at level ${summary.raidLevel.level} with the current IV floor. `,
+    };
+  }
+
+  if (!summary.good) {
+    return {
+      kind: "none",
+      message: `CP ${summary.cp} is possible, but none of its ${summary.total} IV spread${
+        summary.total === 1 ? "" : "s"
+      } purify to 100%. `,
+    };
+  }
+
+  if (summary.good === summary.total) {
+    return {
+      kind: "good",
+      message: `Every IV spread that can produce CP ${summary.cp} purifies to 100%.`,
+    };
+  }
+
+  return {
+    kind: "mixed",
+    message: `CP ${summary.cp} is a collision: ${summary.good} of ${summary.total} matching spreads purify to 100%.`,
+  };
+}
+
+function renderNearest(summary: CpSummary): string {
+  if (summary.total && summary.good) return "";
+  if (!summary.nearestEligible.length) return "No eligible CPs exist under these settings.";
+
+  const chips = summary.nearestEligible
+    .map(
+      (row) =>
+        `<button class="chip-button" type="button" data-cp="${row.cp}">${row.cp} (${formatPercent(row.odds)})</button>`,
+    )
+    .join("");
+
+  return `<span class="nearest-list">Closest eligible CPs: ${chips}</span>`;
+}
+
+function renderCombos(summary: CpSummary): string {
+  if (!summary.total) return "";
+
+  const combos = summary.combos
+    .slice()
+    .sort((left, right) => Number(right.good) - Number(left.good) || sumIvs(right) - sumIvs(left))
+    .map(renderComboPill)
+    .join("");
+
+  return `
+    <div class="combo-area" ${prefs.showDetails ? "" : "hidden"}>
+      <div class="combo-head">
+        <span>Matching IV spreads</span>
+        <span>${summary.good} good / ${summary.bad} miss</span>
+      </div>
+      <div class="combo-list">${combos}</div>
+    </div>
+  `;
+}
+
+function renderComboPill(combo: IvCombo): string {
+  const original = `${combo.a}/${combo.d}/${combo.s}`;
+  const purified = `${combo.purified.a}/${combo.purified.d}/${combo.purified.s}`;
+  return `
+    <span class="combo-pill ${combo.good ? "good" : "bad"}" title="${original} purifies to ${purified}">
+      ${original}${combo.good ? " -> 100%" : ""}
+    </span>
+  `;
+}
+
+function renderWatchlistPanel(summary: CpSummary): string {
+  const filteredRows = filterWatchlist(summary.watchlist);
+  const guaranteed = filteredRows.filter((row) => row.good === row.total).length;
+  const rows = filteredRows.map(renderWatchlistRow).join("");
+
+  return `
+    <article class="watch-panel" data-testid="${summary.raidLevel.key}-watchlist">
+      <div class="watch-head">
+        <div>
+          <h2>${summary.raidLevel.label} Watchlist</h2>
+          <p>CPs with at least one pre-purification spread that reaches 15/15/15.</p>
+        </div>
+        <span class="watch-summary">${filteredRows.length}/${summary.watchlist.length} CPs, ${guaranteed} guaranteed</span>
+      </div>
+      ${
+        rows
+          ? `<div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>CP</th>
+                    <th>Odds</th>
+                    <th>Good/Total</th>
+                    <th>Good IV spreads</th>
+                  </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>`
+          : `<p class="empty-state">No CPs match this watchlist filter.</p>`
+      }
+    </article>
+  `;
+}
+
+function renderWatchlistRow(row: WatchlistRow): string {
+  const oddsClass = row.good === row.total ? "full" : "partial";
+  const comboPreview = previewGoodCombos(row.goodCombos);
+
+  return `
+    <tr>
+      <td><button class="cp-button" type="button" data-cp="${row.cp}">${row.cp}</button></td>
+      <td><span class="odds-token ${oddsClass}">${formatPercent(row.odds)}</span></td>
+      <td>${row.good}/${row.total}</td>
+      <td>${comboPreview}</td>
+    </tr>
+  `;
+}
+
+function filterWatchlist(rows: readonly WatchlistRow[]): WatchlistRow[] {
+  if (prefs.watchFilter === "partial") return rows.filter((row) => row.good > 0 && row.good < row.total);
+  if (prefs.watchFilter === "strong") return rows.filter((row) => row.odds >= 0.5);
+  if (prefs.watchFilter === "guaranteed") return rows.filter((row) => row.good === row.total);
+  return [...rows];
+}
+
+function previewGoodCombos(combos: readonly IvCombo[]): string {
+  const sorted = combos.slice().sort((left, right) => sumIvs(left) - sumIvs(right));
+  const visible = sorted
+    .slice(0, 3)
+    .map((combo) => `${combo.a}/${combo.d}/${combo.s}`)
+    .join(", ");
+  const hidden = sorted.length - 3;
+  return hidden > 0 ? `${visible}, +${hidden}` : visible;
+}
+
+function applyAppearance(): void {
+  const resolvedTheme =
+    prefs.theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : prefs.theme === "system"
+        ? "light"
+        : prefs.theme;
+
+  document.documentElement.dataset.theme = resolvedTheme;
+  document.documentElement.dataset.mode = prefs.theme;
+  document.documentElement.dataset.accent = prefs.accent;
+  document.documentElement.dataset.density = prefs.density;
+
+  const themeColor = resolvedTheme === "dark" ? "#101417" : accentThemeColor(prefs.accent);
+  elements.themeMeta?.setAttribute("content", themeColor);
+  updateControlState();
+}
+
+function updateControlState(): void {
+  elements.themeButtons.forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.themeChoice === prefs.theme));
+  });
+  elements.accentButtons.forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.accentChoice === prefs.accent));
+  });
+  elements.showDetails.checked = prefs.showDetails;
+  elements.watchFilter.value = prefs.watchFilter;
+  elements.densitySelect.value = prefs.density;
+}
+
+function saveState(settings: { baseStats: BaseStats; cp: number; raidFloor: number; purifyBonus: number }): void {
+  const state: SavedState = {
+    selectedName: elements.pokemonSelect.value,
+    cp: settings.cp,
+    manualStats: elements.manualStats.checked,
+    stats: settings.baseStats,
+    raidFloor: settings.raidFloor,
+    purifyBonus: settings.purifyBonus,
+    theme: prefs.theme,
+    accent: prefs.accent,
+    density: prefs.density,
+    showDetails: prefs.showDetails,
+    watchFilter: prefs.watchFilter,
+  };
+
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Persistence is a convenience; the calculator still works without it.
+  }
+}
+
+function loadSavedState(): SavedState {
+  try {
+    return (JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "{}") || {}) as SavedState;
+  } catch {
+    return {};
+  }
+}
+
+function registerServiceWorker(): void {
+  const isProductionBuild = typeof import.meta.env === "object" && Boolean(import.meta.env.PROD);
+  if (!isProductionBuild || !("serviceWorker" in navigator)) return;
+  navigator.serviceWorker.register("/sw.js").catch(() => {});
+}
+
+function validateOption<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
+  return typeof value === "string" && allowed.includes(value as T) ? (value as T) : fallback;
+}
+
+function accentThemeColor(accent: AccentChoice): string {
+  return (
+    {
+      aqua: "#0a7775",
+      mystic: "#2d63b8",
+      valor: "#b93845",
+      instinct: "#a56a00",
+    }[accent] || "#0a7775"
+  );
+}
+
+function sumIvs(combo: Pick<IvCombo, "a" | "d" | "s">): number {
+  return combo.a + combo.d + combo.s;
+}
+
+function escapeHtml(value: unknown): string {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function byId<T extends HTMLElement>(id: string): T {
+  const element = document.getElementById(id);
+  if (!element) throw new Error(`Missing required element #${id}`);
+  return element as T;
+}
+
+document.addEventListener("DOMContentLoaded", init);
