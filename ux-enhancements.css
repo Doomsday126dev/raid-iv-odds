@@ -1,0 +1,127 @@
+.settings-drawer {
+  min-width: 260px;
+}
+
+.settings-summary,
+.tutorial-summary {
+  align-items: center;
+  background: var(--surface-muted);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--accent);
+  cursor: pointer;
+  display: flex;
+  font-size: 0.82rem;
+  font-weight: 900;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 10px 12px;
+  text-transform: uppercase;
+}
+
+.settings-summary::after,
+.tutorial-summary::after {
+  content: "+";
+  font-size: 1.1rem;
+}
+
+.settings-drawer[open] .settings-summary::after,
+.tutorial-panel[open] .tutorial-summary::after {
+  content: "–";
+}
+
+.settings-drawer .appearance-panel {
+  margin-top: 10px;
+}
+
+.share-button {
+  width: 100%;
+}
+
+.tutorial-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
+  margin-top: 16px;
+  overflow: hidden;
+}
+
+.tutorial-panel summary {
+  list-style: none;
+}
+
+.tutorial-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.tutorial-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 16px 20px 10px 38px;
+}
+
+.tutorial-list li {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.tutorial-example {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  border-radius: 8px;
+  margin: 6px 16px 16px;
+  padding: 12px;
+}
+
+.tutorial-example strong {
+  color: var(--accent);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.tutorial-example p {
+  color: var(--muted);
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .topline {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .settings-drawer {
+    min-width: 0;
+    order: 3;
+  }
+
+  .settings-drawer .appearance-panel {
+    max-height: 52vh;
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+
+  .hundo-hints {
+    order: 2;
+  }
+
+  .control-surface {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .insight-surface {
+    margin-top: 12px;
+  }
+
+  .control-surface,
+  .insight-surface,
+  .results-grid,
+  .watchlist-grid {
+    gap: 12px;
+  }
+}
