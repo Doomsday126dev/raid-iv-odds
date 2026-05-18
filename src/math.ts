@@ -1,3 +1,5 @@
+import "./ux-enhancements";
+
 export type BaseStats = {
   atk: number;
   def: number;
