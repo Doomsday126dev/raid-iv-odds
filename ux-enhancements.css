@@ -40,53 +40,32 @@
 
 @media (min-width: 1081px) {
   .control-surface {
-    align-items: start;
-    grid-template-columns: minmax(300px, 1.7fr) minmax(210px, 1fr) minmax(320px, 1.35fr) minmax(210px, auto) minmax(120px, auto);
+    align-items: end;
+    grid-template-columns: minmax(260px, 1.45fr) minmax(200px, 0.95fr) minmax(300px, 1.25fr) minmax(190px, 0.85fr);
   }
 
-  .control-surface > .field,
-  .control-surface > .quick-actions,
-  .control-surface > .toggle-row,
   .control-surface > .reset-button {
-    align-self: stretch;
-  }
-
-  .control-surface > .field {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-  }
-
-  .control-surface .field input,
-  .control-surface .field select,
-  .control-surface .cp-stepper,
-  .control-surface .quick-actions,
-  .control-surface > .toggle-row,
-  .control-surface > .reset-button {
-    align-self: start;
-    margin-top: 0;
-  }
-
-  .control-surface .cp-field .field-help,
-  .control-surface .pokemon-field .field-help {
-    min-height: 3.4em;
-  }
-
-  .control-surface .quick-actions {
-    grid-template-columns: repeat(2, minmax(150px, 1fr));
-  }
-
-  .control-surface .quick-actions .secondary-button,
-  .control-surface > .toggle-row,
-  .control-surface > .reset-button {
-    min-height: 86px;
+    grid-column: 4;
+    justify-self: stretch;
   }
 
   .control-surface > .toggle-row {
     justify-content: center;
   }
 
+  .control-surface .quick-actions .secondary-button,
+  .control-surface > .toggle-row,
   .control-surface > .reset-button {
-    min-width: 118px;
+    min-height: 54px;
+  }
+
+  .control-surface .quick-actions {
+    align-self: end;
+    min-width: 0;
+  }
+
+  .control-surface > * {
+    min-width: 0;
   }
 }
 
