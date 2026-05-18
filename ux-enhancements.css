@@ -41,7 +41,7 @@
 @media (min-width: 1081px) {
   .control-surface {
     align-items: start;
-    grid-template-columns: minmax(280px, 1.4fr) minmax(220px, 1fr) minmax(300px, 1.15fr) minmax(210px, 0.9fr) minmax(130px, 0.55fr);
+    grid-template-columns: minmax(220px, 1.25fr) minmax(190px, 0.95fr) minmax(240px, 1fr) minmax(190px, 0.85fr) minmax(105px, 0.45fr);
   }
 
   .control-surface > * {
@@ -71,23 +71,6 @@
 
   .control-surface > .reset-button {
     min-width: 0;
-  }
-}
-
-@media (min-width: 1081px) and (max-width: 1500px) {
-  .control-surface {
-    grid-template-columns: minmax(260px, 1.15fr) minmax(220px, 0.95fr) minmax(300px, 1.1fr) minmax(320px, 1.15fr);
-  }
-
-  .control-surface > .toggle-row {
-    grid-column: 4;
-  }
-
-  .control-surface > .reset-button {
-    grid-column: 4;
-    justify-self: start;
-    margin-top: 10px;
-    width: min(180px, 100%);
   }
 }
 
