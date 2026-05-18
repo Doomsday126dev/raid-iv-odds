@@ -4,3 +4,4 @@ ios/
 android/
 .DS_Store
 *.log
+~$*.xlsx
