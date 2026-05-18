@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   appType: "spa",
-  base: "./",
+  base: "/raid-iv-odds/",
   build: {
     target: "es2022",
     sourcemap: true,

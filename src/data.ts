@@ -5,6 +5,8 @@ export type Pokemon = {
   sta: number;
 };
 
+export const DATA_LAST_REVIEWED = "May 18, 2026";
+
 const pokemon: Pokemon[] = [
   { name: "Articuno", atk: 192, def: 236, sta: 207 },
   { name: "Articuno Galarian", atk: 250, def: 197, sta: 207 },
@@ -68,6 +70,15 @@ const pokemon: Pokemon[] = [
   { name: "Zamazenta Hero", atk: 254, def: 236, sta: 192 },
   { name: "Regieleki", atk: 250, def: 125, sta: 190 },
   { name: "Regidrago", atk: 202, def: 101, sta: 400 },
+  { name: "Nihilego", atk: 249, def: 210, sta: 240 },
+  { name: "Buzzwole", atk: 236, def: 196, sta: 216 },
+  { name: "Pheromosa", atk: 316, def: 85, sta: 174 },
+  { name: "Xurkitree", atk: 330, def: 144, sta: 195 },
+  { name: "Celesteela", atk: 207, def: 199, sta: 219 },
+  { name: "Kartana", atk: 323, def: 182, sta: 139 },
+  { name: "Guzzlord", atk: 188, def: 99, sta: 440 },
+  { name: "Stakataka", atk: 213, def: 298, sta: 156 },
+  { name: "Blacephalon", atk: 315, def: 148, sta: 142 },
   { name: "Genesect", atk: 252, def: 199, sta: 174 },
   { name: "Deoxys Normal", atk: 345, def: 115, sta: 137 },
   { name: "Deoxys Attack", atk: 414, def: 46, sta: 137 },

@@ -2,14 +2,27 @@
   "name": "Raid IV Odds",
   "short_name": "Raid IV Odds",
   "description": "A mobile-friendly purified hundo odds calculator for Shadow Raid catch CPs.",
-  "start_url": "/",
-  "scope": "/",
+  "id": "/raid-iv-odds/",
+  "start_url": "/raid-iv-odds/",
+  "scope": "/raid-iv-odds/",
   "display": "standalone",
   "background_color": "#f5f7f3",
   "theme_color": "#0a7775",
   "icons": [
     {
-      "src": "/assets/icon.svg",
+      "src": "/raid-iv-odds/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/raid-iv-odds/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/raid-iv-odds/assets/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

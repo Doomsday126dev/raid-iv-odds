@@ -1,4 +1,4 @@
-import { POKEMON, type Pokemon } from "./data";
+import { DATA_LAST_REVIEWED, POKEMON, type Pokemon } from "./data";
 import {
   MAX_IV,
   MIN_CP,
@@ -64,6 +64,7 @@ const DEFAULT_PREFS: Preferences = {
 const elements = {
   pokemonSelect: byId<HTMLSelectElement>("pokemonSelect"),
   cpInput: byId<HTMLInputElement>("cpInput"),
+  cpValidation: byId<HTMLElement>("cpValidation"),
   normalMaxButton: byId<HTMLButtonElement>("normalMaxButton"),
   boostedMaxButton: byId<HTMLButtonElement>("boostedMaxButton"),
   manualStats: byId<HTMLInputElement>("manualStats"),
@@ -81,6 +82,7 @@ const elements = {
   contextStrip: byId<HTMLElement>("contextStrip"),
   resultsGrid: byId<HTMLElement>("resultsGrid"),
   watchlistGrid: byId<HTMLElement>("watchlistGrid"),
+  dataHint: byId<HTMLElement>("dataHint"),
   themeButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-theme-choice]")),
   accentButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-accent-choice]")),
   cpStepButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-cp-step]")),
@@ -106,7 +108,7 @@ function populatePokemonSelect(): void {
 }
 
 function restoreState(): void {
-  const saved = loadSavedState();
+  const saved = { ...loadSavedState(), ...loadStateFromUrl() };
   const savedPokemon =
     typeof saved.selectedName === "string" && POKEMON.some((pokemon) => pokemon.name === saved.selectedName)
       ? saved.selectedName
@@ -151,7 +153,7 @@ function restoreState(): void {
 function bindEvents(): void {
   elements.pokemonSelect.addEventListener("change", () => {
     syncStatsToSelected();
-    elements.cpInput.value = String(maxCpFor(readBaseStats(), RAID_LEVELS[0]));
+    trackEvent("Pokemon selected");
     render();
   });
 
@@ -199,7 +201,8 @@ function bindEvents(): void {
   elements.cpStepButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const delta = Number(button.dataset.cpStep);
-      elements.cpInput.value = String(clampInt(elements.cpInput.value, MIN_CP, 99999, MIN_CP) + delta);
+      const nextCp = clampInt(elements.cpInput.value, MIN_CP, 99999, MIN_CP) + delta;
+      elements.cpInput.value = String(clampInt(nextCp, MIN_CP, 99999, MIN_CP));
       render();
     });
   });
@@ -225,12 +228,18 @@ function bindEvents(): void {
     const button = event.target.closest<HTMLButtonElement>("[data-cp]");
     if (!button) return;
     elements.cpInput.value = button.dataset.cp ?? String(MIN_CP);
+    trackEvent("Watchlist CP tapped");
     render();
     elements.resultsGrid.scrollIntoView({ block: "start", behavior: "smooth" });
   };
 
   elements.resultsGrid.addEventListener("click", handleCpButtonClick);
   elements.watchlistGrid.addEventListener("click", handleCpButtonClick);
+  elements.contextStrip.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element) || !event.target.closest("[data-focus-cp]")) return;
+    elements.cpInput.focus();
+    elements.cpInput.select();
+  });
 
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
@@ -241,6 +250,7 @@ function bindEvents(): void {
   elements.installButton.addEventListener("click", async () => {
     if (!deferredInstallPrompt) return;
     await deferredInstallPrompt.prompt();
+    trackEvent("Install prompt opened");
     await deferredInstallPrompt.userChoice;
     deferredInstallPrompt = null;
     elements.installButton.hidden = true;
@@ -304,16 +314,19 @@ function render(): void {
 
   renderQuickButtons(settings.baseStats);
   renderBaseline(settings.raidFloor, settings.purifyBonus);
+  renderCpValidation(summaries, settings);
   renderPrimaryInsight(summaries, settings);
+  renderDataHint();
   elements.resultsGrid.innerHTML = summaries.map(renderResultPanel).join("");
   elements.watchlistGrid.innerHTML = summaries.map(renderWatchlistPanel).join("");
   updateControlState();
   saveState(settings);
+  syncUrl(settings);
 }
 
 function renderQuickButtons(baseStats: BaseStats): void {
-  elements.normalMaxButton.textContent = `L20 max ${maxCpFor(baseStats, RAID_LEVELS[0])}`;
-  elements.boostedMaxButton.textContent = `L25 max ${maxCpFor(baseStats, RAID_LEVELS[1])}`;
+  elements.normalMaxButton.textContent = `Use L20 hundo ${maxCpFor(baseStats, RAID_LEVELS[0])}`;
+  elements.boostedMaxButton.textContent = `Use L25 hundo ${maxCpFor(baseStats, RAID_LEVELS[1])}`;
 }
 
 function renderBaseline(raidFloor: number, purifyBonus: number): void {
@@ -325,6 +338,63 @@ function renderBaseline(raidFloor: number, purifyBonus: number): void {
       totals.total,
     )})</span>
   `;
+}
+
+function renderCpValidation(
+  summaries: CpSummary[],
+  settings: { baseStats: BaseStats; cp: number; raidFloor: number; purifyBonus: number },
+): void {
+  const possible = summaries.filter((summary) => summary.total > 0);
+  const inRange = summaries.filter((summary) => settings.cp >= summary.minCp && settings.cp <= summary.maxCp);
+  const ranges = summaries.map((summary) => `${summary.raidLevel.label}: ${summary.minCp}-${summary.maxCp}`).join(" · ");
+  const possibleClass = possible.length ? "is-valid" : "is-invalid";
+
+  elements.cpInput.min = String(Math.min(...summaries.map((summary) => summary.minCp)));
+  elements.cpInput.max = String(Math.max(...summaries.map((summary) => summary.maxCp)));
+  elements.cpInput.setAttribute("aria-invalid", String(!possible.length));
+
+  if (possible.length === 1) {
+    const match = possible[0];
+    const outcome = match.good
+      ? `${match.good}/${match.total} purify to hundo (${formatPercent(match.odds)}).`
+      : "possible CP, but no matching spread purifies to hundo.";
+    elements.cpInput.setCustomValidity("");
+    elements.cpValidation.className = `field-help cp-validation ${possibleClass}`;
+    elements.cpValidation.textContent = `${match.raidLevel.label} match. ${outcome}`;
+    return;
+  }
+
+  if (possible.length > 1) {
+    elements.cpInput.setCustomValidity("");
+    elements.cpValidation.className = `field-help cp-validation ${possibleClass}`;
+    elements.cpValidation.textContent = `Rare overlap: this CP appears in ${possible
+      .map((summary) => summary.raidLevel.label.toLowerCase())
+      .join(" and ")} tables. Check the raid weather state.`;
+    return;
+  }
+
+  const nearest = summaries.flatMap((summary) => nearestPossibleCpButtons(summary, settings.cp)).slice(0, 3).join(" ");
+  const message = inRange.length
+    ? `Within the selected boss range, but no IV spread lands exactly on ${settings.cp}.`
+    : `Outside the selected boss catch ranges. ${ranges}.`;
+
+  elements.cpInput.setCustomValidity(message);
+  elements.cpValidation.className = `field-help cp-validation ${possibleClass}`;
+  elements.cpValidation.innerHTML = `${escapeHtml(message)}${nearest ? ` Try ${nearest}` : ""}`;
+}
+
+function nearestPossibleCpButtons(summary: CpSummary, cp: number): string[] {
+  return Array.from(summary.buckets.keys())
+    .sort((left, right) => Math.abs(left - cp) - Math.abs(right - cp) || right - left)
+    .slice(0, 2)
+    .map(
+      (candidate) =>
+        `<button class="inline-cp-button" type="button" data-cp="${candidate}">${candidate}</button>`,
+    );
+}
+
+function renderDataHint(): void {
+  elements.dataHint.innerHTML = `Seeded list: ${POKEMON.length} bosses/forms, reviewed ${DATA_LAST_REVIEWED}. Use manual stats for brand-new or missing forms.`;
 }
 
 function renderPrimaryInsight(
@@ -360,7 +430,7 @@ function renderPrimaryInsight(
   const pokemon = selectedPokemon();
   elements.contextStrip.innerHTML = `
     <div class="context-card"><span>Pokemon</span><strong>${escapeHtml(pokemon.name)}</strong></div>
-    <div class="context-card"><span>Observed CP</span><strong>${settings.cp}</strong></div>
+    <button class="context-card context-button" type="button" data-focus-cp><span>Analyzing CP</span><strong>${settings.cp}</strong><em>Tap to edit</em></button>
     <div class="context-card"><span>Pre-purify target</span><strong>${threshold}/${threshold}/${threshold}+</strong></div>
     <div class="context-card"><span>Base stats</span><strong>${settings.baseStats.atk}/${settings.baseStats.def}/${settings.baseStats.sta}</strong></div>
   `;
@@ -501,18 +571,8 @@ function renderWatchlistPanel(summary: CpSummary): string {
       </div>
       ${
         rows
-          ? `<div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>CP</th>
-                    <th>Odds</th>
-                    <th>Good/Total</th>
-                    <th>Good IV spreads</th>
-                  </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-              </table>
+          ? `<div class="watchlist-scroll" tabindex="0" aria-label="${summary.raidLevel.label} eligible CP buttons">
+              <div class="watchlist-cards">${rows}</div>
             </div>`
           : `<p class="empty-state">No CPs match this watchlist filter.</p>`
       }
@@ -525,12 +585,14 @@ function renderWatchlistRow(row: WatchlistRow): string {
   const comboPreview = previewGoodCombos(row.goodCombos);
 
   return `
-    <tr>
-      <td><button class="cp-button" type="button" data-cp="${row.cp}">${row.cp}</button></td>
-      <td><span class="odds-token ${oddsClass}">${formatPercent(row.odds)}</span></td>
-      <td>${row.good}/${row.total}</td>
-      <td>${comboPreview}</td>
-    </tr>
+    <button class="watch-card" type="button" data-cp="${row.cp}" aria-label="Analyze CP ${row.cp}, ${formatPercent(
+      row.odds,
+    )} odds">
+      <span class="watch-card-cp">${row.cp}</span>
+      <span class="odds-token ${oddsClass}">${formatPercent(row.odds)}</span>
+      <span class="watch-card-ratio">${row.good}/${row.total}</span>
+      <span class="watch-card-combos">${escapeHtml(comboPreview)}</span>
+    </button>
   `;
 }
 
@@ -611,10 +673,52 @@ function loadSavedState(): SavedState {
   }
 }
 
+function loadStateFromUrl(): SavedState {
+  const state: SavedState = {};
+  const query = new URLSearchParams(window.location.search);
+  const hash = window.location.hash.startsWith("#?") ? new URLSearchParams(window.location.hash.slice(2)) : null;
+  const params = hash && Array.from(hash.keys()).length ? hash : query;
+
+  const pokemon = params.get("pokemon") || params.get("boss");
+  const cp = params.get("cp");
+  const floor = params.get("floor");
+  const bonus = params.get("bonus");
+
+  if (pokemon && POKEMON.some((entry) => entry.name.toLowerCase() === pokemon.toLowerCase())) {
+    state.selectedName =
+      POKEMON.find((entry) => entry.name.toLowerCase() === pokemon.toLowerCase())?.name || pokemon;
+  }
+
+  if (cp) state.cp = clampInt(cp, MIN_CP, 99999, MIN_CP);
+  if (floor) state.raidFloor = clampInt(floor, 0, MAX_IV, 6);
+  if (bonus) state.purifyBonus = clampInt(bonus, 0, MAX_IV, 2);
+
+  return state;
+}
+
+function syncUrl(settings: { cp: number; raidFloor: number; purifyBonus: number }): void {
+  const params = new URLSearchParams();
+  params.set("pokemon", selectedPokemon().name);
+  params.set("cp", String(settings.cp));
+  if (settings.raidFloor !== 6) params.set("floor", String(settings.raidFloor));
+  if (settings.purifyBonus !== 2) params.set("bonus", String(settings.purifyBonus));
+
+  const nextUrl = `${window.location.pathname}?${params.toString()}`;
+  if (`${window.location.pathname}${window.location.search}` !== nextUrl) {
+    window.history.replaceState(null, "", nextUrl);
+  }
+}
+
 function registerServiceWorker(): void {
   const isProductionBuild = typeof import.meta.env === "object" && Boolean(import.meta.env.PROD);
   if (!isProductionBuild || !("serviceWorker" in navigator)) return;
-  navigator.serviceWorker.register("/sw.js").catch(() => {});
+  const baseUrl = typeof import.meta.env === "object" ? import.meta.env.BASE_URL : "/";
+  navigator.serviceWorker.register(`${baseUrl}sw.js`, { scope: baseUrl }).catch(() => {});
+}
+
+function trackEvent(name: string, props?: Record<string, string | number>): void {
+  const plausible = (window as Window & { plausible?: (eventName: string, options?: unknown) => void }).plausible;
+  plausible?.(name, props ? { props } : undefined);
 }
 
 function validateOption<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {

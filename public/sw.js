@@ -1,5 +1,16 @@
-const CACHE_NAME = "raid-iv-odds-shell-v1";
-const APP_SHELL = ["/", "/index.html", "/manifest.webmanifest", "/assets/icon.svg", "/privacy.html"];
+const CACHE_NAME = "raid-iv-odds-shell-v2";
+const scopePath = new URL(self.registration.scope).pathname.replace(/\/$/, "");
+const withScope = (path) => `${scopePath}${path}`;
+const APP_SHELL = [
+  withScope("/"),
+  withScope("/index.html"),
+  withScope("/manifest.webmanifest"),
+  withScope("/assets/icon.svg"),
+  withScope("/assets/icon-192.png"),
+  withScope("/assets/icon-512.png"),
+  withScope("/assets/apple-touch-icon.png"),
+  withScope("/privacy.html"),
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
@@ -29,6 +40,9 @@ self.addEventListener("fetch", (event) => {
         const copy = response.clone();
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return response;
+      }).catch((error) => {
+        if (event.request.mode === "navigate") return caches.match(withScope("/index.html"));
+        throw error;
       });
     }),
   );

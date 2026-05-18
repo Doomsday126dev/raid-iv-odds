@@ -11,11 +11,12 @@
     <meta name="theme-color" content="#0a7775" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Raid IV Odds" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <link rel="icon" href="/assets/icon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/assets/icon.svg" />
+    <link rel="manifest" href="/raid-iv-odds/manifest.webmanifest" />
+    <link rel="icon" href="/raid-iv-odds/assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/raid-iv-odds/assets/apple-touch-icon.png" />
     <link rel="stylesheet" href="./styles.css" />
-    <script type="module" src="/src/main.js?v=5"></script>
+    <script defer data-domain="doomsday126dev.github.io" src="https://plausible.io/js/script.js"></script>
+    <script type="module" src="/src/main.js?v=6"></script>
   </head>
   <body>
     <a class="skip-link" href="#resultsGrid">Skip to results</a>
@@ -64,6 +65,7 @@
             <input id="cpInput" inputmode="numeric" min="10" type="number" />
             <button class="stepper-button" type="button" data-cp-step="1" aria-label="Increase CP">+</button>
           </div>
+          <p class="field-help cp-validation" id="cpValidation" aria-live="polite"></p>
         </div>
 
         <div class="quick-actions" aria-label="Quick CP choices">
@@ -115,11 +117,12 @@
           </select>
         </label>
         <label class="field compact-field" for="densitySelect">
-          <span>Density</span>
+          <span>Layout</span>
           <select id="densitySelect">
-            <option value="comfortable">Comfortable</option>
-            <option value="compact">Compact</option>
+            <option value="comfortable">Detailed</option>
+            <option value="compact">Fast scan</option>
           </select>
+          <small class="field-help">Fast scan keeps the same math and shows more rows at once.</small>
         </label>
         <button class="secondary-button install-button" id="installButton" type="button" hidden>
           Install app
@@ -136,7 +139,7 @@
           <p>Each IV spread from the raid floor through 15/15/15 is counted once.</p>
           <p>A spread purifies to a hundo when each IV plus the purify bonus reaches 15.</p>
           <p>Shadow battle modifiers do not change the catch CP calculation.</p>
-          <p>The seeded list is a convenience list; manual stats cover missing or future forms.</p>
+          <p id="dataHint">The seeded list is a convenience list; manual stats cover missing or future forms.</p>
         </div>
       </section>
     </main>

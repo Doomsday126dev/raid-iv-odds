@@ -4,6 +4,12 @@ This is a mobile-first web app for checking whether a Shadow Raid catch CP can p
 
 The app now has a production scaffold: TypeScript source, generated browser modules, PWA assets, tests, and Capacitor config for a future iOS/Android wrapper.
 
+Public app URL:
+
+```text
+https://doomsday126dev.github.io/raid-iv-odds/
+```
+
 ## What Is A PWA?
 
 A PWA, or Progressive Web App, is a website that can behave like a lightweight app on your phone. It can have an app icon, open in a standalone full-screen window, cache files for offline use, and later share most of the same code with a native wrapper.
@@ -38,8 +44,10 @@ npm run dev
 - Handles both level 20 and level 25 catch scenarios side by side.
 - Adds click-to-analyze CP watchlists for both non-weather boosted and weather boosted raids.
 - Keeps manual base stats for missing or future Pokemon/forms.
-- Adds persistent display preferences, dark mode, accent themes, compact density, CP steppers, watchlist filtering, and an at-a-glance verdict.
+- Adds persistent display preferences, dark mode, accent themes, a fast-scan layout, CP steppers, watchlist filtering, and an at-a-glance verdict.
+- Supports shareable URLs like `?pokemon=Mewtwo&cp=2387`.
 - Adds PWA starter files: `public/manifest.webmanifest`, `public/sw.js`, an app icon, and a privacy page.
+- Includes a Plausible Analytics script for visit counts and broad feature-use events. Add `doomsday126dev.github.io` in Plausible to view the private dashboard.
 - Adds `capacitor.config.ts` for future App Store and Play Store wrappers.
 
 ## Production Path

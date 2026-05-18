@@ -36,10 +36,13 @@ html[data-theme="dark"] {
   --muted: #a9b8bd;
   --line: #334147;
   --line-strong: #4d6268;
+  --amber: #f0b84d;
+  --rose: #ff6b8a;
+  --green: #59d98b;
   --accent-soft: rgba(41, 199, 190, 0.16);
-  --amber-soft: rgba(246, 195, 79, 0.16);
-  --rose-soft: rgba(255, 101, 132, 0.16);
-  --green-soft: rgba(64, 214, 126, 0.16);
+  --amber-soft: rgba(240, 184, 77, 0.18);
+  --rose-soft: rgba(255, 107, 138, 0.18);
+  --green-soft: rgba(89, 217, 139, 0.17);
   --blue-soft: rgba(78, 145, 255, 0.14);
   --shadow: 0 18px 52px rgba(0, 0, 0, 0.3);
   --shadow-soft: 0 8px 26px rgba(0, 0, 0, 0.26);
@@ -106,6 +109,7 @@ select {
 
 button {
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 button:focus-visible,
@@ -337,6 +341,20 @@ h3 {
   padding: 12px;
 }
 
+.context-button {
+  color: inherit;
+  text-align: left;
+}
+
+.context-button em {
+  color: var(--accent);
+  display: block;
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 850;
+  margin-top: 5px;
+}
+
 .context-card span {
   color: var(--muted);
   display: block;
@@ -396,6 +414,36 @@ h3 {
   min-height: 46px;
   padding: 10px 12px;
   width: 100%;
+}
+
+.field-help {
+  color: var(--muted);
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  margin: 7px 0 0;
+}
+
+.cp-validation {
+  min-height: 2.05em;
+}
+
+.cp-validation.is-valid {
+  color: var(--green);
+}
+
+.cp-validation.is-invalid {
+  color: var(--rose);
+}
+
+.inline-cp-button {
+  background: var(--surface-solid);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--accent);
+  font-weight: 900;
+  min-height: 32px;
+  padding: 4px 9px;
 }
 
 .field select {
@@ -750,50 +798,53 @@ h3 {
   white-space: nowrap;
 }
 
-.table-wrap {
-  max-height: 390px;
+.watchlist-scroll {
+  max-height: 430px;
   overflow: auto;
+  padding: 12px;
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
+.watchlist-cards {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(168px, 1fr));
 }
 
-th,
-td {
-  border-bottom: 1px solid var(--line);
-  padding: 10px 12px;
+.watch-card {
+  background: var(--surface-solid);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--ink);
+  display: grid;
+  gap: 7px;
+  grid-template-columns: 1fr auto;
+  min-height: 74px;
+  padding: 10px;
   text-align: left;
-  vertical-align: middle;
 }
 
-th {
-  background: var(--surface-muted);
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 900;
-  position: sticky;
-  text-transform: uppercase;
-  top: 0;
-  z-index: 1;
+.watch-card:active {
+  transform: translateY(1px);
 }
 
-td {
-  font-size: 0.88rem;
-}
-
-tr:last-child td {
-  border-bottom: 0;
-}
-
-.cp-button {
-  background: transparent;
-  border: 0;
+.watch-card-cp {
   color: var(--accent);
+  font-size: 1.08rem;
   font-weight: 950;
-  padding: 0;
-  text-align: left;
+}
+
+.watch-card-ratio,
+.watch-card-combos {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.watch-card-combos {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .odds-token {
@@ -861,11 +912,15 @@ html[data-density="compact"] .field select,
 html[data-density="compact"] .secondary-button,
 html[data-density="compact"] .toggle-row,
 html[data-density="compact"] .stepper-button {
-  min-height: 38px;
+  min-height: 44px;
 }
 
-html[data-density="compact"] .table-wrap {
-  max-height: 460px;
+html[data-density="compact"] .watchlist-scroll {
+  max-height: 520px;
+}
+
+html[data-density="compact"] .watch-card {
+  min-height: 64px;
 }
 
 @media (max-width: 1080px) {
@@ -961,6 +1016,26 @@ html[data-density="compact"] .table-wrap {
   td:nth-child(4) {
     display: none;
   }
+
+  .watchlist-scroll {
+    max-height: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 12px;
+    scroll-snap-type: x proximity;
+  }
+
+  .watchlist-cards {
+    display: flex;
+    gap: 10px;
+    min-width: max-content;
+  }
+
+  .watch-card {
+    flex: 0 0 min(78vw, 280px);
+    min-height: 92px;
+    scroll-snap-align: start;
+  }
 }
 
 @media (max-width: 430px) {
@@ -971,5 +1046,18 @@ html[data-density="compact"] .table-wrap {
 
   .palette-segment button {
     min-width: auto;
+  }
+
+  .segmented button,
+  .secondary-button,
+  .toggle-row,
+  .stepper-button,
+  .field input,
+  .field select {
+    min-height: 48px;
+  }
+
+  .odds-badge {
+    min-width: 0;
   }
 }

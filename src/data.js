@@ -1,3 +1,4 @@
+export const DATA_LAST_REVIEWED = "May 18, 2026";
 const pokemon = [
     {
         name: "Articuno",
@@ -370,6 +371,60 @@ const pokemon = [
         atk: 202,
         def: 101,
         sta: 400
+    },
+    {
+        name: "Nihilego",
+        atk: 249,
+        def: 210,
+        sta: 240
+    },
+    {
+        name: "Buzzwole",
+        atk: 236,
+        def: 196,
+        sta: 216
+    },
+    {
+        name: "Pheromosa",
+        atk: 316,
+        def: 85,
+        sta: 174
+    },
+    {
+        name: "Xurkitree",
+        atk: 330,
+        def: 144,
+        sta: 195
+    },
+    {
+        name: "Celesteela",
+        atk: 207,
+        def: 199,
+        sta: 219
+    },
+    {
+        name: "Kartana",
+        atk: 323,
+        def: 182,
+        sta: 139
+    },
+    {
+        name: "Guzzlord",
+        atk: 188,
+        def: 99,
+        sta: 440
+    },
+    {
+        name: "Stakataka",
+        atk: 213,
+        def: 298,
+        sta: 156
+    },
+    {
+        name: "Blacephalon",
+        atk: 315,
+        def: 148,
+        sta: 142
     },
     {
         name: "Genesect",
