@@ -101,13 +101,20 @@
   }
 
   .settings-drawer {
+    box-sizing: border-box;
     min-width: 0;
     order: 3;
+    width: 100%;
+  }
+
+  .settings-drawer[open] {
+    max-width: 100%;
+    width: 100%;
   }
 
   .settings-drawer .appearance-panel {
     max-height: 52vh;
-    overflow-x: auto;
+    overflow-x: hidden;
     overflow-y: auto;
   }
 
