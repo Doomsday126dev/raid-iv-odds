@@ -943,9 +943,9 @@ h3 {
 .watch-head {
   align-items: center;
   border-bottom: 1px solid var(--line);
-  display: flex;
+  display: grid;
   gap: 12px;
-  justify-content: space-between;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   padding: 14px 16px;
 }
 
@@ -960,10 +960,10 @@ h3 {
   color: var(--accent);
   content: attr(data-watch-open);
   display: inline-grid;
-  flex: 0 0 auto;
   font-size: 0.74rem;
   font-weight: 900;
   min-height: 34px;
+  min-width: 72px;
   padding: 6px 10px;
   place-items: center;
 }
@@ -976,6 +976,10 @@ h3 {
   color: var(--muted);
   font-size: 0.84rem;
   margin-bottom: 0;
+}
+
+.watch-head > div {
+  min-width: 0;
 }
 
 .watch-summary {
@@ -1251,7 +1255,26 @@ h3 {
     font-size: 1.25rem;
   }
 
+  .watch-head {
+    align-items: center;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
   .watch-head::before {
+    grid-column: 2;
+    grid-row: 1;
+    width: auto;
+  }
+
+  .watch-head > div {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .watch-summary {
+    grid-column: 1 / -1;
+    text-align: center;
+    white-space: normal;
     width: 100%;
   }
 
