@@ -510,19 +510,12 @@ h3 {
 
 .utility-bar {
   align-items: end;
-  grid-template-columns: minmax(190px, auto) minmax(260px, 1.05fr) minmax(180px, 0.7fr) minmax(260px, 1fr) minmax(150px, auto);
+  grid-template-columns: minmax(190px, auto) minmax(280px, 1fr) minmax(150px, auto);
 }
 
 .utility-control {
   display: grid;
   gap: 6px;
-}
-
-.utility-help {
-  align-self: end;
-  margin: 0;
-  max-width: 440px;
-  padding-bottom: 11px;
 }
 
 .field label,
@@ -1138,32 +1131,6 @@ h3 {
   width: max-content;
 }
 
-html[data-density="compact"] .app-shell {
-  max-width: 1320px;
-}
-
-html[data-density="compact"] .topline,
-html[data-density="compact"] .insight-surface,
-html[data-density="compact"] .control-surface,
-html[data-density="compact"] .stats-surface,
-html[data-density="compact"] .utility-bar,
-html[data-density="compact"] .result-panel,
-html[data-density="compact"] .notes-panel {
-  padding: 12px;
-}
-
-html[data-density="compact"] .field input,
-html[data-density="compact"] .field select,
-html[data-density="compact"] .secondary-button,
-html[data-density="compact"] .toggle-row,
-html[data-density="compact"] .stepper-button {
-  min-height: 44px;
-}
-
-html[data-density="compact"] .watch-row {
-  min-height: 48px;
-}
-
 @media (max-width: 1080px) {
   .topline {
     grid-template-columns: 1fr;
@@ -1184,12 +1151,6 @@ html[data-density="compact"] .watch-row {
   .control-surface,
   .utility-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .utility-help {
-    align-self: start;
-    grid-column: 1 / -1;
-    max-width: none;
   }
 
   .stats-surface {

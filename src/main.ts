@@ -19,7 +19,6 @@ const STORAGE_KEY = "raidIvOdds:v4";
 
 type ThemeChoice = "system" | "light" | "dark";
 type AccentChoice = "aqua" | "mystic" | "valor" | "instinct";
-type DensityChoice = "comfortable" | "compact";
 type LanguageChoice = "en" | "ja";
 type WatchFilter = "all" | "partial" | "strong" | "guaranteed";
 type ResultTone = "good" | "mixed" | "none";
@@ -27,7 +26,6 @@ type ResultTone = "good" | "mixed" | "none";
 type Preferences = {
   theme: ThemeChoice;
   accent: AccentChoice;
-  density: DensityChoice;
   language: LanguageChoice;
   showDetails: boolean;
   watchFilter: WatchFilter;
@@ -61,7 +59,6 @@ type BeforeInstallPromptEvent = Event & {
 const DEFAULT_PREFS: Preferences = {
   theme: "system",
   accent: "aqua",
-  density: "comfortable",
   language: "en",
   showDetails: true,
   watchFilter: "all",
@@ -103,10 +100,6 @@ const TEXT = {
     filterPartial: "Mixed odds only",
     filterStrong: "50% or better",
     filterGuaranteed: "Guaranteed only",
-    layoutLabel: "Layout",
-    layoutDetailed: "Detailed",
-    layoutFast: "Fast scan",
-    layoutHelp: "Fast scan keeps the same math and shows more rows at once.",
     installApp: "Install app",
     calculationNotes: "Calculation Notes",
     noteFloor: "Each IV spread from the raid floor through 15/15/15 is counted once.",
@@ -212,10 +205,6 @@ const TEXT = {
     filterPartial: "分岐ありのみ",
     filterStrong: "50%以上",
     filterGuaranteed: "確定のみ",
-    layoutLabel: "表示",
-    layoutDetailed: "詳細",
-    layoutFast: "一覧重視",
-    layoutHelp: "一覧重視でも計算は同じで、より多くの行を表示します。",
     installApp: "アプリを追加",
     calculationNotes: "計算メモ",
     noteFloor: "個体値の最低値から15/15/15までの全候補を1回ずつ数えます。",
@@ -303,7 +292,6 @@ const elements = {
   floorHint: byId<HTMLElement>("floorHint"),
   showDetails: byId<HTMLInputElement>("showDetails"),
   watchFilter: byId<HTMLSelectElement>("watchFilter"),
-  densitySelect: byId<HTMLSelectElement>("densitySelect"),
   installButton: byId<HTMLButtonElement>("installButton"),
   hundoHints: byId<HTMLElement>("hundoHints"),
   primaryInsight: byId<HTMLElement>("primaryInsight"),
@@ -353,7 +341,6 @@ function restoreState(): void {
     ...DEFAULT_PREFS,
     theme: validateOption(saved.theme, ["system", "light", "dark"], DEFAULT_PREFS.theme),
     accent: validateOption(saved.accent, ["aqua", "mystic", "valor", "instinct"], DEFAULT_PREFS.accent),
-    density: validateOption(saved.density, ["comfortable", "compact"], DEFAULT_PREFS.density),
     language: validateOption(saved.language, ["en", "ja"], DEFAULT_PREFS.language),
     showDetails: typeof saved.showDetails === "boolean" ? saved.showDetails : DEFAULT_PREFS.showDetails,
     watchFilter: validateOption(
@@ -382,7 +369,6 @@ function restoreState(): void {
       : String(maxCpFor(readBaseStats(), RAID_LEVELS[0]));
   elements.showDetails.checked = prefs.showDetails;
   elements.watchFilter.value = prefs.watchFilter;
-  elements.densitySelect.value = prefs.density;
 }
 
 function bindEvents(): void {
@@ -419,12 +405,6 @@ function bindEvents(): void {
 
   elements.watchFilter.addEventListener("change", () => {
     prefs.watchFilter = elements.watchFilter.value as WatchFilter;
-    render();
-  });
-
-  elements.densitySelect.addEventListener("change", () => {
-    prefs.density = elements.densitySelect.value as DensityChoice;
-    applyAppearance();
     render();
   });
 
@@ -1069,7 +1049,6 @@ function applyAppearance(): void {
   document.documentElement.dataset.theme = resolvedTheme;
   document.documentElement.dataset.mode = prefs.theme;
   document.documentElement.dataset.accent = prefs.accent;
-  document.documentElement.dataset.density = prefs.density;
   document.documentElement.dataset.language = prefs.language;
 
   const themeColor = resolvedTheme === "dark" ? "#101417" : accentThemeColor(prefs.accent);
@@ -1089,7 +1068,6 @@ function updateControlState(): void {
   });
   elements.showDetails.checked = prefs.showDetails;
   elements.watchFilter.value = prefs.watchFilter;
-  elements.densitySelect.value = prefs.density;
 }
 
 function saveState(settings: { baseStats: BaseStats; cp: number; raidFloor: number; purifyBonus: number }): void {
@@ -1102,7 +1080,6 @@ function saveState(settings: { baseStats: BaseStats; cp: number; raidFloor: numb
     purifyBonus: settings.purifyBonus,
     theme: prefs.theme,
     accent: prefs.accent,
-    density: prefs.density,
     language: prefs.language,
     showDetails: prefs.showDetails,
     watchFilter: prefs.watchFilter,
