@@ -80,6 +80,10 @@ const TEXT = {
     themeDark: "Dark",
     languageLabel: "Language",
     accentLabel: "Accent",
+    accentAqua: "Aqua",
+    accentMystic: "Mystic",
+    accentValor: "Valor",
+    accentInstinct: "Instinct",
     pokemonLabel: "Pokemon",
     pokemonSearchHelp: "Type a boss name in English or Japanese.",
     observedCpLabel: "Observed CP",
@@ -120,8 +124,6 @@ const TEXT = {
     selectedBossHundoCps: "Selected boss hundo CPs",
     nonWeather: "Non-weather",
     weatherBoosted: "Weather boosted",
-    useNonWeatherHundo: "Non-weather {cp}",
-    useWeatherHundo: "Weather boosted {cp}",
     cpResult: "CP result",
     cpNotPossibleTitle: "CP not possible for this boss",
     cpNotPossibleCopy:
@@ -191,6 +193,10 @@ const TEXT = {
     themeDark: "ダーク",
     languageLabel: "言語",
     accentLabel: "カラー",
+    accentAqua: "アクア",
+    accentMystic: "ミスティック",
+    accentValor: "ヴァーラー",
+    accentInstinct: "インスティンクト",
     pokemonLabel: "レイドボス",
     pokemonSearchHelp: "日本語名・英語名のどちらでも検索できます。",
     observedCpLabel: "確認したCP",
@@ -231,8 +237,6 @@ const TEXT = {
     selectedBossHundoCps: "選択中ボスの100%CP",
     nonWeather: "通常時",
     weatherBoosted: "天候ブースト",
-    useNonWeatherHundo: "通常時 {cp}",
-    useWeatherHundo: "天候ブースト {cp}",
     cpResult: "CP判定",
     cpNotPossibleTitle: "このボスでは該当しないCP",
     cpNotPossibleCopy: "選択中のボスと個体値最低値では、CP {cp} はレベル20/25の候補に一致しません。",
@@ -300,8 +304,6 @@ const elements = {
   pokemonHelp: byId<HTMLElement>("pokemonHelp"),
   cpInput: byId<HTMLInputElement>("cpInput"),
   cpValidation: byId<HTMLElement>("cpValidation"),
-  normalMaxButton: byId<HTMLButtonElement>("normalMaxButton"),
-  boostedMaxButton: byId<HTMLButtonElement>("boostedMaxButton"),
   resetButton: byId<HTMLButtonElement>("resetButton"),
   manualStats: byId<HTMLInputElement>("manualStats"),
   atkInput: byId<HTMLInputElement>("atkInput"),
@@ -386,7 +388,7 @@ function restoreState(): void {
   }
 
   elements.floorInput.value = String(clampInt(saved.raidFloor, 0, MAX_IV, 6));
-  elements.bonusInput.value = String(clampInt(saved.purifyBonus, 0, MAX_IV, 2));
+  elements.bonusInput.value = "2";
   elements.cpInput.value =
     Number.isFinite(Number(saved.cp)) && Number(saved.cp) >= MIN_CP
       ? String(clampInt(saved.cp, MIN_CP, 99999, MIN_CP))
@@ -421,7 +423,6 @@ function bindEvents(): void {
     elements.defInput,
     elements.staInput,
     elements.floorInput,
-    elements.bonusInput,
   ].forEach((input) => input.addEventListener("input", () => render()));
 
   elements.showDetails.addEventListener("change", () => {
@@ -437,16 +438,6 @@ function bindEvents(): void {
   elements.densitySelect.addEventListener("change", () => {
     prefs.density = elements.densitySelect.value as DensityChoice;
     applyAppearance();
-    render();
-  });
-
-  elements.normalMaxButton.addEventListener("click", () => {
-    elements.cpInput.value = String(maxCpFor(readBaseStats(), RAID_LEVELS[0]));
-    render();
-  });
-
-  elements.boostedMaxButton.addEventListener("click", () => {
-    elements.cpInput.value = String(maxCpFor(readBaseStats(), RAID_LEVELS[1]));
     render();
   });
 
@@ -559,7 +550,6 @@ function handleSummaryEdit(event: Event): void {
 
   if (control === "cp") elements.cpInput.value = event.target.value;
   if (control === "floor") elements.floorInput.value = event.target.value;
-  if (control === "bonus") elements.bonusInput.value = event.target.value;
   if (control === "manual" && event.target instanceof HTMLInputElement) {
     elements.manualStats.checked = event.target.checked;
     if (!elements.manualStats.checked) syncStatsToSelected();
@@ -640,7 +630,7 @@ function readSettings(): {
     baseStats: readBaseStats(),
     cp: clampInt(elements.cpInput.value, MIN_CP, 99999, MIN_CP),
     raidFloor: clampInt(elements.floorInput.value, 0, MAX_IV, 6),
-    purifyBonus: clampInt(elements.bonusInput.value, 0, MAX_IV, 2),
+    purifyBonus: 2,
   };
 }
 
@@ -651,7 +641,6 @@ function render(options: RenderOptions = {}): void {
   );
 
   renderStaticText();
-  renderQuickButtons(settings.baseStats);
   renderHundoHints(settings.baseStats);
   renderCpValidation(summaries, settings);
   renderPrimaryInsight(summaries, settings, !options.preserveContext);
@@ -703,15 +692,6 @@ function renderStaticText(): void {
 
   document.querySelectorAll<HTMLOptionElement>("[data-floor-custom]").forEach((option) => {
     option.textContent = `${copy("floorCustom")}: ${option.value}/${option.value}/${option.value}`;
-  });
-}
-
-function renderQuickButtons(baseStats: BaseStats): void {
-  elements.normalMaxButton.textContent = formatCopy("useNonWeatherHundo", {
-    cp: maxCpFor(baseStats, RAID_LEVELS[0]),
-  });
-  elements.boostedMaxButton.textContent = formatCopy("useWeatherHundo", {
-    cp: maxCpFor(baseStats, RAID_LEVELS[1]),
   });
 }
 
@@ -856,8 +836,8 @@ function renderPrimaryInsight(
       <select id="summaryFloorControl" class="summary-value" data-summary-control="floor">${renderIvFloorOptions(settings.raidFloor)}</select>
     </div>
     <div class="context-card context-edit">
-      <label class="context-label" for="summaryBonusControl">${copy("purifyBonus")}</label>
-      <input id="summaryBonusControl" class="summary-value" data-summary-control="bonus" inputmode="numeric" max="${MAX_IV}" min="0" type="number" value="${settings.purifyBonus}" />
+      <span class="context-label">${copy("purifyBonus")}</span>
+      <span class="summary-value readonly-summary">+2</span>
       <em data-summary-target>${copy("prePurifyTarget")}: ${threshold}/${threshold}/${threshold}+</em>
     </div>
     <div class="context-card context-edit">
@@ -1198,7 +1178,6 @@ function loadStateFromUrl(): SavedState {
   const pokemon = params.get("pokemon") || params.get("boss");
   const cp = params.get("cp");
   const floor = params.get("floor");
-  const bonus = params.get("bonus");
 
   if (pokemon && POKEMON.some((entry) => pokemonNameMatches(entry, pokemon))) {
     state.selectedName =
@@ -1207,17 +1186,14 @@ function loadStateFromUrl(): SavedState {
 
   if (cp) state.cp = clampInt(cp, MIN_CP, 99999, MIN_CP);
   if (floor) state.raidFloor = clampInt(floor, 0, MAX_IV, 6);
-  if (bonus) state.purifyBonus = clampInt(bonus, 0, MAX_IV, 2);
-
   return state;
 }
 
-function syncUrl(settings: { cp: number; raidFloor: number; purifyBonus: number }): void {
+function syncUrl(settings: { cp: number; raidFloor: number }): void {
   const params = new URLSearchParams();
   params.set("pokemon", selectedPokemon().name);
   params.set("cp", String(settings.cp));
   if (settings.raidFloor !== 6) params.set("floor", String(settings.raidFloor));
-  if (settings.purifyBonus !== 2) params.set("bonus", String(settings.purifyBonus));
 
   const nextUrl = `${window.location.pathname}?${params.toString()}`;
   if (`${window.location.pathname}${window.location.search}` !== nextUrl) {

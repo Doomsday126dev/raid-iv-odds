@@ -46,7 +46,7 @@
               </div>
             </div>
             <div class="appearance-group">
-              <span class="appearance-label" data-i18n="themeLabel">Theme</span>
+              <span class="appearance-label"><span aria-hidden="true">🌓</span> <span data-i18n="themeLabel">Theme</span></span>
               <div class="segmented" aria-label="Theme" data-i18n-aria-label="themeLabel">
                 <button type="button" data-theme-choice="system" data-i18n="themeSystem">System</button>
                 <button type="button" data-theme-choice="light" data-i18n="themeLight">Light</button>
@@ -54,12 +54,12 @@
               </div>
             </div>
             <div class="appearance-group">
-              <span class="appearance-label" data-i18n="accentLabel">Accent</span>
+              <span class="appearance-label"><span aria-hidden="true">🎨</span> <span data-i18n="accentLabel">Accent</span></span>
               <div class="segmented palette-segment" aria-label="Accent color" data-i18n-aria-label="accentLabel">
-                <button type="button" data-accent-choice="aqua">Aqua</button>
-                <button type="button" data-accent-choice="mystic">Mystic</button>
-                <button type="button" data-accent-choice="valor">Valor</button>
-                <button type="button" data-accent-choice="instinct">Instinct</button>
+                <button type="button" data-accent-choice="aqua" data-i18n="accentAqua">Aqua</button>
+                <button type="button" data-accent-choice="mystic" data-i18n="accentMystic">Mystic</button>
+                <button type="button" data-accent-choice="valor" data-i18n="accentValor">Valor</button>
+                <button type="button" data-accent-choice="instinct" data-i18n="accentInstinct">Instinct</button>
               </div>
             </div>
           </div>
@@ -93,14 +93,6 @@
             <button class="stepper-button" type="button" data-cp-step="1" aria-label="Increase CP" data-i18n-aria-label="increaseCp">+</button>
           </div>
           <p class="field-help cp-validation" id="cpValidation" aria-live="polite"></p>
-        </div>
-
-        <div class="control-action-field">
-          <span class="control-label-spacer" aria-hidden="true">&nbsp;</span>
-          <div class="quick-actions" aria-label="Quick CP choices">
-            <button class="secondary-button" id="normalMaxButton" type="button"></button>
-            <button class="secondary-button" id="boostedMaxButton" type="button"></button>
-          </div>
         </div>
 
         <div class="control-action-field">
@@ -152,9 +144,10 @@
           </select>
           <small class="field-help" id="floorHint"></small>
         </div>
-        <div class="field">
+        <div class="field readonly-field">
           <label for="bonusInput" data-i18n="purifyBonus">Purify bonus</label>
-          <input id="bonusInput" inputmode="numeric" max="15" min="0" type="number" value="2" />
+          <input id="bonusInput" type="hidden" value="2" />
+          <div class="readonly-value" aria-describedby="bonusHint">+2</div>
           <small class="field-help" id="bonusHint"></small>
         </div>
       </section>
