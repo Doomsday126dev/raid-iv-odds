@@ -84,7 +84,7 @@
           <label for="flowCpInput" data-i18n="observedCpLabel">Observed CP</label>
           <div class="cp-stepper">
             <button class="stepper-button" type="button" data-flow-cp-step="-1" aria-label="Decrease CP" data-i18n-aria-label="decreaseCp">-</button>
-            <input id="flowCpInput" inputmode="numeric" min="10" type="number" />
+            <input id="flowCpInput" inputmode="numeric" pattern="[0-9]*" type="text" />
             <button class="stepper-button" type="button" data-flow-cp-step="1" aria-label="Increase CP" data-i18n-aria-label="increaseCp">+</button>
           </div>
           <span class="field-help" data-i18n="observedCpHelp">Enter the CP shown on the catch screen.</span>

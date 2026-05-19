@@ -490,11 +490,27 @@ function bindEvents(): void {
     elements.floorInput,
   ].forEach((input) =>
     input.addEventListener("input", () => {
-      if (input === elements.flowCpInput) elements.cpInput.value = elements.flowCpInput.value;
+      if (input === elements.flowCpInput) {
+        elements.flowCpInput.value = elements.flowCpInput.value.replaceAll(/\D/g, "");
+        if (!elements.flowCpInput.value || Number(elements.flowCpInput.value) < MIN_CP) {
+          elements.flowCpValidation.textContent = "";
+          elements.flowCpInput.removeAttribute("aria-invalid");
+          return;
+        }
+        elements.cpInput.value = elements.flowCpInput.value;
+      }
       if (input === elements.cpInput) elements.flowCpInput.value = elements.cpInput.value;
       render();
     }),
   );
+
+  elements.flowCpInput.addEventListener("blur", () => {
+    if (!elements.flowCpInput.value) {
+      elements.cpInput.value = String(MIN_CP);
+      elements.flowCpInput.value = elements.cpInput.value;
+    }
+    render();
+  });
 
   elements.showDetails.addEventListener("change", () => {
     prefs.showDetails = elements.showDetails.checked;

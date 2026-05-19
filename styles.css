@@ -190,7 +190,7 @@ a:focus-visible {
   min-width: 0;
 }
 
-.boss-field input,
+.boss-field select,
 .cp-stepper input {
   font-size: 1.05rem;
   font-weight: 800;
@@ -208,6 +208,12 @@ a:focus-visible {
   border: 0;
   border-radius: 0;
   text-align: center;
+}
+
+.cp-stepper input::-webkit-outer-spin-button,
+.cp-stepper input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
 }
 
 .stepper-button {

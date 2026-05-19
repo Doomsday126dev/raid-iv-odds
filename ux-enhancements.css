@@ -2,6 +2,10 @@
   min-width: 260px;
 }
 
+.settings-drawer[open] {
+  width: min(760px, calc(100vw - 32px));
+}
+
 .settings-summary,
 .tutorial-summary {
   align-items: center;
@@ -32,6 +36,7 @@
 
 .settings-drawer .appearance-panel {
   margin-top: 10px;
+  width: 100%;
 }
 
 .share-button {
