@@ -231,26 +231,37 @@ h3 {
 
 .appearance-panel {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   min-width: 340px;
 }
 
 .appearance-group {
-  align-items: center;
+  align-items: start;
   display: grid;
-  gap: 6px;
-  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 10px;
+  grid-template-columns: minmax(118px, 0.55fr) minmax(0, 1fr);
 }
 
 .appearance-label {
   align-items: center;
   color: var(--muted);
-  display: inline-flex;
+  display: grid;
   font-size: 0.72rem;
   font-weight: 850;
-  gap: 6px;
+  gap: 8px;
+  grid-template-columns: 20px minmax(0, 1fr);
+  line-height: 1.2;
+  min-height: 38px;
   min-width: 0;
+  padding-top: 9px;
   text-transform: uppercase;
+}
+
+.appearance-label > span:first-child {
+  display: inline-grid;
+  font-size: 1rem;
+  line-height: 1;
+  place-items: center;
 }
 
 .segmented {
@@ -500,7 +511,7 @@ h3 {
 
 .utility-bar {
   align-items: start;
-  grid-template-columns: minmax(180px, auto) minmax(220px, 1fr) minmax(170px, 0.7fr) auto;
+  grid-template-columns: minmax(180px, auto) minmax(220px, 1fr) minmax(170px, 0.75fr) minmax(150px, auto);
 }
 
 .utility-control {
@@ -514,7 +525,8 @@ h3 {
 }
 
 .utility-help {
-  align-self: end;
+  align-self: center;
+  grid-column: 3 / -1;
   margin: 0;
   max-width: 440px;
 }
