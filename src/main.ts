@@ -18,7 +18,7 @@ import {
 const STORAGE_KEY = "raidIvOdds:v4";
 
 type ThemeChoice = "system" | "light" | "dark";
-type AccentChoice = "aqua" | "mystic" | "valor" | "instinct";
+type AccentChoice = "aqua" | "mystic" | "valor" | "instinct" | "harmony";
 type LanguageChoice = "en" | "ja";
 type WatchFilter = "all" | "partial" | "strong" | "guaranteed";
 type ResultTone = "good" | "mixed" | "none";
@@ -80,6 +80,7 @@ const TEXT = {
     accentMystic: "Mystic",
     accentValor: "Valor",
     accentInstinct: "Instinct",
+    accentHarmony: "Harmony",
     pokemonLabel: "Pokemon",
     pokemonSearchHelp: "Type a boss name in English or Japanese.",
     observedCpLabel: "Observed CP",
@@ -185,6 +186,7 @@ const TEXT = {
     accentMystic: "ミスティック",
     accentValor: "ヴァーラー",
     accentInstinct: "インスティンクト",
+    accentHarmony: "ハーモニー",
     pokemonLabel: "レイドボス",
     pokemonSearchHelp: "日本語名・英語名のどちらでも検索できます。",
     observedCpLabel: "確認したCP",
@@ -340,7 +342,7 @@ function restoreState(): void {
   prefs = {
     ...DEFAULT_PREFS,
     theme: validateOption(saved.theme, ["system", "light", "dark"], DEFAULT_PREFS.theme),
-    accent: validateOption(saved.accent, ["aqua", "mystic", "valor", "instinct"], DEFAULT_PREFS.accent),
+    accent: validateOption(saved.accent, ["aqua", "mystic", "valor", "instinct", "harmony"], DEFAULT_PREFS.accent),
     language: validateOption(saved.language, ["en", "ja"], DEFAULT_PREFS.language),
     showDetails: typeof saved.showDetails === "boolean" ? saved.showDetails : DEFAULT_PREFS.showDetails,
     watchFilter: validateOption(
@@ -1216,6 +1218,7 @@ function accentThemeColor(accent: AccentChoice): string {
       mystic: "#2d63b8",
       valor: "#b93845",
       instinct: "#a56a00",
+      harmony: "#2f8f46",
     }[accent] || "#0a7775"
   );
 }
