@@ -1183,7 +1183,7 @@ h3 {
 .watch-row {
   display: grid;
   gap: 10px;
-  grid-template-columns: minmax(74px, 0.75fr) minmax(82px, 0.82fr) minmax(96px, 1fr) minmax(90px, 0.88fr) minmax(150px, 1.8fr);
+  grid-template-columns: minmax(74px, 0.8fr) minmax(82px, 0.9fr) minmax(90px, 0.9fr) minmax(160px, 2fr);
   padding: 0 16px;
 }
 
@@ -1494,10 +1494,6 @@ h3 {
 
   .watch-row-ratio::before {
     content: attr(data-label) " ";
-  }
-
-  .watch-row .priority-badge {
-    justify-self: end;
   }
 
   .watch-row-combos {

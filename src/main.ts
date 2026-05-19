@@ -169,7 +169,6 @@ const TEXT = {
     watchSummary: "{shown}/{total} CPs, {guaranteed} guaranteed",
     tableCp: "CP",
     tableChance: "Chance",
-    tablePriority: "Priority",
     tableGoodTotal: "Good/Total",
     tableGoodIvs: "Good IVs",
     analyzeCp: "Analyze CP {cp}, {odds} chance",
@@ -301,7 +300,6 @@ const TEXT = {
     watchSummary: "{shown}/{total} CP、確定 {guaranteed}",
     tableCp: "CP",
     tableChance: "確率",
-    tablePriority: "優先度",
     tableGoodTotal: "対象/合計",
     tableGoodIvs: "対象個体値",
     analyzeCp: "CP {cp} を判定、確率 {odds}",
@@ -1197,7 +1195,6 @@ function renderWatchlistPanel(summary: CpSummary): string {
               <div class="watch-table-head" role="row">
                 <span>${copy("tableCp")}</span>
                 <span>${copy("tableChance")}</span>
-                <span>${copy("tablePriority")}</span>
                 <span>${copy("tableGoodTotal")}</span>
                 <span>${copy("tableGoodIvs")}</span>
               </div>
@@ -1212,7 +1209,6 @@ function renderWatchlistPanel(summary: CpSummary): string {
 function renderWatchlistRow(row: WatchlistRow): string {
   const oddsClass = row.good === row.total ? "full" : "partial";
   const comboPreview = previewGoodCombos(row.goodCombos);
-  const priority = priorityFor(row);
 
   return `
     <button class="watch-row" type="button" data-cp="${row.cp}" role="row" aria-label="${formatCopy("analyzeCp", {
@@ -1221,7 +1217,6 @@ function renderWatchlistRow(row: WatchlistRow): string {
     })}">
       <span class="watch-row-cp">${row.cp}</span>
       <span class="odds-token ${oddsClass}">${formatPercent(row.odds)}</span>
-      ${renderPriorityBadge(priority)}
       <span class="watch-row-ratio" data-label="${copy("tableGoodTotal")}">${row.good}/${row.total}</span>
       <span class="watch-row-combos">${escapeHtml(comboPreview)}</span>
     </button>
