@@ -1252,7 +1252,8 @@ h3 {
 
   .context-card input,
   .context-card select {
-    font-size: 1.25rem;
+    font-size: 1.05rem;
+    min-height: 42px;
   }
 
   .watch-head {
@@ -1306,6 +1307,18 @@ h3 {
   .context-strip,
   .stat-row {
     grid-template-columns: 1fr;
+  }
+
+  .context-strip {
+    gap: 8px;
+  }
+
+  .context-edit {
+    min-height: 0;
+  }
+
+  .context-card {
+    padding: 10px;
   }
 
   .palette-segment button {
