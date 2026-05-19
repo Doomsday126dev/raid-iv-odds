@@ -10,7 +10,7 @@ const TEXT = {
     steps: [
       "Pick the raid boss before or during the encounter. The app fills in base stats automatically.",
       "Keep Shadow raid: 6/6/6 and purify bonus +2 for normal shadow legendary raids.",
-      "When the catch screen shows the CP, type that CP before spending extra balls, berries, or time.",
+      "When the catch screen shows the CP, type that CP before spending extra balls, berries, or, most importantly, time.",
       "If the result is 0%, you can save effort because that CP cannot purify to hundo. If it is mixed or guaranteed, keep trying and use the odds/watchlist to understand how strong the CP is.",
     ],
     exampleTitle: "Why this saves time",
@@ -26,7 +26,7 @@ const TEXT = {
     steps: [
       "レイド前またはゲットチャレンジ中にレイドボスを選びます。種族値は自動で入力されます。",
       "通常のシャドウ伝説レイドなら、個体値最低値は6/6/6、リトレーン加算は+2のままにします。",
-      "ゲット画面にCPが表示されたら、追加のボール・きのみ・時間を使う前にそのCPを入力します。",
+      "ゲット画面にCPが表示されたら、追加のボール・きのみ、そして何より時間を使う前にそのCPを入力します。",
       "結果が0%なら、そのCPはリトレーン後100%にならないため労力を節約できます。分岐ありまたは確定なら、捕獲を続けて確率やウォッチリストを確認します。",
     ],
     exampleTitle: "時間を節約できる理由",

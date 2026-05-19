@@ -35,32 +35,35 @@
           </div>
         </div>
 
-        <div class="appearance-panel" aria-label="Display options" data-i18n-aria-label="displayOptions">
-          <div class="appearance-group">
-            <span class="appearance-label"><span aria-hidden="true">🌐</span> <span data-i18n="languageLabel">Language</span></span>
-            <div class="segmented language-segment" aria-label="Language" data-i18n-aria-label="languageLabel">
-              <button type="button" data-language-choice="en">EN</button>
-              <button type="button" data-language-choice="ja">日本語</button>
+        <details class="settings-drawer">
+          <summary class="settings-summary">Settings</summary>
+          <div class="appearance-panel" aria-label="Display options" data-i18n-aria-label="displayOptions">
+            <div class="appearance-group">
+              <span class="appearance-label"><span aria-hidden="true">🌐</span> <span data-i18n="languageLabel">Language</span></span>
+              <div class="segmented language-segment" aria-label="Language" data-i18n-aria-label="languageLabel">
+                <button type="button" data-language-choice="en">EN</button>
+                <button type="button" data-language-choice="ja">日本語</button>
+              </div>
+            </div>
+            <div class="appearance-group">
+              <span class="appearance-label" data-i18n="themeLabel">Theme</span>
+              <div class="segmented" aria-label="Theme" data-i18n-aria-label="themeLabel">
+                <button type="button" data-theme-choice="system" data-i18n="themeSystem">System</button>
+                <button type="button" data-theme-choice="light" data-i18n="themeLight">Light</button>
+                <button type="button" data-theme-choice="dark" data-i18n="themeDark">Dark</button>
+              </div>
+            </div>
+            <div class="appearance-group">
+              <span class="appearance-label" data-i18n="accentLabel">Accent</span>
+              <div class="segmented palette-segment" aria-label="Accent color" data-i18n-aria-label="accentLabel">
+                <button type="button" data-accent-choice="aqua">Aqua</button>
+                <button type="button" data-accent-choice="mystic">Mystic</button>
+                <button type="button" data-accent-choice="valor">Valor</button>
+                <button type="button" data-accent-choice="instinct">Instinct</button>
+              </div>
             </div>
           </div>
-          <div class="appearance-group">
-            <span class="appearance-label" data-i18n="themeLabel">Theme</span>
-            <div class="segmented" aria-label="Theme" data-i18n-aria-label="themeLabel">
-              <button type="button" data-theme-choice="system" data-i18n="themeSystem">System</button>
-              <button type="button" data-theme-choice="light" data-i18n="themeLight">Light</button>
-              <button type="button" data-theme-choice="dark" data-i18n="themeDark">Dark</button>
-            </div>
-          </div>
-          <div class="appearance-group">
-            <span class="appearance-label" data-i18n="accentLabel">Accent</span>
-            <div class="segmented palette-segment" aria-label="Accent color" data-i18n-aria-label="accentLabel">
-              <button type="button" data-accent-choice="aqua">Aqua</button>
-              <button type="button" data-accent-choice="mystic">Mystic</button>
-              <button type="button" data-accent-choice="valor">Valor</button>
-              <button type="button" data-accent-choice="instinct">Instinct</button>
-            </div>
-          </div>
-        </div>
+        </details>
         <div class="sr-only" id="languageStatus" aria-live="polite"></div>
 
         <div class="hundo-hints" id="hundoHints" aria-live="polite"></div>
@@ -92,17 +95,26 @@
           <p class="field-help cp-validation" id="cpValidation" aria-live="polite"></p>
         </div>
 
-        <div class="quick-actions" aria-label="Quick CP choices">
-          <button class="secondary-button" id="normalMaxButton" type="button"></button>
-          <button class="secondary-button" id="boostedMaxButton" type="button"></button>
+        <div class="control-action-field">
+          <span class="control-label-spacer" aria-hidden="true">&nbsp;</span>
+          <div class="quick-actions" aria-label="Quick CP choices">
+            <button class="secondary-button" id="normalMaxButton" type="button"></button>
+            <button class="secondary-button" id="boostedMaxButton" type="button"></button>
+          </div>
         </div>
 
-        <label class="toggle-row" for="manualStats">
-          <input id="manualStats" type="checkbox" />
-          <span data-i18n="manualBaseStats">Manual base stats</span>
-        </label>
+        <div class="control-action-field">
+          <span class="control-label-spacer" aria-hidden="true">&nbsp;</span>
+          <label class="toggle-row" for="manualStats">
+            <input id="manualStats" type="checkbox" />
+            <span data-i18n="manualBaseStats">Manual base stats</span>
+          </label>
+        </div>
 
-        <button class="secondary-button reset-button" id="resetButton" type="button" data-i18n="resetAll">Reset all</button>
+        <div class="control-action-field">
+          <span class="control-label-spacer" aria-hidden="true">&nbsp;</span>
+          <button class="secondary-button reset-button" id="resetButton" type="button" data-i18n="resetAll">Reset all</button>
+        </div>
       </section>
 
       <section class="stats-surface" aria-label="Base stats and assumptions">

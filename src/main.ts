@@ -1,4 +1,5 @@
 import { DATA_LAST_REVIEWED, POKEMON, type Pokemon } from "./data";
+import "./ux-enhancements";
 import {
   MAX_IV,
   MIN_CP,
@@ -119,8 +120,8 @@ const TEXT = {
     selectedBossHundoCps: "Selected boss hundo CPs",
     nonWeather: "Non-weather",
     weatherBoosted: "Weather boosted",
-    useNonWeatherHundo: "Non-weather hundo {cp}",
-    useWeatherHundo: "Weather hundo {cp}",
+    useNonWeatherHundo: "Non-weather {cp}",
+    useWeatherHundo: "Weather boosted {cp}",
     cpResult: "CP result",
     cpNotPossibleTitle: "CP not possible for this boss",
     cpNotPossibleCopy:
@@ -230,8 +231,8 @@ const TEXT = {
     selectedBossHundoCps: "選択中ボスの100%CP",
     nonWeather: "通常時",
     weatherBoosted: "天候ブースト",
-    useNonWeatherHundo: "通常時100%CP {cp}",
-    useWeatherHundo: "天候ブースト100%CP {cp}",
+    useNonWeatherHundo: "通常時 {cp}",
+    useWeatherHundo: "天候ブースト {cp}",
     cpResult: "CP判定",
     cpNotPossibleTitle: "このボスでは該当しないCP",
     cpNotPossibleCopy: "選択中のボスと個体値最低値では、CP {cp} はレベル20/25の候補に一致しません。",

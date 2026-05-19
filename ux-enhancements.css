@@ -41,35 +41,37 @@
 @media (min-width: 1081px) {
   .control-surface {
     align-items: start;
-    grid-template-columns: minmax(220px, 1.25fr) minmax(190px, 0.95fr) minmax(240px, 1fr) minmax(190px, 0.85fr) minmax(105px, 0.45fr);
+    grid-template-columns:
+      minmax(240px, 1.2fr)
+      minmax(210px, 0.95fr)
+      minmax(300px, 1fr)
+      minmax(190px, 0.74fr)
+      minmax(112px, auto);
   }
 
   .control-surface > * {
     min-width: 0;
   }
 
-  .control-surface > .quick-actions,
-  .control-surface > .toggle-row,
-  .control-surface > .reset-button {
-    align-self: start;
-    margin-top: 26px;
+  .control-action-field {
+    min-width: 0;
   }
 
-  .control-surface > .quick-actions {
+  .control-surface .quick-actions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .control-surface > .toggle-row {
+  .control-surface .toggle-row {
     justify-content: center;
   }
 
   .control-surface .quick-actions .secondary-button,
-  .control-surface > .toggle-row,
-  .control-surface > .reset-button {
+  .control-surface .toggle-row,
+  .control-surface .reset-button {
     min-height: 54px;
   }
 
-  .control-surface > .reset-button {
+  .control-surface .reset-button {
     min-width: 0;
   }
 }
