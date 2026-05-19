@@ -99,6 +99,7 @@ body {
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
+  overflow-x: hidden;
 }
 
 button,
@@ -481,8 +482,13 @@ h3 {
 }
 
 .control-surface {
-  align-items: end;
-  grid-template-columns: minmax(220px, 2fr) minmax(190px, 1.2fr) minmax(280px, 1.5fr) auto auto;
+  align-items: start;
+  grid-template-columns:
+    minmax(230px, 1.25fr)
+    minmax(220px, 1fr)
+    minmax(320px, 1fr)
+    minmax(180px, 0.7fr)
+    minmax(118px, auto);
 }
 
 .stats-surface {
@@ -614,9 +620,12 @@ h3 {
 }
 
 .quick-actions {
+  align-self: start;
   display: grid;
   gap: 8px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1.72rem;
+  min-width: 0;
 }
 
 .secondary-button,
@@ -629,8 +638,10 @@ h3 {
   display: inline-flex;
   font-weight: 850;
   justify-content: center;
+  line-height: 1.12;
   min-height: 46px;
   padding: 10px 12px;
+  text-align: center;
 }
 
 .secondary-button:hover,
@@ -649,6 +660,12 @@ h3 {
   padding: 10px 12px;
   white-space: nowrap;
   width: 100%;
+}
+
+.control-surface > .toggle-row,
+.control-surface > .reset-button {
+  align-self: start;
+  margin-top: 1.72rem;
 }
 
 .toggle-row input {
@@ -710,6 +727,10 @@ h3 {
   gap: 14px;
   justify-content: space-between;
   padding-left: 4px;
+}
+
+.result-head > div {
+  min-width: 0;
 }
 
 .scenario-copy {
@@ -793,8 +814,10 @@ h3 {
 .status-line {
   border-radius: 7px;
   font-size: 0.9rem;
+  line-height: 1.38;
   min-height: 56px;
   margin: 0;
+  overflow-wrap: anywhere;
   padding: 10px 12px;
 }
 
@@ -823,8 +846,10 @@ h3 {
 
 .status-line .chip-button {
   font-size: 0.82rem;
+  line-height: 1.15;
   min-height: 30px;
   padding: 4px 8px;
+  white-space: normal;
 }
 
 .stat-row {
@@ -840,6 +865,8 @@ h3 {
   display: block;
   font-size: 0.72rem;
   font-weight: 850;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
   text-transform: uppercase;
 }
 
@@ -887,6 +914,7 @@ h3 {
   color: var(--ink);
   font-size: 0.8rem;
   font-weight: 800;
+  line-height: 1.15;
   padding: 5px 8px;
 }
 
@@ -1156,6 +1184,12 @@ html[data-density="compact"] .watch-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .quick-actions,
+  .control-surface > .toggle-row,
+  .control-surface > .reset-button {
+    margin-top: 0;
+  }
+
   .utility-help {
     align-self: start;
     grid-column: 1 / -1;
@@ -1223,6 +1257,11 @@ html[data-density="compact"] .watch-row {
     grid-template-columns: 1fr;
   }
 
+  .result-panel {
+    gap: 12px;
+    padding: 14px 12px 14px 16px;
+  }
+
   .result-head,
   .watch-head,
   .combo-head {
@@ -1232,15 +1271,36 @@ html[data-density="compact"] .watch-row {
 
   .odds-badge {
     text-align: left;
+    width: 100%;
+  }
+
+  .scenario-copy {
+    min-height: 0;
+  }
+
+  .spread-summary,
+  .scenario-copy,
+  .watch-head p,
+  .combo-head span {
+    overflow-wrap: anywhere;
   }
 
   .stat-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .nearest-list {
+    display: flex;
+    margin: 8px 0 0;
+  }
+
   .context-card input,
   .context-card select {
     font-size: 1.25rem;
+  }
+
+  .watch-head::before {
+    width: 100%;
   }
 
   .watch-table-head {

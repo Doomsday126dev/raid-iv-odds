@@ -119,8 +119,8 @@ const TEXT = {
     selectedBossHundoCps: "Selected boss hundo CPs",
     nonWeather: "Non-weather",
     weatherBoosted: "Weather boosted",
-    useNonWeatherHundo: "Use non-weather hundo {cp}",
-    useWeatherHundo: "Use weather-boosted hundo {cp}",
+    useNonWeatherHundo: "Non-weather hundo {cp}",
+    useWeatherHundo: "Weather hundo {cp}",
     cpResult: "CP result",
     cpNotPossibleTitle: "CP not possible for this boss",
     cpNotPossibleCopy:
@@ -330,6 +330,7 @@ const elements = {
 
 let prefs: Preferences = { ...DEFAULT_PREFS };
 let deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
+let watchlistSignature = "";
 
 function init(): void {
   renderPokemonOptions();
@@ -656,10 +657,30 @@ function render(options: RenderOptions = {}): void {
   renderAssumptionHints(settings);
   renderDataHint();
   elements.resultsGrid.innerHTML = summaries.map(renderResultPanel).join("");
-  elements.watchlistGrid.innerHTML = summaries.map(renderWatchlistPanel).join("");
+  const nextWatchlistSignature = watchlistRenderSignature(settings);
+  if (nextWatchlistSignature !== watchlistSignature) {
+    elements.watchlistGrid.innerHTML = summaries.map(renderWatchlistPanel).join("");
+    watchlistSignature = nextWatchlistSignature;
+  }
   updateControlState();
   saveState(settings);
   syncUrl(settings);
+}
+
+function watchlistRenderSignature(settings: {
+  baseStats: BaseStats;
+  raidFloor: number;
+  purifyBonus: number;
+}): string {
+  return [
+    prefs.language,
+    prefs.watchFilter,
+    settings.raidFloor,
+    settings.purifyBonus,
+    settings.baseStats.atk,
+    settings.baseStats.def,
+    settings.baseStats.sta,
+  ].join("|");
 }
 
 function renderStaticText(): void {
