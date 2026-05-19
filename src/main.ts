@@ -1215,10 +1215,10 @@ function accentThemeColor(accent: AccentChoice): string {
   return (
     {
       aqua: "#0a7775",
-      mystic: "#2d63b8",
-      valor: "#b93845",
-      instinct: "#a56a00",
-      harmony: "#2f8f46",
+      mystic: "#2F7DF6",
+      valor: "#E63B3B",
+      instinct: "#F6C945",
+      harmony: "#2ECC71",
     }[accent] || "#0a7775"
   );
 }

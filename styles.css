@@ -55,31 +55,31 @@ html[data-accent="aqua"] {
 }
 
 html[data-accent="mystic"] {
-  --accent: #2d63b8;
-  --accent-line: #a7bff0;
-  --accent-soft: #e3edff;
-  --accent-focus: rgba(45, 99, 184, 0.32);
+  --accent: #2f7df6;
+  --accent-line: #a9caff;
+  --accent-soft: #e7f0ff;
+  --accent-focus: rgba(47, 125, 246, 0.32);
 }
 
 html[data-accent="valor"] {
-  --accent: #b93845;
-  --accent-line: #f2a4ae;
-  --accent-soft: #ffe6ea;
-  --accent-focus: rgba(185, 56, 69, 0.32);
+  --accent: #e63b3b;
+  --accent-line: #f4a0a0;
+  --accent-soft: #ffe7e7;
+  --accent-focus: rgba(230, 59, 59, 0.32);
 }
 
 html[data-accent="instinct"] {
-  --accent: #a56a00;
-  --accent-line: #efca72;
-  --accent-soft: #fff1c2;
-  --accent-focus: rgba(165, 106, 0, 0.32);
+  --accent: #9b7100;
+  --accent-line: #f6c945;
+  --accent-soft: #fff4c7;
+  --accent-focus: rgba(246, 201, 69, 0.42);
 }
 
 html[data-accent="harmony"] {
-  --accent: #2f8f46;
-  --accent-line: #9dd7aa;
-  --accent-soft: #ddf6e3;
-  --accent-focus: rgba(47, 143, 70, 0.32);
+  --accent: #2ecc71;
+  --accent-line: #98e8ba;
+  --accent-soft: #ddf8e9;
+  --accent-focus: rgba(46, 204, 113, 0.32);
 }
 
 html[data-theme="dark"][data-accent="mystic"],
