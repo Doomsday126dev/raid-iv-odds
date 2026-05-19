@@ -89,7 +89,6 @@ const TEXT = {
     decreaseCp: "Decrease CP",
     increaseCp: "Increase CP",
     manualBaseStats: "Manual base stats",
-    resetAll: "Reset all",
     baseAttack: "Base attack",
     baseDefense: "Base defense",
     baseStamina: "Base stamina",
@@ -120,8 +119,8 @@ const TEXT = {
     privacyLink: "Privacy",
     feedbackLink: "Feedback",
     selectedBossHundoCps: "Selected boss hundo CPs",
-    nonWeather: "Regular catch",
-    weatherBoosted: "Weather boost",
+    nonWeather: "Non-Weather Boosted",
+    weatherBoosted: "Weather Boosted",
     cpResult: "CP result",
     cpNotPossibleTitle: "CP not possible for this boss",
     cpNotPossibleCopy:
@@ -199,7 +198,6 @@ const TEXT = {
     decreaseCp: "CPを1下げる",
     increaseCp: "CPを1上げる",
     manualBaseStats: "種族値を手入力",
-    resetAll: "すべてリセット",
     baseAttack: "攻撃種族値",
     baseDefense: "防御種族値",
     baseStamina: "HP種族値",
@@ -230,8 +228,8 @@ const TEXT = {
     privacyLink: "プライバシー",
     feedbackLink: "フィードバック",
     selectedBossHundoCps: "選択中ボスの100%CP",
-    nonWeather: "通常捕獲",
-    weatherBoosted: "天候ブースト",
+    nonWeather: "天候ブーストなし",
+    weatherBoosted: "天候ブーストあり",
     cpResult: "CP判定",
     cpNotPossibleTitle: "このボスでは該当しないCP",
     cpNotPossibleCopy: "選択中のボスと個体値最低値では、CP {cp} はレベル20/25の候補に一致しません。",
@@ -297,7 +295,6 @@ const elements = {
   pokemonHelp: byId<HTMLElement>("pokemonHelp"),
   cpInput: byId<HTMLInputElement>("cpInput"),
   cpValidation: byId<HTMLElement>("cpValidation"),
-  resetButton: byId<HTMLButtonElement>("resetButton"),
   manualStats: byId<HTMLInputElement>("manualStats"),
   atkInput: byId<HTMLInputElement>("atkInput"),
   defInput: byId<HTMLInputElement>("defInput"),
@@ -430,8 +427,6 @@ function bindEvents(): void {
     applyAppearance();
     render();
   });
-
-  elements.resetButton.addEventListener("click", resetAll);
 
   elements.cpStepButtons.forEach((button) => {
     button.addEventListener("click", () => {
@@ -568,20 +563,6 @@ function handleSummaryKeydown(event: KeyboardEvent): void {
 
 function syncPokemonInputToSelected(): void {
   elements.pokemonInput.value = pokemonInputValue(selectedPokemon());
-}
-
-function resetAll(): void {
-  prefs = { ...DEFAULT_PREFS };
-  elements.pokemonSelect.value = "Mewtwo";
-  elements.manualStats.checked = false;
-  elements.floorInput.value = "6";
-  elements.showDetails.checked = DEFAULT_PREFS.showDetails;
-  elements.watchFilter.value = DEFAULT_PREFS.watchFilter;
-  elements.densitySelect.value = DEFAULT_PREFS.density;
-  syncStatsToSelected();
-  elements.cpInput.value = String(maxCpFor(readBaseStats(), RAID_LEVELS[0]));
-  applyAppearance();
-  render();
 }
 
 function syncStatsToSelected(): void {

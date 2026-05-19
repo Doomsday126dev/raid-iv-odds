@@ -44,10 +44,9 @@
   .control-surface {
     align-items: start;
     grid-template-columns:
-      minmax(260px, 1.25fr)
-      minmax(220px, 1fr)
-      minmax(190px, 0.78fr)
-      minmax(112px, auto);
+      minmax(280px, 1.25fr)
+      minmax(240px, 1fr)
+      minmax(220px, 0.82fr);
   }
 
   .control-surface > * {
@@ -62,13 +61,8 @@
     justify-content: center;
   }
 
-  .control-surface .toggle-row,
-  .control-surface .reset-button {
+  .control-surface .toggle-row {
     min-height: 54px;
-  }
-
-  .control-surface .reset-button {
-    min-width: 0;
   }
 }
 

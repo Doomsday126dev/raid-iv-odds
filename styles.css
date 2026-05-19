@@ -499,10 +499,9 @@ h3 {
 .control-surface {
   align-items: start;
   grid-template-columns:
-    minmax(260px, 1.25fr)
-    minmax(220px, 1fr)
-    minmax(190px, 0.78fr)
-    minmax(112px, auto);
+    minmax(280px, 1.25fr)
+    minmax(240px, 1fr)
+    minmax(220px, 0.82fr);
 }
 
 .stats-surface {
@@ -683,11 +682,6 @@ h3 {
 
 .install-button[hidden] {
   display: none;
-}
-
-.reset-button {
-  min-width: 108px;
-  width: 100%;
 }
 
 .results-grid,
