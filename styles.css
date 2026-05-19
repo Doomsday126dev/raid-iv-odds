@@ -510,8 +510,8 @@ h3 {
 }
 
 .utility-bar {
-  align-items: start;
-  grid-template-columns: minmax(180px, auto) minmax(220px, 1fr) minmax(170px, 0.75fr) minmax(150px, auto);
+  align-items: end;
+  grid-template-columns: minmax(190px, auto) minmax(260px, 1.05fr) minmax(180px, 0.7fr) minmax(260px, 1fr) minmax(150px, auto);
 }
 
 .utility-control {
@@ -519,16 +519,11 @@ h3 {
   gap: 6px;
 }
 
-.utility-label {
-  display: block;
-  min-height: 0.74rem;
-}
-
 .utility-help {
-  align-self: center;
-  grid-column: 3 / -1;
+  align-self: end;
   margin: 0;
   max-width: 440px;
+  padding-bottom: 11px;
 }
 
 .field label,
@@ -1229,10 +1224,6 @@ html[data-density="compact"] .watch-row {
   .stats-surface,
   .utility-bar {
     grid-template-columns: 1fr;
-  }
-
-  .utility-label {
-    display: none;
   }
 
   .control-label-spacer {

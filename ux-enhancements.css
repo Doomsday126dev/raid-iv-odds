@@ -36,6 +36,7 @@
 
 .share-button {
   align-self: end;
+  min-height: 46px;
   width: 100%;
 }
 
