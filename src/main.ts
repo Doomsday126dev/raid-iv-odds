@@ -8,7 +8,6 @@ import {
   formatPercent,
   formatRatio,
   maxCpFor,
-  purifiedThreshold,
   summarizeCp,
   type BaseStats,
   type CpSummary,
@@ -99,7 +98,6 @@ const TEXT = {
     floorStandard: "Standard raid: 10/10/10",
     floorWild: "Wild/no floor: 0/0/0",
     floorCustom: "Custom",
-    purifyBonus: "Purify bonus",
     showIvSpreads: "Show IV spreads",
     watchlistFilter: "Watchlist filter",
     filterAll: "All eligible CPs",
@@ -131,7 +129,6 @@ const TEXT = {
     pokemonContext: "Pokemon",
     analyzingCp: "Analyzing CP",
     ivFloor: "IV floor",
-    prePurifyTarget: "Pre-purify target",
     baseStats: "Base stats",
     attackShort: "Atk",
     defenseShort: "Def",
@@ -168,7 +165,6 @@ const TEXT = {
     outsideRange: "Outside the selected boss catch ranges. {ranges}.",
     tryNearest: " Try {chips}",
     floorHint: "Counts every spread from {floor}/{floor}/{floor} through 15/15/15.",
-    bonusHint: "With +{bonus}, pre-purify {target}/{target}/{target}+ reaches a hundo.",
     dataHint: "Pokemon data last updated: {date}. Seeded list: {count} bosses/forms.",
     languageChanged: "Language changed to English.",
     guaranteedChanceTitle: "Guaranteed purified hundo",
@@ -212,7 +208,6 @@ const TEXT = {
     floorStandard: "通常レイド: 10/10/10",
     floorWild: "野生/最低値なし: 0/0/0",
     floorCustom: "カスタム",
-    purifyBonus: "リトレーン加算",
     showIvSpreads: "個体値候補を表示",
     watchlistFilter: "ウォッチリスト絞り込み",
     filterAll: "対象CPすべて",
@@ -243,7 +238,6 @@ const TEXT = {
     pokemonContext: "ポケモン",
     analyzingCp: "判定中CP",
     ivFloor: "個体値最低値",
-    prePurifyTarget: "リトレーン前の目安",
     baseStats: "種族値",
     attackShort: "攻撃",
     defenseShort: "防御",
@@ -279,7 +273,6 @@ const TEXT = {
     outsideRange: "選択中ボスの捕獲CP範囲外です。{ranges}。",
     tryNearest: " 近い候補: {chips}",
     floorHint: "{floor}/{floor}/{floor}から15/15/15までの全候補を数えます。",
-    bonusHint: "+{bonus}の場合、リトレーン前{target}/{target}/{target}+が100%になります。",
     dataHint: "ポケモンデータ最終更新: {date}。収録ボス/フォーム: {count}件。",
     languageChanged: "表示言語を日本語に切り替えました。",
     guaranteedChanceTitle: "リトレーン後100%確定",
@@ -311,8 +304,6 @@ const elements = {
   staInput: byId<HTMLInputElement>("staInput"),
   floorInput: byId<HTMLSelectElement>("floorInput"),
   floorHint: byId<HTMLElement>("floorHint"),
-  bonusInput: byId<HTMLInputElement>("bonusInput"),
-  bonusHint: byId<HTMLElement>("bonusHint"),
   showDetails: byId<HTMLInputElement>("showDetails"),
   watchFilter: byId<HTMLSelectElement>("watchFilter"),
   densitySelect: byId<HTMLSelectElement>("densitySelect"),
@@ -388,7 +379,6 @@ function restoreState(): void {
   }
 
   elements.floorInput.value = String(clampInt(saved.raidFloor, 0, MAX_IV, 6));
-  elements.bonusInput.value = "2";
   elements.cpInput.value =
     Number.isFinite(Number(saved.cp)) && Number(saved.cp) >= MIN_CP
       ? String(clampInt(saved.cp, MIN_CP, 99999, MIN_CP))
@@ -564,7 +554,6 @@ function handleSummaryEdit(event: Event): void {
     return;
   }
 
-  updateSummaryTargetHint();
   render({ preserveContext: true });
 }
 
@@ -586,7 +575,6 @@ function resetAll(): void {
   elements.pokemonSelect.value = "Mewtwo";
   elements.manualStats.checked = false;
   elements.floorInput.value = "6";
-  elements.bonusInput.value = "2";
   elements.showDetails.checked = DEFAULT_PREFS.showDetails;
   elements.watchFilter.value = DEFAULT_PREFS.watchFilter;
   elements.densitySelect.value = DEFAULT_PREFS.density;
@@ -775,10 +763,8 @@ function renderDataHint(): void {
   });
 }
 
-function renderAssumptionHints(settings: { raidFloor: number; purifyBonus: number }): void {
-  const threshold = purifiedThreshold(settings.purifyBonus);
+function renderAssumptionHints(settings: { raidFloor: number }): void {
   elements.floorHint.textContent = formatCopy("floorHint", { floor: settings.raidFloor });
-  elements.bonusHint.textContent = formatCopy("bonusHint", { bonus: settings.purifyBonus, target: threshold });
 }
 
 function renderPrimaryInsight(
@@ -820,7 +806,6 @@ function renderPrimaryInsight(
 
   if (!renderContext) return;
 
-  const threshold = purifiedThreshold(settings.purifyBonus);
   const pokemon = selectedPokemon();
   elements.contextStrip.innerHTML = `
     <div class="context-card context-edit">
@@ -834,11 +819,6 @@ function renderPrimaryInsight(
     <div class="context-card context-edit">
       <label class="context-label" for="summaryFloorControl">${copy("ivFloor")}</label>
       <select id="summaryFloorControl" class="summary-value" data-summary-control="floor">${renderIvFloorOptions(settings.raidFloor)}</select>
-    </div>
-    <div class="context-card context-edit">
-      <span class="context-label">${copy("purifyBonus")}</span>
-      <span class="summary-value readonly-summary">+2</span>
-      <em data-summary-target>${copy("prePurifyTarget")}: ${threshold}/${threshold}/${threshold}+</em>
     </div>
     <div class="context-card context-edit">
       <span class="context-label">${copy("baseStats")}</span>
@@ -945,13 +925,6 @@ function renderSummaryStats(baseStats: BaseStats): string {
       </label>
     </div>
   `;
-}
-
-function updateSummaryTargetHint(): void {
-  const target = elements.contextStrip.querySelector<HTMLElement>("[data-summary-target]");
-  if (!target) return;
-  const threshold = purifiedThreshold(clampInt(elements.bonusInput.value, 0, MAX_IV, 2));
-  target.textContent = `${copy("prePurifyTarget")}: ${threshold}/${threshold}/${threshold}+`;
 }
 
 function resultState(summary: CpSummary): ResultState {
