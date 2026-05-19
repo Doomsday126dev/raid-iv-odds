@@ -75,72 +75,37 @@
         <div class="context-strip" id="contextStrip"></div>
       </section>
 
-      <section class="control-surface" aria-label="Raid inputs">
-        <div class="field pokemon-field">
-          <label for="pokemonInput" data-i18n="pokemonLabel">Pokemon</label>
-          <input id="pokemonInput" list="pokemonOptions" autocomplete="off" spellcheck="false" />
-          <datalist id="pokemonOptions"></datalist>
-          <input id="pokemonSelect" type="hidden" value="Mewtwo" />
-          <p class="field-help" id="pokemonHelp" data-i18n="pokemonSearchHelp">
-            Type a boss name in English or Japanese.
-          </p>
-        </div>
-
-        <div class="field cp-field">
-          <label for="cpInput" data-i18n="observedCpLabel">Observed CP</label>
-          <div class="cp-stepper">
-            <button class="stepper-button" type="button" data-cp-step="-1" aria-label="Decrease CP" data-i18n-aria-label="decreaseCp">-</button>
-            <input id="cpInput" inputmode="numeric" min="10" type="number" />
-            <button class="stepper-button" type="button" data-cp-step="1" aria-label="Increase CP" data-i18n-aria-label="increaseCp">+</button>
-          </div>
-          <p class="field-help cp-validation" id="cpValidation" aria-live="polite"></p>
-        </div>
-
-        <div class="control-action-field">
-          <span class="control-label-spacer" aria-hidden="true">&nbsp;</span>
-          <label class="toggle-row" for="manualStats">
-            <input id="manualStats" type="checkbox" />
-            <span data-i18n="manualBaseStats">Manual base stats</span>
-          </label>
-        </div>
-      </section>
-
-      <section class="stats-surface" aria-label="Base stats and assumptions">
-        <div class="field">
-          <label for="atkInput" data-i18n="baseAttack">Base attack</label>
-          <input id="atkInput" inputmode="numeric" min="1" type="number" />
-        </div>
-        <div class="field">
-          <label for="defInput" data-i18n="baseDefense">Base defense</label>
-          <input id="defInput" inputmode="numeric" min="1" type="number" />
-        </div>
-        <div class="field">
-          <label for="staInput" data-i18n="baseStamina">Base stamina</label>
-          <input id="staInput" inputmode="numeric" min="1" type="number" />
-        </div>
-        <div class="field">
-          <label for="floorInput" data-i18n="raidIvFloor">Raid IV floor</label>
-          <select id="floorInput">
-            <option value="6" data-i18n="floorShadow">Shadow raid: 6/6/6</option>
-            <option value="10" data-i18n="floorStandard">Standard raid: 10/10/10</option>
-            <option value="0" data-i18n="floorWild">Wild/no floor: 0/0/0</option>
-            <option value="1" data-floor-custom>Custom: 1/1/1</option>
-            <option value="2" data-floor-custom>Custom: 2/2/2</option>
-            <option value="3" data-floor-custom>Custom: 3/3/3</option>
-            <option value="4" data-floor-custom>Custom: 4/4/4</option>
-            <option value="5" data-floor-custom>Custom: 5/5/5</option>
-            <option value="7" data-floor-custom>Custom: 7/7/7</option>
-            <option value="8" data-floor-custom>Custom: 8/8/8</option>
-            <option value="9" data-floor-custom>Custom: 9/9/9</option>
-            <option value="11" data-floor-custom>Custom: 11/11/11</option>
-            <option value="12" data-floor-custom>Custom: 12/12/12</option>
-            <option value="13" data-floor-custom>Custom: 13/13/13</option>
-            <option value="14" data-floor-custom>Custom: 14/14/14</option>
-            <option value="15" data-floor-custom>Custom: 15/15/15</option>
-          </select>
-          <small class="field-help" id="floorHint"></small>
-        </div>
-      </section>
+      <div class="state-controls" aria-hidden="true">
+        <input id="pokemonInput" autocomplete="off" spellcheck="false" />
+        <datalist id="pokemonOptions"></datalist>
+        <input id="pokemonSelect" type="hidden" value="Mewtwo" />
+        <span id="pokemonHelp"></span>
+        <input id="cpInput" min="10" type="number" />
+        <span id="cpValidation"></span>
+        <input id="manualStats" type="checkbox" />
+        <input id="atkInput" min="1" type="number" />
+        <input id="defInput" min="1" type="number" />
+        <input id="staInput" min="1" type="number" />
+        <select id="floorInput">
+          <option value="6" data-i18n="floorShadow">Shadow raid: 6/6/6</option>
+          <option value="10" data-i18n="floorStandard">Standard raid: 10/10/10</option>
+          <option value="0" data-i18n="floorWild">Wild/no floor: 0/0/0</option>
+          <option value="1" data-floor-custom>Custom: 1/1/1</option>
+          <option value="2" data-floor-custom>Custom: 2/2/2</option>
+          <option value="3" data-floor-custom>Custom: 3/3/3</option>
+          <option value="4" data-floor-custom>Custom: 4/4/4</option>
+          <option value="5" data-floor-custom>Custom: 5/5/5</option>
+          <option value="7" data-floor-custom>Custom: 7/7/7</option>
+          <option value="8" data-floor-custom>Custom: 8/8/8</option>
+          <option value="9" data-floor-custom>Custom: 9/9/9</option>
+          <option value="11" data-floor-custom>Custom: 11/11/11</option>
+          <option value="12" data-floor-custom>Custom: 12/12/12</option>
+          <option value="13" data-floor-custom>Custom: 13/13/13</option>
+          <option value="14" data-floor-custom>Custom: 14/14/14</option>
+          <option value="15" data-floor-custom>Custom: 15/15/15</option>
+        </select>
+        <span id="floorHint"></span>
+      </div>
 
       <section class="utility-bar" aria-label="View controls">
         <div class="utility-control">

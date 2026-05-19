@@ -40,32 +40,6 @@
   width: 100%;
 }
 
-@media (min-width: 1081px) {
-  .control-surface {
-    align-items: start;
-    grid-template-columns:
-      minmax(280px, 1.25fr)
-      minmax(240px, 1fr)
-      minmax(220px, 0.82fr);
-  }
-
-  .control-surface > * {
-    min-width: 0;
-  }
-
-  .control-action-field {
-    min-width: 0;
-  }
-
-  .control-surface .toggle-row {
-    justify-content: center;
-  }
-
-  .control-surface .toggle-row {
-    min-height: 54px;
-  }
-}
-
 .tutorial-panel {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -140,7 +114,6 @@
     margin-top: 12px;
   }
 
-  .control-surface,
   .insight-surface,
   .results-grid,
   .watchlist-grid {

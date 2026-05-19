@@ -160,10 +160,12 @@ a:focus-visible {
   width: 1px;
 }
 
+.state-controls {
+  display: none;
+}
+
 .topline,
 .insight-surface,
-.control-surface,
-.stats-surface,
 .utility-bar,
 .notes-panel,
 .result-panel,
@@ -495,25 +497,11 @@ h3 {
   padding: 7px 8px;
 }
 
-.control-surface,
-.stats-surface,
 .utility-bar {
   display: grid;
   gap: 14px;
   margin-top: 16px;
   padding: 16px;
-}
-
-.control-surface {
-  align-items: start;
-  grid-template-columns:
-    minmax(280px, 1.25fr)
-    minmax(240px, 1fr)
-    minmax(220px, 0.82fr);
-}
-
-.stats-surface {
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
 }
 
 .utility-bar {
@@ -627,17 +615,6 @@ h3 {
 
 .stepper-button:last-child {
   border-radius: 0 7px 7px 0;
-}
-
-.control-action-field {
-  display: grid;
-  gap: 6px;
-  min-width: 0;
-}
-
-.control-label-spacer {
-  display: block;
-  min-height: 0.74rem;
 }
 
 .secondary-button,
@@ -1160,13 +1137,8 @@ h3 {
   }
 
   .insight-surface,
-  .control-surface,
   .utility-bar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .stats-surface {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .context-strip {
@@ -1187,14 +1159,8 @@ h3 {
 
   .topline,
   .insight-surface,
-  .control-surface,
-  .stats-surface,
   .utility-bar {
     grid-template-columns: 1fr;
-  }
-
-  .control-label-spacer {
-    display: none;
   }
 
   .brand-block {
