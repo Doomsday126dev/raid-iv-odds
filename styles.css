@@ -284,7 +284,7 @@ a:focus-visible {
   align-items: center;
   display: grid;
   gap: 18px;
-  grid-template-columns: minmax(320px, 1fr) auto minmax(210px, auto);
+  grid-template-columns: minmax(300px, 1fr) minmax(420px, 0.92fr) minmax(240px, 0.32fr);
   padding: 18px;
 }
 
@@ -413,8 +413,10 @@ h3 {
 
 .hundo-hints {
   border-left: 4px solid var(--accent);
-  min-width: 210px;
+  justify-self: start;
+  min-width: 0;
   padding: 8px 0 8px 16px;
+  width: 100%;
 }
 
 .hundo-hint-label {
