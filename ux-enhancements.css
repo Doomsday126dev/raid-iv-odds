@@ -1,9 +1,12 @@
 .settings-drawer {
+  grid-area: settings;
+  justify-self: end;
   min-width: 260px;
+  width: min(760px, 100%);
 }
 
 .settings-drawer[open] {
-  width: min(520px, calc(100vw - 32px));
+  width: min(760px, 100%);
 }
 
 .settings-summary,

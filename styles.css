@@ -284,7 +284,10 @@ a:focus-visible {
   align-items: center;
   display: grid;
   gap: 18px;
-  grid-template-columns: minmax(300px, 1fr) minmax(420px, 0.92fr) minmax(240px, 0.32fr);
+  grid-template-areas:
+    "brand hints"
+    "settings settings";
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
   padding: 18px;
 }
 
@@ -292,6 +295,7 @@ a:focus-visible {
   align-items: center;
   display: flex;
   gap: 14px;
+  grid-area: brand;
   min-width: 0;
 }
 
@@ -413,6 +417,7 @@ h3 {
 
 .hundo-hints {
   border-left: 4px solid var(--accent);
+  grid-area: hints;
   justify-self: start;
   min-width: 0;
   padding: 8px 0 8px 16px;
@@ -1322,6 +1327,10 @@ h3 {
 
 @media (max-width: 1080px) {
   .topline {
+    grid-template-areas:
+      "brand"
+      "hints"
+      "settings";
     grid-template-columns: 1fr;
   }
 
