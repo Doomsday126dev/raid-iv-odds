@@ -71,3 +71,10 @@ test("recalculates odds when the raid IV floor changes", () => {
   assert.equal(lowerFloor.total, 5);
   assert.equal(lowerFloor.good, 0);
 });
+
+test("supports custom attack defense and stamina IV floors", () => {
+  const totals = combinationTotals({ a: 5, d: 6, s: 7 }, 2);
+
+  assert.equal(totals.total, 11 * 10 * 9);
+  assert.equal(totals.good, 3 * 3 * 3);
+});

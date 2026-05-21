@@ -9,9 +9,11 @@ import {
   formatPercent,
   formatRatio,
   maxCpFor,
+  normalizeIvFloor,
   summarizeCp,
   type BaseStats,
   type CpSummary,
+  type IvFloor,
   type IvCombo,
   type WatchlistRow,
 } from "./math";
@@ -25,6 +27,7 @@ type WatchFilter = "all" | "partial" | "strong" | "guaranteed";
 type ResultTone = "good" | "mixed" | "none";
 type WeatherChoice = "normal" | "boosted";
 type PriorityKind = "skip" | "maybe" | "high" | "catch";
+type FloorMode = "preset" | "custom";
 
 type Preferences = {
   theme: ThemeChoice;
@@ -41,7 +44,8 @@ type SavedState = Partial<
     cp: number;
     manualStats: boolean;
     stats: BaseStats;
-    raidFloor: number;
+    raidFloor: IvFloor;
+    customFloor: { a: number; d: number; s: number };
     purifyBonus: number;
   }
 >;
@@ -71,6 +75,8 @@ const DEFAULT_PREFS: Preferences = {
 
 // Update this one list when you want different one-tap bosses near the search box.
 const QUICK_PICK_BOSSES = ["Mewtwo", "Rayquaza", "Kyogre", "Groudon"] as const;
+
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mwvzlypv";
 
 const TEXT = {
   en: {
@@ -117,6 +123,17 @@ const TEXT = {
     floorStandard: "Standard raid: 10/10/10",
     floorWild: "Wild/no floor: 0/0/0",
     floorCustom: "Custom",
+    customFloorHint: "Custom floor",
+    feedbackSummary: "Feedback",
+    feedbackMessageLabel: "Message",
+    feedbackEmailLabel: "Email",
+    feedbackPlaceholder: "Suggestions, bug reports, or missing Pokémon…",
+    feedbackEmailPlaceholder: "Email (optional)",
+    feedbackSubmit: "Send feedback",
+    feedbackSending: "Sending feedback...",
+    feedbackSuccess: "Thanks, feedback sent.",
+    feedbackError: "Could not send feedback. Please try again later.",
+    feedbackAdvanced: "Advanced: GitHub Issues",
     showIvSpreads: "Show IV spreads",
     watchlistFilter: "Watchlist filter",
     filterAll: "All eligible CPs",
@@ -179,7 +196,7 @@ const TEXT = {
     exactNoSpread: "Within the selected boss range, but no IV spread lands exactly on {cp}.",
     outsideRange: "Outside the selected boss catch ranges. {ranges}.",
     tryNearest: " Try {chips}",
-    floorHint: "Counts every spread from {floor}/{floor}/{floor} through 15/15/15.",
+    floorHint: "Counts every spread from {floor} through 15/15/15.",
     dataHint: "Pokémon data last updated: {date}. Seeded list: {count} bosses/forms.",
     languageChanged: "Language changed to English.",
     guaranteedChanceTitle: "Guaranteed purified hundo",
@@ -250,6 +267,17 @@ const TEXT = {
     floorStandard: "通常レイド: 10/10/10",
     floorWild: "野生/最低値なし: 0/0/0",
     floorCustom: "カスタム",
+    customFloorHint: "カスタム最低値",
+    feedbackSummary: "フィードバック",
+    feedbackMessageLabel: "内容",
+    feedbackEmailLabel: "メール",
+    feedbackPlaceholder: "提案、不具合、未収録ポケモンなど…",
+    feedbackEmailPlaceholder: "メール（任意）",
+    feedbackSubmit: "送信",
+    feedbackSending: "送信中...",
+    feedbackSuccess: "ありがとうございます。フィードバックを送信しました。",
+    feedbackError: "送信できませんでした。時間をおいてもう一度お試しください。",
+    feedbackAdvanced: "上級者向け: GitHub Issues",
     showIvSpreads: "個体値候補を表示",
     watchlistFilter: "ウォッチリスト絞り込み",
     filterAll: "対象CPすべて",
@@ -310,7 +338,7 @@ const TEXT = {
     exactNoSpread: "選択中ボスのCP範囲内ですが、CP {cp} ぴったりの候補はありません。",
     outsideRange: "選択中ボスの捕獲CP範囲外です。{ranges}。",
     tryNearest: " 近い候補: {chips}",
-    floorHint: "{floor}/{floor}/{floor}から15/15/15までの全候補を数えます。",
+    floorHint: "{floor}から15/15/15までの全候補を数えます。",
     dataHint: "ポケモンデータ最終更新: {date}。収録ボス/フォーム: {count}件。",
     languageChanged: "表示言語を日本語に切り替えました。",
     guaranteedChanceTitle: "リトレーン後100%確定",
@@ -351,6 +379,9 @@ const elements = {
   defInput: byId<HTMLInputElement>("defInput"),
   staInput: byId<HTMLInputElement>("staInput"),
   floorInput: byId<HTMLSelectElement>("floorInput"),
+  floorAtkInput: byId<HTMLInputElement>("floorAtkInput"),
+  floorDefInput: byId<HTMLInputElement>("floorDefInput"),
+  floorStaInput: byId<HTMLInputElement>("floorStaInput"),
   floorHint: byId<HTMLElement>("floorHint"),
   showDetails: byId<HTMLInputElement>("showDetails"),
   watchFilter: byId<HTMLSelectElement>("watchFilter"),
@@ -363,6 +394,10 @@ const elements = {
   dataHint: byId<HTMLElement>("dataHint"),
   languageStatus: byId<HTMLElement>("languageStatus"),
   quickPickButtons: byId<HTMLElement>("quickPickButtons"),
+  feedbackForm: byId<HTMLFormElement>("feedbackForm"),
+  feedbackMessage: byId<HTMLTextAreaElement>("feedbackMessage"),
+  feedbackEmail: byId<HTMLInputElement>("feedbackEmail"),
+  feedbackStatus: byId<HTMLElement>("feedbackStatus"),
   themeButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-theme-choice]")),
   languageButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-language-choice]")),
   accentButtons: Array.from(document.querySelectorAll<HTMLButtonElement>("[data-accent-choice]")),
@@ -375,13 +410,13 @@ const elements = {
 let prefs: Preferences = { ...DEFAULT_PREFS };
 let deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
 let watchlistSignature = "";
+let lastPresetFloor = "6";
 
 function init(): void {
   renderPokemonOptions();
   restoreState();
   applyAppearance();
   bindEvents();
-  registerServiceWorker();
   render();
 }
 
@@ -444,7 +479,10 @@ function restoreState(): void {
     syncStatsToSelected();
   }
 
-  elements.floorInput.value = String(clampInt(saved.raidFloor, 0, MAX_IV, 6));
+  const savedFloor = normalizeSavedFloor(saved.raidFloor, saved.customFloor);
+  elements.floorInput.value = savedFloor.mode === "custom" ? "custom" : String(savedFloor.floor.a);
+  if (savedFloor.mode === "preset") lastPresetFloor = elements.floorInput.value;
+  setCustomFloorInputs(savedFloor.custom);
   elements.cpInput.value =
     Number.isFinite(Number(saved.cp)) && Number(saved.cp) >= MIN_CP
       ? String(clampInt(saved.cp, MIN_CP, 99999, MIN_CP))
@@ -486,6 +524,9 @@ function bindEvents(): void {
     elements.defInput,
     elements.staInput,
     elements.floorInput,
+    elements.floorAtkInput,
+    elements.floorDefInput,
+    elements.floorStaInput,
   ].forEach((input) =>
     input.addEventListener("input", () => {
       if (input === elements.flowCpInput) {
@@ -498,9 +539,16 @@ function bindEvents(): void {
         elements.cpInput.value = elements.flowCpInput.value;
       }
       if (input === elements.cpInput) elements.flowCpInput.value = elements.cpInput.value;
+      if (input === elements.floorInput) handleFloorModeChange();
+      if (isCustomFloorInput(input)) normalizeCustomFloorInput(input);
       render();
     }),
   );
+
+  elements.floorInput.addEventListener("change", () => {
+    handleFloorModeChange();
+    render();
+  });
 
   elements.flowCpInput.addEventListener("blur", () => {
     if (!elements.flowCpInput.value) {
@@ -597,6 +645,7 @@ function bindEvents(): void {
   elements.contextStrip.addEventListener("input", handleSummaryEdit);
   elements.contextStrip.addEventListener("change", handleSummaryEdit);
   elements.contextStrip.addEventListener("keydown", handleSummaryKeydown);
+  elements.feedbackForm.addEventListener("submit", handleFeedbackSubmit);
 
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
@@ -657,7 +706,19 @@ function handleSummaryEdit(event: Event): void {
     elements.cpInput.value = event.target.value;
     elements.flowCpInput.value = event.target.value;
   }
-  if (control === "floor") elements.floorInput.value = event.target.value;
+  if (control === "floor") {
+    elements.floorInput.value = event.target.value;
+    handleFloorModeChange();
+    render();
+    return;
+  }
+  if (control === "floorAtk" || control === "floorDef" || control === "floorSta") {
+    if (!(event.target instanceof HTMLInputElement)) return;
+    normalizeCustomFloorInput(event.target);
+    if (control === "floorAtk") elements.floorAtkInput.value = event.target.value;
+    if (control === "floorDef") elements.floorDefInput.value = event.target.value;
+    if (control === "floorSta") elements.floorStaInput.value = event.target.value;
+  }
   if (control === "manual" && event.target instanceof HTMLInputElement) {
     elements.manualStats.checked = event.target.checked;
     if (!elements.manualStats.checked) syncStatsToSelected();
@@ -714,16 +775,83 @@ function readBaseStats(): BaseStats {
   };
 }
 
+function readCustomFloor(): { a: number; d: number; s: number } {
+  return {
+    a: clampInt(elements.floorAtkInput.value, 0, MAX_IV, 6),
+    d: clampInt(elements.floorDefInput.value, 0, MAX_IV, 6),
+    s: clampInt(elements.floorStaInput.value, 0, MAX_IV, 6),
+  };
+}
+
+function readRaidFloor(): IvFloor {
+  if (elements.floorInput.value === "custom") return readCustomFloor();
+  return clampInt(elements.floorInput.value, 0, MAX_IV, 6);
+}
+
+function floorMode(): FloorMode {
+  return elements.floorInput.value === "custom" ? "custom" : "preset";
+}
+
+function setCustomFloorInputs(floor: { a: number; d: number; s: number }): void {
+  elements.floorAtkInput.value = String(clampInt(floor.a, 0, MAX_IV, 6));
+  elements.floorDefInput.value = String(clampInt(floor.d, 0, MAX_IV, 6));
+  elements.floorStaInput.value = String(clampInt(floor.s, 0, MAX_IV, 6));
+}
+
+function handleFloorModeChange(): void {
+  if (elements.floorInput.value !== "custom") {
+    lastPresetFloor = elements.floorInput.value;
+  } else if (!elements.floorAtkInput.value || !elements.floorDefInput.value || !elements.floorStaInput.value) {
+    const preset = clampInt(lastPresetFloor, 0, MAX_IV, 6);
+    setCustomFloorInputs({ a: preset, d: preset, s: preset });
+  }
+}
+
+function isCustomFloorInput(input: Element): input is HTMLInputElement {
+  return input === elements.floorAtkInput || input === elements.floorDefInput || input === elements.floorStaInput;
+}
+
+function normalizeCustomFloorInput(input: HTMLInputElement): void {
+  input.value = String(clampInt(input.value, 0, MAX_IV, 0));
+}
+
+function normalizeSavedFloor(
+  raidFloor: unknown,
+  customFloor: unknown,
+): { mode: FloorMode; floor: { a: number; d: number; s: number }; custom: { a: number; d: number; s: number } } {
+  const custom = typeof customFloor === "object" && customFloor
+    ? normalizeIvFloor(customFloor as IvFloor)
+    : normalizeIvFloor(raidFloor && typeof raidFloor === "object" ? raidFloor as IvFloor : 6);
+
+  if (raidFloor && typeof raidFloor === "object") {
+    return { mode: "custom", floor: custom, custom };
+  }
+
+  const preset = clampInt(raidFloor, 0, MAX_IV, 6);
+  const isPreset = preset === 0 || preset === 6 || preset === 10;
+  const floor = isPreset ? normalizeIvFloor(preset) : normalizeIvFloor({ a: preset, d: preset, s: preset });
+  return {
+    mode: isPreset ? "preset" : "custom",
+    floor,
+    custom: isPreset ? custom : floor,
+  };
+}
+
+function formatFloor(floor: IvFloor): string {
+  const normalized = normalizeIvFloor(floor);
+  return `${normalized.a}/${normalized.d}/${normalized.s}`;
+}
+
 function readSettings(): {
   baseStats: BaseStats;
   cp: number;
-  raidFloor: number;
+  raidFloor: IvFloor;
   purifyBonus: number;
 } {
   return {
     baseStats: readBaseStats(),
     cp: clampInt(elements.cpInput.value, MIN_CP, 99999, MIN_CP),
-    raidFloor: clampInt(elements.floorInput.value, 0, MAX_IV, 6),
+    raidFloor: readRaidFloor(),
     purifyBonus: 2,
   };
 }
@@ -756,13 +884,13 @@ function render(options: RenderOptions = {}): void {
 
 function watchlistRenderSignature(settings: {
   baseStats: BaseStats;
-  raidFloor: number;
+  raidFloor: IvFloor;
   purifyBonus: number;
 }): string {
   return [
     prefs.language,
     prefs.watchFilter,
-    settings.raidFloor,
+    formatFloor(settings.raidFloor),
     settings.purifyBonus,
     settings.baseStats.atk,
     settings.baseStats.def,
@@ -793,9 +921,6 @@ function renderStaticText(): void {
     element.setAttribute("placeholder", copy(key));
   });
 
-  document.querySelectorAll<HTMLOptionElement>("[data-floor-custom]").forEach((option) => {
-    option.textContent = `${copy("floorCustom")}: ${option.value}/${option.value}/${option.value}`;
-  });
 }
 
 function renderHundoHints(baseStats: BaseStats): void {
@@ -814,7 +939,7 @@ function renderHundoHints(baseStats: BaseStats): void {
 
 function renderCpValidation(
   summaries: CpSummary[],
-  settings: { baseStats: BaseStats; cp: number; raidFloor: number; purifyBonus: number },
+  settings: { baseStats: BaseStats; cp: number; raidFloor: IvFloor; purifyBonus: number },
 ): void {
   const possible = summaries.filter((summary) => summary.total > 0);
   const inRange = summaries.filter((summary) => settings.cp >= summary.minCp && settings.cp <= summary.maxCp);
@@ -886,13 +1011,13 @@ function renderDataHint(): void {
   });
 }
 
-function renderAssumptionHints(settings: { raidFloor: number }): void {
-  elements.floorHint.textContent = formatCopy("floorHint", { floor: settings.raidFloor });
+function renderAssumptionHints(settings: { raidFloor: IvFloor }): void {
+  elements.floorHint.textContent = formatCopy("floorHint", { floor: formatFloor(settings.raidFloor) });
 }
 
 function renderPrimaryInsight(
   summaries: CpSummary[],
-  settings: { baseStats: BaseStats; cp: number; raidFloor: number; purifyBonus: number },
+  settings: { baseStats: BaseStats; cp: number; raidFloor: IvFloor; purifyBonus: number },
   renderContext = true,
 ): void {
   const summary = selectedWeatherSummary(summaries);
@@ -942,7 +1067,8 @@ function renderPrimaryInsight(
   elements.contextStrip.innerHTML = `
     <div class="context-card context-edit">
       <label class="context-label" for="summaryFloorControl">${copy("ivFloor")}</label>
-      <select id="summaryFloorControl" class="summary-value" data-summary-control="floor">${renderIvFloorOptions(settings.raidFloor)}</select>
+      <select id="summaryFloorControl" class="summary-value" data-summary-control="floor">${renderIvFloorOptions()}</select>
+      ${renderCustomFloorControls()}
     </div>
     <div class="context-card context-edit">
       <span class="context-label">${copy("baseStats")}</span>
@@ -1058,16 +1184,40 @@ function renderResultPanel(summary: CpSummary): string {
   `;
 }
 
-function renderIvFloorOptions(selectedFloor: number): string {
-  return Array.from({ length: MAX_IV + 1 }, (_value, floor) => {
-    const label =
-      floor === 6
-        ? copy("floorShadow")
-        : floor === 10
-          ? copy("floorStandard")
-          : `${copy("floorCustom")}: ${floor}/${floor}/${floor}`;
-    return `<option value="${floor}" ${floor === selectedFloor ? "selected" : ""}>${escapeHtml(label)}</option>`;
-  }).join("");
+function renderIvFloorOptions(): string {
+  const selected = elements.floorInput.value;
+  return [
+    { value: "6", label: copy("floorShadow") },
+    { value: "10", label: copy("floorStandard") },
+    { value: "0", label: copy("floorWild") },
+    { value: "custom", label: copy("floorCustom") },
+  ]
+    .map(
+      (option) =>
+        `<option value="${option.value}" ${option.value === selected ? "selected" : ""}>${escapeHtml(option.label)}</option>`,
+    )
+    .join("");
+}
+
+function renderCustomFloorControls(): string {
+  const floor = readCustomFloor();
+  return `
+    <div class="custom-floor-grid" ${floorMode() === "custom" ? "" : "hidden"}>
+      <span>${copy("customFloorHint")}</span>
+      ${renderCustomFloorInput("floorAtk", copy("attackShort"), floor.a)}
+      ${renderCustomFloorInput("floorDef", copy("defenseShort"), floor.d)}
+      ${renderCustomFloorInput("floorSta", copy("staminaShort"), floor.s)}
+    </div>
+  `;
+}
+
+function renderCustomFloorInput(control: string, label: string, value: number): string {
+  return `
+    <label>
+      <span>${label}</span>
+      <input data-summary-control="${control}" inputmode="numeric" min="0" max="${MAX_IV}" type="number" value="${value}" />
+    </label>
+  `;
 }
 
 function renderSummaryStats(baseStats: BaseStats): string {
@@ -1275,13 +1425,14 @@ function updateControlState(): void {
   elements.watchFilter.value = prefs.watchFilter;
 }
 
-function saveState(settings: { baseStats: BaseStats; cp: number; raidFloor: number; purifyBonus: number }): void {
+function saveState(settings: { baseStats: BaseStats; cp: number; raidFloor: IvFloor; purifyBonus: number }): void {
   const state: SavedState = {
     selectedName: elements.pokemonSelect.value,
     cp: settings.cp,
     manualStats: elements.manualStats.checked,
     stats: settings.baseStats,
     raidFloor: settings.raidFloor,
+    customFloor: readCustomFloor(),
     purifyBonus: settings.purifyBonus,
     theme: prefs.theme,
     accent: prefs.accent,
@@ -1323,17 +1474,23 @@ function loadStateFromUrl(): SavedState {
   }
 
   if (cp) state.cp = clampInt(cp, MIN_CP, 99999, MIN_CP);
-  if (floor) state.raidFloor = clampInt(floor, 0, MAX_IV, 6);
+  if (floor) state.raidFloor = parseFloorParam(floor);
   if (weather === "boosted" || weather === "normal") state.weather = weather;
   return state;
 }
 
-function syncUrl(settings: { cp: number; raidFloor: number }): void {
+function parseFloorParam(value: string): IvFloor {
+  const parts = value.split(/[/-]/).map((part) => clampInt(part, 0, MAX_IV, 6));
+  if (parts.length >= 3) return { a: parts[0], d: parts[1], s: parts[2] };
+  return clampInt(value, 0, MAX_IV, 6);
+}
+
+function syncUrl(settings: { cp: number; raidFloor: IvFloor }): void {
   const params = new URLSearchParams();
   params.set("pokemon", selectedPokemon().name);
   params.set("cp", String(settings.cp));
   if (prefs.weather === "boosted") params.set("weather", "boosted");
-  if (settings.raidFloor !== 6) params.set("floor", String(settings.raidFloor));
+  if (formatFloor(settings.raidFloor) !== "6/6/6") params.set("floor", formatFloor(settings.raidFloor));
 
   const nextUrl = `${window.location.pathname}?${params.toString()}`;
   if (`${window.location.pathname}${window.location.search}` !== nextUrl) {
@@ -1341,11 +1498,39 @@ function syncUrl(settings: { cp: number; raidFloor: number }): void {
   }
 }
 
-function registerServiceWorker(): void {
-  const isProductionBuild = typeof import.meta.env === "object" && Boolean(import.meta.env.PROD);
-  if (!isProductionBuild || !("serviceWorker" in navigator)) return;
-  const baseUrl = typeof import.meta.env === "object" ? import.meta.env.BASE_URL : "/";
-  navigator.serviceWorker.register(`${baseUrl}sw.js`, { scope: baseUrl }).catch(() => {});
+async function handleFeedbackSubmit(event: SubmitEvent): Promise<void> {
+  event.preventDefault();
+  const message = elements.feedbackMessage.value.trim();
+  if (!message) {
+    elements.feedbackStatus.textContent = copy("feedbackError");
+    return;
+  }
+
+  elements.feedbackStatus.textContent = copy("feedbackSending");
+
+  try {
+    const response = await fetch(FORMSPREE_ENDPOINT, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message,
+        email: elements.feedbackEmail.value.trim() || undefined,
+        page: window.location.href,
+        pokemon: selectedPokemon().name,
+        cp: elements.cpInput.value,
+      }),
+    });
+
+    if (!response.ok) throw new Error("Feedback request failed");
+    elements.feedbackMessage.value = "";
+    elements.feedbackEmail.value = "";
+    elements.feedbackStatus.textContent = copy("feedbackSuccess");
+  } catch {
+    elements.feedbackStatus.textContent = copy("feedbackError");
+  }
 }
 
 function copy(key: TextKey): string {

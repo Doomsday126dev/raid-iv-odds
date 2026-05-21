@@ -6,7 +6,7 @@
     <title>Shadow Raid Purified Hundo Odds</title>
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; script-src 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; img-src 'self' data:; style-src 'self' 'unsafe-inline'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; script-src 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com https://formspree.io; img-src 'self' data:; style-src 'self' 'unsafe-inline'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests"
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <meta name="robots" content="index,follow" />
@@ -17,7 +17,7 @@
     <meta name="theme-color" content="#0a7775" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Raid IV Odds" />
-    <link rel="manifest" href="/raid-iv-odds/manifest.webmanifest" />
+    <link rel="manifest" href="/raid-iv-odds/manifest.json" />
     <link rel="icon" href="/raid-iv-odds/assets/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" sizes="180x180" href="/raid-iv-odds/assets/apple-touch-icon.png" />
     <script type="module" src="/src/main.ts"></script>
@@ -118,20 +118,11 @@
           <option value="6" data-i18n="floorShadow">Shadow raid: 6/6/6</option>
           <option value="10" data-i18n="floorStandard">Standard raid: 10/10/10</option>
           <option value="0" data-i18n="floorWild">Wild/no floor: 0/0/0</option>
-          <option value="1" data-floor-custom>Custom: 1/1/1</option>
-          <option value="2" data-floor-custom>Custom: 2/2/2</option>
-          <option value="3" data-floor-custom>Custom: 3/3/3</option>
-          <option value="4" data-floor-custom>Custom: 4/4/4</option>
-          <option value="5" data-floor-custom>Custom: 5/5/5</option>
-          <option value="7" data-floor-custom>Custom: 7/7/7</option>
-          <option value="8" data-floor-custom>Custom: 8/8/8</option>
-          <option value="9" data-floor-custom>Custom: 9/9/9</option>
-          <option value="11" data-floor-custom>Custom: 11/11/11</option>
-          <option value="12" data-floor-custom>Custom: 12/12/12</option>
-          <option value="13" data-floor-custom>Custom: 13/13/13</option>
-          <option value="14" data-floor-custom>Custom: 14/14/14</option>
-          <option value="15" data-floor-custom>Custom: 15/15/15</option>
+          <option value="custom" data-i18n="floorCustom">Custom</option>
         </select>
+        <input id="floorAtkInput" min="0" max="15" type="number" />
+        <input id="floorDefInput" min="0" max="15" type="number" />
+        <input id="floorStaInput" min="0" max="15" type="number" />
         <span id="floorHint"></span>
       </div>
 
@@ -174,6 +165,45 @@
         </div>
       </section>
 
+      <section class="feedback-panel">
+        <details>
+          <summary data-i18n="feedbackSummary">Feedback</summary>
+          <form id="feedbackForm" class="feedback-form">
+            <label>
+              <span data-i18n="feedbackMessageLabel">Message</span>
+              <textarea
+                id="feedbackMessage"
+                name="message"
+                rows="4"
+                required
+                data-i18n-placeholder="feedbackPlaceholder"
+                placeholder="Suggestions, bug reports, or missing Pokémon…"
+              ></textarea>
+            </label>
+            <label>
+              <span data-i18n="feedbackEmailLabel">Email</span>
+              <input
+                id="feedbackEmail"
+                name="email"
+                type="email"
+                data-i18n-placeholder="feedbackEmailPlaceholder"
+                placeholder="Email (optional)"
+              />
+            </label>
+            <button class="secondary-button" type="submit" data-i18n="feedbackSubmit">Send feedback</button>
+            <p class="feedback-status" id="feedbackStatus" role="status" aria-live="polite"></p>
+          </form>
+          <p class="feedback-advanced">
+            <a
+              href="https://github.com/doomsday126dev/raid-iv-odds/issues/new?template=feedback.yml"
+              rel="noopener noreferrer"
+              target="_blank"
+              data-i18n="feedbackAdvanced"
+            >Advanced: GitHub Issues</a>
+          </p>
+        </details>
+      </section>
+
       <footer class="legal-footer">
         <p data-i18n="legalDisclaimer">
           Unofficial fan-made calculator. Not affiliated with, sponsored by, endorsed by, or approved by
@@ -186,15 +216,10 @@
         </p>
         <div class="footer-links">
           <a href="/raid-iv-odds/privacy.html" data-i18n="privacyLink">Privacy</a>
-          <a
-            href="https://github.com/doomsday126dev/raid-iv-odds/issues/new?template=feedback.yml"
-            rel="noopener noreferrer"
-            target="_blank"
-            data-i18n="feedbackLink"
-          >Feedback</a>
         </div>
       </footer>
     </main>
+    <script type="module" src="/register-sw.js"></script>
     <!-- Cloudflare Web Analytics -->
     <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"4fe630b31803492095d8b9f9d2487143","spa":false}'></script>
     <!-- End Cloudflare Web Analytics -->

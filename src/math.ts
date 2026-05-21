@@ -4,6 +4,12 @@ export type BaseStats = {
   sta: number;
 };
 
+export type IvFloor = number | {
+  a: number;
+  d: number;
+  s: number;
+};
+
 export type RaidLevel = {
   key: "normal" | "boosted";
   label: string;
@@ -100,16 +106,38 @@ export function purifiedThreshold(purifyBonus: number): number {
   return Math.max(0, MAX_IV - Math.max(0, Number(purifyBonus)));
 }
 
+export function normalizeIvFloor(raidFloor: IvFloor): { a: number; d: number; s: number } {
+  if (typeof raidFloor === "object" && raidFloor) {
+    return {
+      a: clampInt(raidFloor.a, 0, MAX_IV, 6),
+      d: clampInt(raidFloor.d, 0, MAX_IV, 6),
+      s: clampInt(raidFloor.s, 0, MAX_IV, 6),
+    };
+  }
+
+  const floor = clampInt(raidFloor, 0, MAX_IV, 6);
+  return { a: floor, d: floor, s: floor };
+}
+
 export function combinationTotals(
-  raidFloor: number,
+  raidFloor: IvFloor,
   purifyBonus: number,
 ): { total: number; good: number; bad: number; odds: number } {
-  const floor = clampInt(raidFloor, 0, MAX_IV, 6);
+  const floor = normalizeIvFloor(raidFloor);
   const bonus = clampInt(purifyBonus, 0, MAX_IV, 2);
-  const totalOptions = MAX_IV - floor + 1;
-  const goodOptions = Math.max(0, MAX_IV - Math.max(floor, purifiedThreshold(bonus)) + 1);
-  const total = totalOptions ** 3;
-  const good = goodOptions ** 3;
+  const threshold = purifiedThreshold(bonus);
+  const totalOptions = {
+    a: MAX_IV - floor.a + 1,
+    d: MAX_IV - floor.d + 1,
+    s: MAX_IV - floor.s + 1,
+  };
+  const goodOptions = {
+    a: Math.max(0, MAX_IV - Math.max(floor.a, threshold) + 1),
+    d: Math.max(0, MAX_IV - Math.max(floor.d, threshold) + 1),
+    s: Math.max(0, MAX_IV - Math.max(floor.s, threshold) + 1),
+  };
+  const total = totalOptions.a * totalOptions.d * totalOptions.s;
+  const good = goodOptions.a * goodOptions.d * goodOptions.s;
 
   return {
     total,
@@ -122,16 +150,16 @@ export function combinationTotals(
 export function enumerateCpBuckets(
   baseStats: BaseStats,
   raidLevel: RaidLevel,
-  raidFloor: number,
+  raidFloor: IvFloor,
   purifyBonus: number,
 ): Map<number, IvCombo[]> {
-  const floor = clampInt(raidFloor, 0, MAX_IV, 6);
+  const floor = normalizeIvFloor(raidFloor);
   const bonus = clampInt(purifyBonus, 0, MAX_IV, 2);
   const buckets = new Map<number, IvCombo[]>();
 
-  for (let a = floor; a <= MAX_IV; a += 1) {
-    for (let d = floor; d <= MAX_IV; d += 1) {
-      for (let s = floor; s <= MAX_IV; s += 1) {
+  for (let a = floor.a; a <= MAX_IV; a += 1) {
+    for (let d = floor.d; d <= MAX_IV; d += 1) {
+      for (let s = floor.s; s <= MAX_IV; s += 1) {
         const cp = cpFor(baseStats, a, d, s, raidLevel.cpm);
         const combo: IvCombo = {
           a,
@@ -160,7 +188,7 @@ export function summarizeCp(
   baseStats: BaseStats,
   raidLevel: RaidLevel,
   cp: number,
-  raidFloor: number,
+  raidFloor: IvFloor,
   purifyBonus: number,
 ): CpSummary {
   const buckets = enumerateCpBuckets(baseStats, raidLevel, raidFloor, purifyBonus);
