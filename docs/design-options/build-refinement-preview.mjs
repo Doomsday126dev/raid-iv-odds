@@ -6,6 +6,9 @@ const out = new URL("./refinement/", import.meta.url);
 const { mkdirSync } = await import("node:fs");
 mkdirSync(out, { recursive: true });
 const css = readFileSync(new URL("../../src/app.css", import.meta.url), "utf8");
+const variants = process.argv.includes("--ring-only")
+  ? ["ring"]
+  : ["before", "dotted", "label", "ring"];
 const refinedCss = `
 /* Proposed refinement, limited to this static preview. */
 .reference-table .species-reference,.reference-table .cp-reference{text-decoration:none}
@@ -22,6 +25,17 @@ const refinedCss = `
 .marker-slot{display:flex;align-items:center;justify-content:center;width:1.1rem;height:1.1rem;color:var(--accent)}
 [data-preview=dotted] .reference-table .cp-reference{grid-template-columns:5ch;gap:0}
 [data-preview=dotted] .cp-reference[data-ambiguous=true] .cp-value{text-decoration:underline dotted var(--accent);text-decoration-thickness:1px;text-underline-offset:5px}
+[data-preview=ring] .reference-table .cp-reference{grid-template-columns:5ch;gap:0;min-height:2.6rem;padding:.45rem .7rem}
+[data-preview=ring] .cp-number{display:inline-block;position:relative}
+[data-preview=ring] .cp-reference[data-ambiguous=true] .cp-number::after{content:"";position:absolute;inset:-.25rem -.45rem;border:1px dotted var(--accent);border-radius:50%;opacity:.78;pointer-events:none}
+.ring-sizing{border-top:1px solid var(--line);padding:1rem 0;margin-top:1rem}
+.ring-sizing h3{font-size:.8rem;margin:.2rem 0}
+.ring-sizing p{font-size:.72rem;color:var(--muted);margin:.3rem 0 .8rem}
+.ring-sizing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+.ring-sizing-pair{display:flex;flex-direction:column;align-items:center;gap:.5rem;border-left:1px solid var(--line)}
+.ring-sizing-pair:first-child{border:0}
+.ring-sizing .cp-reference{display:inline-grid;grid-template-columns:5ch;gap:0;min-height:2.6rem;padding:.45rem .7rem;font-size:1rem}
+.ring-sizing small{font-size:.65rem;color:var(--muted)}
 [data-preview=label] .reference-table .cp-reference{grid-template-columns:5ch 5rem}
 [data-preview=label] .ambiguity-label{width:5rem;justify-content:flex-start;font-size:.65rem;line-height:1.3;color:var(--muted);white-space:nowrap;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 
@@ -43,7 +57,7 @@ const refinedCss = `
 .reference-assumptions summary{cursor:pointer;min-height:1.6rem;display:list-item;font-weight:500}
 .reference-assumptions p{font-size:.75rem;line-height:1.5;margin:.5rem 0}
 #use-reference-cp{width:100%;min-height:38px;padding:.4rem .65rem;font-size:.8rem;margin-top:.25rem}
-@media(max-width:640px){.reference-table th,.reference-table td{padding:.35rem .25rem}.reference-table .cp-reference{grid-template-columns:4.5ch 1rem;gap:.15rem}.reference-table thead tr:nth-child(2) th{padding-right:1.4rem}.reference-table .species-reference{font-size:.8rem}[data-preview=dotted] .reference-table .cp-reference{grid-template-columns:4.5ch}[data-preview=label] .reference-table th:first-child{width:34%}[data-preview=label] .reference-table .cp-reference{grid-template-columns:1fr;grid-template-rows:1.2rem .9rem;min-width:4.5rem;width:100%;font-size:.95rem;padding:.2rem 0}[data-preview=label] .ambiguity-label{width:auto;justify-content:flex-end;font-size:.7rem;height:.9rem}.reference-ivs th,.reference-ivs td{padding:.48rem .3rem}}
+@media(max-width:640px){.reference-table th,.reference-table td{padding:.35rem .25rem}.reference-table .cp-reference{grid-template-columns:4.5ch 1rem;gap:.15rem}.reference-table thead tr:nth-child(2) th{padding-right:1.4rem}.reference-table .species-reference{font-size:.8rem}[data-preview=dotted] .reference-table .cp-reference{grid-template-columns:4.5ch}[data-preview=ring] .reference-table .cp-reference{grid-template-columns:4.5ch;gap:0;padding:.45rem .65rem}[data-preview=label] .reference-table th:first-child{width:34%}[data-preview=label] .reference-table .cp-reference{grid-template-columns:1fr;grid-template-rows:1.2rem .9rem;min-width:4.5rem;width:100%;font-size:.95rem;padding:.2rem 0}[data-preview=label] .ambiguity-label{width:auto;justify-content:flex-end;font-size:.7rem;height:.9rem}.reference-ivs th,.reference-ivs td{padding:.48rem .3rem}}
 `;
 const browser = await chromium.launch({ channel: "chrome" });
 const context = await browser.newContext();
@@ -104,7 +118,7 @@ for (const lang of ["en", "ja"])
         )
         .click();
     }
-    for (const variant of ["before", "dotted", "label"]) {
+    for (const variant of variants) {
       const html = await page.evaluate(
         ({ variant, lang, theme }) => {
           const clone = document.documentElement.cloneNode(true);
@@ -124,12 +138,16 @@ for (const lang of ["en", "ja"])
             clone.dataset.preview = variant;
             clone.querySelector(".reference-legend").textContent =
               lang === "en"
-                ? variant === "dotted"
-                  ? "Dotted CP: multiple IV combinations. Tap for details."
-                  : "Multiple IVs: this CP has more than one IV combination. Tap for details."
-                : variant === "dotted"
-                  ? "点線のCP：複数の個体値が一致。選ぶと詳細を表示。"
-                  : "複数個体値：同じCPに複数の組み合わせ。選ぶと詳細を表示。";
+                ? variant === "ring"
+                  ? "Dotted ring: multiple IV combinations. Tap for details."
+                  : variant === "dotted"
+                    ? "Dotted CP: multiple IV combinations. Tap for details."
+                    : "Multiple IVs: this CP has more than one IV combination. Tap for details."
+                : variant === "ring"
+                  ? "点線の囲み：複数の個体値が一致。選ぶと詳細を表示。"
+                  : variant === "dotted"
+                    ? "点線のCP：複数の個体値が一致。選ぶと詳細を表示。"
+                    : "複数個体値：同じCPに複数の組み合わせ。選ぶと詳細を表示。";
             clone.querySelectorAll(".cp-reference").forEach((b) => {
               const number = Array.from(b.childNodes)
                 .filter((n) => n.nodeType === 3)
@@ -140,8 +158,14 @@ for (const lang of ["en", "ja"])
               b.dataset.ambiguous = String(ambiguous);
               const hint =
                 b.querySelector(".collision-explanation")?.outerHTML ?? "";
-              b.innerHTML = `<span class="cp-value">${number}</span>${variant === "label" ? `<span class="marker-slot ambiguity-label" aria-hidden="true">${ambiguous ? (lang === "en" ? "Multiple IVs" : "複数個体値") : ""}</span>` : ""}${hint}`;
+              b.innerHTML = `<span class="cp-value">${variant === "ring" ? `<span class="cp-number">${number}</span>` : number}</span>${variant === "label" ? `<span class="marker-slot ambiguity-label" aria-hidden="true">${ambiguous ? (lang === "en" ? "Multiple IVs" : "複数個体値") : ""}</span>` : ""}${hint}`;
             });
+            if (variant === "ring") {
+              const sizing = document.createElement("section");
+              sizing.className = "ring-sizing";
+              sizing.innerHTML = `<h3>${lang === "en" ? "Ring sizing study" : "囲みのサイズ確認"}</h3><p>${lang === "en" ? "Visual sizing only. The 4-digit ring is a layout sample, not a collision claim." : "見た目のサイズ確認です。4桁の囲みはレイアウト見本で、CPの一致を示すものではありません。"}</p><div class="ring-sizing-grid">${["61", "102", "2387"].map((value) => `<div class="ring-sizing-pair"><small>${lang === "en" ? "Marked / plain" : "囲みあり・なし"}</small>${[true, false].map((marked) => `<span class="cp-reference" data-ambiguous="${marked}"><span class="cp-value"><span class="cp-number">${value}</span></span></span>`).join("")}</div>`).join("")}</div>`;
+              clone.querySelector(".reference-table").after(sizing);
+            }
             const content = clone.querySelector("#reference-dialog-content");
             if (content.children.length) {
               content.children[1].textContent =
@@ -171,7 +195,7 @@ for (const lang of ["en", "ja"])
         },
         { variant, lang, theme },
       );
-      const script = `<script>const d=document.querySelector('dialog');if(d?.open){d.close();d.showModal();}document.querySelector('#reference-dialog-close').onclick=()=>d.close();document.querySelectorAll('[data-ref-mode]').forEach(b=>b.onclick=()=>{document.querySelector('.reference-table').dataset.mode=b.dataset.refMode;document.querySelectorAll('[data-ref-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});document.querySelectorAll('.cp-reference[data-ambiguous=true]').forEach(b=>b.onclick=()=>{document.querySelector('#reference-dialog-title').textContent=b.closest('tr').querySelector('.species-reference').textContent+' · CP '+b.querySelector('.cp-value').textContent;document.querySelector('#reference-dialog-content').textContent=b.querySelector('.collision-explanation').textContent;d.showModal();});</script>`;
+      const script = `<script>const d=document.querySelector('dialog');if(d?.open){d.close();d.showModal();}document.querySelector('#reference-dialog-close').onclick=()=>d.close();document.querySelectorAll('[data-ref-mode]').forEach(b=>b.onclick=()=>{document.querySelector('.reference-table').dataset.mode=b.dataset.refMode;document.querySelectorAll('[data-ref-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});document.querySelectorAll('.reference-table .cp-reference[data-ambiguous=true]').forEach(b=>b.onclick=()=>{document.querySelector('#reference-dialog-title').textContent=b.closest('tr').querySelector('.species-reference').textContent+' · CP '+b.querySelector('.cp-value').textContent;document.querySelector('#reference-dialog-content').textContent=b.querySelector('.collision-explanation').textContent;d.showModal();});</script>`;
       const hash = createHash("sha256")
         .update(script.slice(8, -9))
         .digest("base64");

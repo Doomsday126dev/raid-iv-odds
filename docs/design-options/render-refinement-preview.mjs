@@ -2,6 +2,9 @@ import { chromium, webkit } from "playwright";
 import { expect } from "@playwright/test";
 import { fileURLToPath } from "node:url";
 import { writeFileSync } from "node:fs";
+const variants = process.argv.includes("--ring-only")
+  ? ["ring"]
+  : ["before", "dotted", "label", "ring"];
 const root = new URL("./refinement/", import.meta.url),
   reports = [];
 for (const engine of ["chrome", "webkit"]) {
@@ -11,7 +14,7 @@ for (const engine of ["chrome", "webkit"]) {
   const page = await browser.newPage({ hasTouch: true });
   for (const lang of ["en", "ja"])
     for (const mode of ["reference", "modal"])
-      for (const variant of ["before", "dotted", "label"]) {
+      for (const variant of variants) {
         const theme = mode === "modal" ? "dark" : "light",
           file = `${variant}-${mode}-${lang}-${theme}`;
         await page.setViewportSize(
@@ -70,6 +73,36 @@ for (const engine of ["chrome", "webkit"]) {
             await page.keyboard.press("Escape");
           }
         }
+        if (variant === "ring" && mode === "reference") {
+          for (const group of ["rocket", "raid"])
+            for (const boosted of ["false", "true"]) {
+              const edges = await page
+                .locator(
+                  `[data-cp-group=${group}][data-cp-boosted=${boosted}] .cp-number`,
+                )
+                .evaluateAll((els) =>
+                  els.map((e) => e.getBoundingClientRect().right),
+                );
+              expect(Math.max(...edges) - Math.min(...edges)).toBeLessThan(0.2);
+            }
+          await expect(
+            page.locator(
+              "[data-cp-species=MEWTWO][data-cp-group=raid][data-cp-boosted=false]",
+            ),
+          ).toHaveAttribute("data-ambiguous", "false");
+          for (const pair of await page.locator(".ring-sizing-pair").all()) {
+            const boxes = await pair
+              .locator(".cp-reference")
+              .evaluateAll((els) =>
+                els.map((e) => {
+                  const b = e.getBoundingClientRect(),
+                    n = e.querySelector(".cp-number").getBoundingClientRect();
+                  return { w: b.width, h: b.height, right: n.right - b.right };
+                }),
+              );
+            expect(boxes[0]).toEqual(boxes[1]);
+          }
+        }
         if (engine === "chrome") {
           await page
             .locator("body")
@@ -89,13 +122,11 @@ for (const engine of ["chrome", "webkit"]) {
             await page.evaluate(
               () => (document.documentElement.dataset.theme = "light"),
             );
-            await page
-              .locator("#reference-dialog")
-              .screenshot({
-                path: fileURLToPath(
-                  new URL(`${variant}-modal-${lang}-light-crop.png`, root),
-                ),
-              });
+            await page.locator("#reference-dialog").screenshot({
+              path: fileURLToPath(
+                new URL(`${variant}-modal-${lang}-light-crop.png`, root),
+              ),
+            });
             await page.evaluate(
               () => (document.documentElement.dataset.theme = "dark"),
             );
@@ -130,20 +161,57 @@ for (const engine of ["chrome", "webkit"]) {
             await page.locator("#reference-dialog-close").tap();
           }
           if (engine === "chrome")
-            await page
-              .locator(".reference-table")
-              .screenshot({
-                path: fileURLToPath(
-                  new URL(`${variant}-table-mobile-${lang}-dark.png`, root),
-                ),
-              });
+            await page.locator(".reference-table").screenshot({
+              path: fileURLToPath(
+                new URL(`${variant}-table-mobile-${lang}-dark.png`, root),
+              ),
+            });
+        }
+        if (variant === "ring" && mode === "reference" && engine === "chrome") {
+          for (const mobile of [false, true])
+            for (const palette of ["light", "dark"]) {
+              await page.setViewportSize(
+                mobile
+                  ? { width: 320, height: 800 }
+                  : { width: 1440, height: 1000 },
+              );
+              await page.evaluate(
+                (palette) => (document.documentElement.dataset.theme = palette),
+                palette,
+              );
+              await page
+                .locator(".reference-table")
+                .screenshot({
+                  path: fileURLToPath(
+                    new URL(
+                      `ring-table-${mobile ? "mobile" : "desktop"}-${lang}-${palette}.png`,
+                      root,
+                    ),
+                  ),
+                });
+              await page
+                .locator(".ring-sizing")
+                .screenshot({
+                  path: fileURLToPath(
+                    new URL(
+                      `ring-sizing-${mobile ? "mobile" : "desktop"}-${lang}-${palette}.png`,
+                      root,
+                    ),
+                  ),
+                });
+            }
         }
         reports.push({ engine, lang, mode, variant, status: "passed" });
       }
   await browser.close();
 }
 writeFileSync(
-  new URL("verification.json", root),
+  new URL(
+    process.argv.includes("--ring-only")
+      ? "verification-ring.json"
+      : "verification.json",
+    root,
+  ),
   JSON.stringify(reports, null, 2),
 );
 console.log(`${reports.length} static-preview checks passed`);

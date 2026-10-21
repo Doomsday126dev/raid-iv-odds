@@ -1,0 +1,58 @@
+[
+  {
+    "engine": "chrome",
+    "lang": "en",
+    "mode": "reference",
+    "variant": "ring",
+    "status": "passed"
+  },
+  {
+    "engine": "chrome",
+    "lang": "en",
+    "mode": "modal",
+    "variant": "ring",
+    "status": "passed"
+  },
+  {
+    "engine": "chrome",
+    "lang": "ja",
+    "mode": "reference",
+    "variant": "ring",
+    "status": "passed"
+  },
+  {
+    "engine": "chrome",
+    "lang": "ja",
+    "mode": "modal",
+    "variant": "ring",
+    "status": "passed"
+  },
+  {
+    "engine": "webkit",
+    "lang": "en",
+    "mode": "reference",
+    "variant": "ring",
+    "status": "passed"
+  },
+  {
+    "engine": "webkit",
+    "lang": "en",
+    "mode": "modal",
+    "variant": "ring",
+    "status": "passed"
+  },
+  {
+    "engine": "webkit",
+    "lang": "ja",
+    "mode": "reference",
+    "variant": "ring",
+    "status": "passed"
+  },
+  {
+    "engine": "webkit",
+    "lang": "ja",
+    "mode": "modal",
+    "variant": "ring",
+    "status": "passed"
+  }
+]

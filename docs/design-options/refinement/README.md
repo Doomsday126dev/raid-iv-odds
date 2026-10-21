@@ -1,5 +1,13 @@
 # Option A refinement — review only
 
+## Latest: dotted number ring
+
+`ring-*` is the latest requested refinement. Only ambiguous CPs get a thin dotted accent ring around their digits; two-digit values are near-circular and longer values oval. An absolutely positioned border keeps numeric edges, button size and table cell geometry identical to unmarked values. There is no separate symbol or marker slot. The compact three-column modal is unchanged.
+
+Real two-/three-digit collision examples use the released calculation data. An audit found **no four-digit perfect-CP collisions** in the current catalog at the supported reference levels/floors. The separate, clearly labeled ring-sizing study therefore shows a four-digit *layout fixture*, not a factual collision marker. That sizing study is review material, not proposed product UI; actual four-digit reference values remain unmarked.
+
+Eight focused Chrome/WebKit ring scenarios pass, including numeric glyph-edge alignment, equal marked/plain sizing geometry, touch/focus explanations, English/Japanese, 320px bounds and light/dark screenshots. See `verification-ring.json`. Regenerate only this revision by appending `--ring-only` to both generator/render commands. No application source or production changes are included. Await user review.
+
 These are isolated, self-contained static mockups based on released commit `bece37f7c415a1dc59fc5d6f0183ed8040ab4890`. Application source, calculations and production remain unchanged. No option has been selected or deployed.
 
 - **A / dotted:** only ambiguous CPs receive a restrained dotted underline. Ordinary CPs and species have no persistent underline. Digits share a fixed, right-aligned numeric track.
