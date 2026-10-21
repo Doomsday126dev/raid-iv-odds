@@ -361,7 +361,7 @@ function referenceCell(p: Species, group: string, boosted: boolean) {
     context = `${t(group === "rocket" ? "referenceRocket" : "referenceRaids")} · ${t(boosted ? "boosted" : "normal")}`;
   const hint = t("collisionHint", { cp: r.cp, count: r.matches.length }),
     id = `hint-${p.id}-${group}-${boosted}`;
-  return `<td data-reference-group="${group}"><button class="cp-reference" data-cp-species="${p.id}" data-cp-group="${group}" data-cp-boosted="${boosted}" aria-label="${escape(nameOf(p))} · ${context} · CP ${r.cp}${collision ? " · " + escape(hint) : ""}" ${collision ? `aria-describedby="${id}"` : ""}>${r.cp}${collision ? `<svg class="collision-icon" aria-hidden="true" viewBox="0 0 24 16"><circle cx="9" cy="8" r="6"/><circle cx="15" cy="8" r="6"/></svg><span id="${id}" class="collision-explanation" role="tooltip">${hint}</span>` : ""}</button></td>`;
+  return `<td data-reference-group="${group}"><button class="cp-reference" data-cp-species="${p.id}" data-cp-group="${group}" data-cp-boosted="${boosted}" data-ambiguous="${collision}" aria-label="${escape(nameOf(p))} · ${context} · CP ${r.cp}${collision ? " · " + escape(hint) : ""}" ${collision ? `aria-describedby="${id}"` : ""}><span class="cp-value"><span class="cp-number">${r.cp}</span></span>${collision ? `<span id="${id}" class="collision-explanation" role="tooltip">${hint}</span>` : ""}</button></td>`;
 }
 const referenceDialog = $<HTMLDialogElement>("#reference-dialog");
 $("#reference-dialog-close").addEventListener("click", () =>
@@ -376,16 +376,7 @@ function showReference(p: Species, group: string, boosted: boolean) {
       : t(p.shadow ? "shadowRaidRef" : "normalRaidRef");
   $("#reference-dialog-title").textContent = `${nameOf(p)} · CP ${r.cp}`;
   $("#reference-dialog-content").innerHTML =
-    `<p>${context} · ${t(boosted ? "boosted" : "normal")}</p><p>${supported ? t(r.collision ? "collisionHint" : "referenceUnique", { cp: r.cp, count: r.matches.length }) : t("refUnsupported")}</p>${
-      supported
-        ? `<p>${t("referenceFloor", { level: r.level, floor: r.floor })}</p>${group === "raid" && p.shadow ? `<p>${t("normalComparison", { count: referenceFor(p, group, boosted, true).matches.length })}</p>` : ""}<div class="reference-matches"><table class="reference-ivs"><caption>${t("matchingIvs")}</caption><thead><tr><th scope="col">${t("ivAttack")}</th><th scope="col">${t("ivDefense")}</th><th scope="col">${t("ivHp")}</th><th scope="col">${t("ivNote")}</th></tr></thead><tbody>${r.matches
-            .map((c) => {
-              const perfect = c.a === 15 && c.d === 15 && c.s === 15;
-              return `<tr data-perfect="${perfect}"><td>${c.a}</td><td>${c.d}</td><td>${c.s}</td><td>${perfect ? t("perfectIv") : ""}</td></tr>`;
-            })
-            .join("")}</tbody></table></div>`
-        : ""
-    }<button id="use-reference-cp" class="secondary">${t("useCp")}</button>`;
+    `<p>${context} · ${t(boosted ? "boosted" : "normal")}</p>${supported ? `<p class="combination-count">${t(r.matches.length === 1 ? "combinationOne" : "combinationCount", { count: r.matches.length })}</p><div class="reference-matches"><table class="reference-ivs"><caption class="sr-only">${t("matchingIvs")}</caption><thead><tr><th scope="col">${t("ivAttack")}</th><th scope="col">${t("ivDefense")}</th><th scope="col">${t("ivHp")}</th></tr></thead><tbody>${r.matches.map((c) => `<tr data-perfect="${isOriginalPerfect(c)}"><td>${c.a}</td><td>${c.d}</td><td>${c.s}</td></tr>`).join("")}</tbody></table></div><details class="reference-assumptions"><summary>${t("calculationAssumptions")}</summary><p>${t("referenceFloor", { level: r.level, floor: r.floor })}</p><p>${t(r.collision ? "collisionHint" : "referenceUnique", { cp: r.cp, count: r.matches.length })}</p>${group === "raid" && p.shadow ? `<p>${t("normalComparison", { count: referenceFor(p, group, boosted, true).matches.length })}</p>` : ""}</details>` : `<p>${t("refUnsupported")}</p>`}<button id="use-reference-cp" class="secondary">${t("useCp")}</button>`;
   $("#use-reference-cp").addEventListener("click", () => {
     referenceDialog.close();
     choose(p.id);

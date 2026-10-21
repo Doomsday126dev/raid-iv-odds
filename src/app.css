@@ -1226,16 +1226,6 @@ html[lang="ja"] .view-tabs button {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.collision-icon {
-  width: 20px;
-  height: 15px;
-  margin-left: 4px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 1.4;
-  vertical-align: middle;
-  opacity: 0.65;
-}
 .collision-explanation {
   display: none;
 }
@@ -1370,8 +1360,205 @@ html[lang="ja"] .view-tabs button {
   .cp-reference {
     font-size: 0.95rem;
   }
-  .collision-icon {
-    width: 16px;
-    margin-left: 2px;
+}
+
+/* Approved field-guide reference and compact collision details. */
+.reference-table {
+  --ring-stroke: #c9322e;
+}
+[data-theme="dark"] .reference-table {
+  --ring-stroke: #ff6b63;
+}
+@media (prefers-color-scheme: dark) {
+  [data-theme="system"] .reference-table {
+    --ring-stroke: #ff6b63;
+  }
+}
+.reference-table .species-reference,
+.reference-table .cp-reference {
+  text-decoration: none;
+}
+.reference-table .species-reference {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.35rem 0.2rem;
+  margin-left: -0.2rem;
+}
+.reference-table .species-reference:hover,
+.reference-table .cp-reference:hover {
+  background: var(--soft);
+  color: var(--accent);
+}
+.reference-table .species-reference:active,
+.reference-table .cp-reference:active {
+  background: var(--line);
+}
+.reference-table th,
+.reference-table td {
+  padding: 0.35rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+.reference-table td {
+  text-align: right;
+}
+.reference-table tbody th {
+  font-size: 0.9rem;
+}
+.reference-table tbody small {
+  margin-top: 0.12rem;
+  font-size: 0.68rem;
+}
+.reference-table thead tr:nth-child(2) th {
+  text-align: right;
+  padding-right: 2.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.reference-table .cp-reference {
+  display: inline-grid;
+  grid-template-columns: 5ch;
+  gap: 0;
+  align-items: center;
+  min-height: 2.6rem;
+  padding: 0.45rem 0.7rem;
+  font-size: 1rem;
+  line-height: 1.4;
+  border-radius: 2px;
+}
+.cp-value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.cp-number {
+  display: inline-block;
+  position: relative;
+}
+.cp-reference[data-ambiguous="true"] .cp-number::after {
+  content: "";
+  position: absolute;
+  inset: -0.25rem -0.45rem;
+  border: 1px solid var(--ring-stroke);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.reference-intro h2 {
+  font-size: 1.8rem;
+  margin-bottom: 0.8rem;
+}
+.reference-legend {
+  margin: 0.6rem 0;
+  font-size: 0.73rem;
+}
+#reference-dialog {
+  position: fixed;
+  width: min(28rem, calc(100% - 1.5rem));
+  padding: 1.15rem;
+  border-radius: 3px;
+  max-height: 90dvh;
+}
+#reference-dialog h2 {
+  font-size: 1.25rem;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  margin: 0 2.3rem 0.5rem 0;
+}
+#reference-dialog-close {
+  position: absolute;
+  right: 0.7rem;
+  top: 0.7rem;
+  display: grid;
+  place-items: center;
+  float: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+#reference-dialog-close:hover {
+  background: var(--soft);
+}
+#reference-dialog-content > p:first-child {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--muted);
+  margin: 0.4rem 0 0.8rem;
+}
+#reference-dialog-content > .combination-count {
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0.6rem 0;
+}
+.reference-matches {
+  border: 0;
+  padding: 0;
+  margin: 0.7rem 0;
+}
+.reference-ivs th,
+.reference-ivs td {
+  padding: 0.45rem 0.35rem;
+}
+.reference-ivs th {
+  font-size: 0.7rem;
+  width: 33.333%;
+}
+.reference-ivs th:last-child {
+  width: 33.333%;
+}
+.reference-ivs td,
+.reference-ivs td:last-child {
+  font-size: 1rem;
+  color: var(--ink);
+  font-weight: 400;
+}
+.reference-ivs tr[data-perfect="true"] {
+  background: var(--soft);
+}
+.reference-assumptions {
+  border-bottom: 1px solid var(--line);
+  margin: 0.2rem 0 0.8rem;
+  padding: 0.2rem 0 0.65rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.reference-assumptions summary {
+  cursor: pointer;
+  min-height: 1.6rem;
+  display: list-item;
+  font-weight: 500;
+}
+.reference-assumptions p {
+  font-size: 0.75rem;
+  line-height: 1.5;
+  margin: 0.5rem 0;
+}
+#use-reference-cp {
+  width: 100%;
+  min-height: 38px;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+@media (max-width: 640px) {
+  .reference-table th,
+  .reference-table td {
+    padding: 0.35rem 0.25rem;
+  }
+  .reference-table .cp-reference {
+    grid-template-columns: 4.5ch;
+    padding: 0.45rem 0.65rem;
+  }
+  .reference-table thead tr:nth-child(2) th {
+    padding-right: 1.4rem;
+  }
+  .reference-table .species-reference {
+    font-size: 0.8rem;
+  }
+  .reference-ivs th,
+  .reference-ivs td {
+    padding: 0.48rem 0.3rem;
   }
 }
