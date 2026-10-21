@@ -98,6 +98,11 @@ test("Japanese UI, aliases, form selection, reference and language persistence",
 test("Japanese errors, ambiguity, empty state and existing language preferences", async ({
   page,
 }) => {
+  await page.goto("?species=UNKNOWN&cp=2387&lang=en");
+  await page.locator('[data-language="ja"]').click();
+  await expect(page.locator("#species-search")).toHaveValue("");
+  await expect(page.locator(".chance-value")).toHaveCount(0);
+  await expect(page).toHaveURL(/species=UNKNOWN/);
   await page.goto("?lang=ja");
   await expect(page.locator("#decision")).toContainText("CPを入力");
   await page.locator("#cp-input").fill("1.5");

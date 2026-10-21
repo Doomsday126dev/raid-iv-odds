@@ -162,6 +162,9 @@ document.querySelectorAll<HTMLButtonElement>("[data-encounter]").forEach((b) =>
   }),
 );
 function updateUrl() {
+  // Language/reference changes must not turn an unknown or unfinished species
+  // into the internal default used only to keep the empty UI initialized.
+  if (search.value !== nameOf(selected)) return;
   const q = new URLSearchParams({
     species: selected.id,
     encounter,
