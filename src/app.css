@@ -1180,3 +1180,166 @@ html[lang="ja"] .view-tabs button {
   overflow: auto;
   scrollbar-width: thin;
 }
+.scope-hint {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  border-left: 2px solid var(--line);
+  padding: 4px 10px;
+  margin: 10px 0;
+}
+.scope-hint + #cp-context {
+  margin-top: 10px;
+}
+.reference-modes {
+  display: none;
+  gap: 0;
+  margin: 1rem 0;
+}
+.reference-modes button {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: inherit;
+  padding: 0.65rem 1rem;
+}
+.reference-modes button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.species-reference,
+.cp-reference {
+  border: 0;
+  background: none;
+  color: inherit;
+  padding: 0.4rem 0;
+  cursor: pointer;
+}
+.species-reference {
+  text-align: left;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cp-reference {
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.collision-icon {
+  width: 20px;
+  height: 15px;
+  margin-left: 4px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.4;
+  vertical-align: middle;
+  opacity: 0.65;
+}
+.collision-explanation {
+  display: none;
+}
+.cp-reference:focus-visible .collision-explanation {
+  display: block;
+  position: fixed;
+  z-index: 20;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  max-width: 42rem;
+  margin: auto;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.8rem;
+  white-space: normal;
+  text-align: left;
+  box-shadow: 0 3px 14px #0003;
+}
+.reference-table thead th {
+  text-align: center;
+}
+.reference-table thead th:first-child {
+  text-align: left;
+}
+.reference-table td {
+  text-align: center;
+}
+#reference-dialog {
+  width: min(36rem, calc(100% - 2rem));
+  max-height: 85dvh;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1.5rem;
+  background: var(--paper);
+  color: var(--ink);
+  overflow: auto;
+}
+#reference-dialog::backdrop {
+  background: #17151188;
+}
+#reference-dialog-close {
+  float: right;
+  background: none;
+  color: inherit;
+  border: 0;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.reference-matches {
+  border-top: 1px solid var(--line);
+  margin: 1rem 0;
+  padding-top: 0.7rem;
+}
+.reference-matches code {
+  display: inline-block;
+  margin: 0.25rem 0.8rem 0.25rem 0;
+}
+.reference-matches h3 {
+  font-size: 0.85rem;
+}
+.reference-legend {
+  max-width: 70ch;
+}
+@media (max-width: 640px) {
+  .reference-modes {
+    display: flex;
+  }
+  .reference-table[data-mode="rocket"] [data-reference-group="raid"],
+  .reference-table[data-mode="raid"] [data-reference-group="rocket"] {
+    display: none;
+  }
+  .reference-table th,
+  .reference-table td {
+    padding: 0.6rem 0.35rem;
+  }
+  .reference-table {
+    overflow: visible;
+  }
+  .reference-table table {
+    min-width: 0;
+    width: 100%;
+    table-layout: fixed;
+  }
+  .reference-table th:first-child {
+    width: 38%;
+  }
+  .reference-table thead th {
+    font-size: 0.73rem;
+    overflow-wrap: anywhere;
+  }
+  .reference-table small {
+    font-size: 0.65rem;
+  }
+  .species-reference {
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+  }
+  .cp-reference {
+    font-size: 0.95rem;
+  }
+  .collision-icon {
+    width: 16px;
+    margin-left: 2px;
+  }
+}

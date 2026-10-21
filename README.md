@@ -1,11 +1,11 @@
 # Hundo Check / Raid IV Odds
 
-A mobile-first Pokémon GO tool for deciding whether a Shadow catch is worth checking for a purified hundo.
+A mobile-first Pokémon GO tool for checking whether a Shadow catch can become a purified hundo.
 
 - Search 1,073 released species/forms, including ordinary Pokémon.
-- Select Shadow raid or Rocket Grunt/Leader and enter catch CP; weather conditions are inferred automatically.
+- Enter Pokémon and catch CP; supported Shadow raid/Rocket and weather contexts are inferred automatically.
 - Get one factual result; expand exact IV matches and probability details when needed.
-- Search a separate level 8/13 **15/15/15 CP reference**. These are Rocket catch levels; normal wild levels vary. Matching CP alone does not prove perfect IVs.
+- Search grouped Rocket and raid perfect-CP references for both weather conditions. Tap a CP to inspect exact IV collisions; normal wild levels vary. Matching CP alone does not prove perfect IVs.
 - Switch the complete main interface and species/form search between English and 日本語.
 - Read conditional purified-hundo percentages and exact qualifying IV tables, separately from already-perfect IV odds.
 - Use the advanced calculator for custom raid floors, manual stats and detailed comparisons.

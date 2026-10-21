@@ -24,6 +24,11 @@ const pokemon = source
     def: p.baseStats.def,
     sta: p.baseStats.hp,
     shadow: !!p.tags?.includes("shadoweligible"),
+    // Regular Grunt/Leader IV assumptions are not applied to special classes;
+    // Giovanni/research/event-specific catches are outside the supported model.
+    rocketModelSupported: !p.tags?.some((tag) =>
+      ["legendary", "mythical", "ultrabeast"].includes(tag),
+    ),
     types: p.types
       .filter((x) => x !== "none")
       .map((x) => x[0].toUpperCase() + x.slice(1)),

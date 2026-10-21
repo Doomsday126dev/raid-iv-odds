@@ -33,7 +33,6 @@ test("search supports keyboard selection, forms, weather and watchlist", async (
   await search.press("Enter");
   await expect(search).toHaveValue("Weedle");
   await expect(search).toHaveAttribute("aria-expanded", "false");
-  await page.locator("[data-encounter=rocket]").click();
   await page.locator("#cp-input").fill("102");
   await expect(page.locator("#decision h2")).toHaveText(
     "Every match can purify to a hundo",
@@ -62,9 +61,9 @@ test("reference shows ordinary species CPs, collision caveat and routes to Rocke
     path: `qa/${test.info().project.name}-reference.png`,
     fullPage: true,
   });
-  await row.getByRole("button").click();
+  await row.locator("[data-reference]").click();
   await expect(page.locator("#cp-context")).toContainText(
-    "Weather condition inferred",
+    "Raid, Rocket and weather checked",
   );
   await expect(page.locator("#species-search")).toHaveValue("Bulbasaur");
   await page.locator("#cp-input").fill("243");
@@ -195,12 +194,13 @@ test("weather is inferred automatically and only conflicting contexts ask for cl
   await expect(page.locator("#decision")).toContainText(
     "No combined probability",
   );
-  await page.locator("[data-clarify=false]").click();
+  await page.locator("[data-clarify=rocket-normal]").click();
   await expect(page.locator("#decision h2")).toHaveText(
     "Possible purified hundo",
   );
   await page.locator("#cp-input").fill("92");
   await expect(page.locator("[data-clarify]")).toHaveCount(0);
-  await page.locator("[data-encounter=raid]").click();
+  await expect(page.locator("[data-encounter]")).toHaveCount(0);
+  await page.locator("[data-species=MEWTWO]").click();
   await expect(page.locator("#cp-input")).toHaveValue("");
 });

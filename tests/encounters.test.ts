@@ -3,6 +3,7 @@ import test from "node:test";
 import { readFileSync } from "node:fs";
 import {
   analyzeEncounter,
+  analyzeShadowCatch,
   encounterFloor,
   encounterLevel,
 } from "../src/encounters.ts";
@@ -182,4 +183,54 @@ test("Japanese names cover ordinary species and distinct regional forms", () => 
         /[\u3040-\u30ff]/.test(data.names[p.id]),
     ),
   );
+});
+
+test("Shadow context inference checks raid and Rocket without a required category", () => {
+  const mewtwo = get("MEWTWO");
+  for (const [pokemon, cp, id] of [
+    [get("BULBASAUR"), 251, "rocket-normal"],
+    [get("BULBASAUR"), 414, "rocket-boosted"],
+    [mewtwo, 2387, "raid-normal"],
+    [mewtwo, 2984, "raid-boosted"],
+  ] as const) {
+    const result = analyzeShadowCatch(pokemon, cp);
+    assert.deepEqual(
+      result.matches.map((c) => c.id),
+      [id],
+    );
+    assert.equal(result.needsClarification, false);
+  }
+  assert.equal(analyzeShadowCatch(mewtwo, 99999).outcome, "invalid");
+  assert.equal(analyzeShadowCatch(mewtwo, 942).outcome, "unsupported");
+  assert.equal(analyzeShadowCatch(mewtwo, 942).matches.length, 0);
+  assert.equal(mewtwo.rocketModelSupported, false);
+  assert.equal(get("BULBASAUR").rocketModelSupported, true);
+});
+test("overlapping contexts preserve verdicts and exact conditional percentages", () => {
+  const differing = analyzeShadowCatch(get("CATERPIE"), 246);
+  assert.deepEqual(
+    differing.matches.map((c) => [c.id, c.summary.good, c.summary.total]),
+    [
+      ["raid-normal", 3, 4],
+      ["raid-boosted", 0, 2],
+    ],
+  );
+  assert.equal(differing.needsClarification, true);
+  assert.equal(differing.outcome, "ambiguous");
+  const common = analyzeShadowCatch(get("MAGIKARP"), 142);
+  assert.deepEqual(
+    common.matches.map((c) => c.id),
+    ["raid-normal", "raid-boosted"],
+  );
+  assert.equal(common.outcome, "none");
+  assert.equal(common.sameChance, true);
+  assert.equal(common.needsClarification, false);
+  // Artificial low stats exercise future cross-category overlaps; no current
+  // species/availability claim is made for this mathematical boundary fixture.
+  const cross = analyzeShadowCatch({ atk: 1, def: 1, sta: 1 }, 10);
+  assert.equal(cross.matches.length, 4);
+  assert.equal(cross.outcome, "candidate");
+  assert.equal(cross.sameChance, false);
+  assert.equal(cross.needsClarification, true);
+  assert.ok(cross.matches.every((c) => c.summary.good > 0));
 });

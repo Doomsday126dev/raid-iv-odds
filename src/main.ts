@@ -1,6 +1,11 @@
 import catalog from "./catalog.json";
-import { cpFor, formatPercent, type CpSummary } from "./math";
-import { ROCKET_LEVELS, analyzeEncounter, type Encounter } from "./encounters";
+import { RAID_LEVELS, formatPercent, type CpSummary } from "./math";
+import {
+  ROCKET_LEVELS,
+  analyzeShadowCatch,
+  type ShadowContextId,
+} from "./encounters";
+import { perfectReference } from "./reference";
 import "./app.css";
 import { shell } from "./ui";
 import {
@@ -30,14 +35,23 @@ let selected: Species =
   all.find(
     (p) => p.id === params.get("species") || p.name.toLowerCase() === oldName,
   ) ?? all.find((p) => p.id === "MEWTWO")!;
-let encounter: Encounter =
-  params.get("encounter") === "rocket" ? "rocket" : "raid";
-let clarified: boolean | null =
-  params.get("confirmedWeather") === "normal"
-    ? false
-    : params.get("confirmedWeather") === "boosted"
-      ? true
-      : null;
+const contextIds: ShadowContextId[] = [
+  "rocket-normal",
+  "rocket-boosted",
+  "raid-normal",
+  "raid-boosted",
+];
+const linkedContext =
+  params.get("confirmedContext") ??
+  (params.has("confirmedWeather") &&
+  ["raid", "rocket"].includes(params.get("encounter") ?? "")
+    ? `${params.get("encounter")}-${params.get("confirmedWeather")}`
+    : null);
+let clarified: ShadowContextId | null = contextIds.includes(
+  linkedContext as ShadowContextId,
+)
+  ? (linkedContext as ShadowContextId)
+  : null;
 let cpText = params.get("cp") ?? "";
 let view = params.get("view") === "reference" ? "reference" : "check";
 const app = document.querySelector<HTMLDivElement>("#app")!;
@@ -152,29 +166,19 @@ document
   .forEach((b) =>
     b.addEventListener("click", () => choose(b.dataset.species!)),
   );
-document.querySelectorAll<HTMLButtonElement>("[data-encounter]").forEach((b) =>
-  b.addEventListener("click", () => {
-    encounter = b.dataset.encounter as Encounter;
-    clarified = null;
-    cpText = "";
-    input.value = "";
-    render();
-  }),
-);
 function updateUrl() {
   // Language/reference changes must not turn an unknown or unfinished species
   // into the internal default used only to keep the empty UI initialized.
   if (search.value !== nameOf(selected)) return;
   const q = new URLSearchParams({
     species: selected.id,
-    encounter,
   });
   q.set("lang", language);
-  if (clarified !== null)
-    q.set("confirmedWeather", clarified ? "boosted" : "normal");
+  if (clarified !== null) q.set("confirmedContext", clarified);
   if (cpText) q.set("cp", cpText);
   if (view === "reference") {
     q.set("view", view);
+    q.set("refMode", referenceMode);
     const term = $<HTMLInputElement>("#reference-search").value;
     if (term) q.set("q", term);
   }
@@ -182,16 +186,13 @@ function updateUrl() {
 }
 function render() {
   const number = /^\d+$/.test(cpText) ? Number(cpText) : 0;
-  const analysis = analyzeEncounter(selected, encounter, number);
-  if (
-    clarified !== null &&
-    !analysis.matches.some((c) => c.boosted === clarified)
-  )
+  const analysis = analyzeShadowCatch(selected, number);
+  if (clarified !== null && !analysis.matches.some((c) => c.id === clarified))
     clarified = null;
   const matches =
     clarified === null
       ? analysis.matches
-      : analysis.matches.filter((c) => c.boosted === clarified);
+      : analysis.matches.filter((c) => c.id === clarified);
   const outcome =
     clarified === null
       ? analysis.outcome
@@ -203,21 +204,21 @@ function render() {
             ? "all"
             : "candidate";
   const weather = (boosted: boolean) => t(boosted ? "boosted" : "normal");
+  const contextLabel = (c: (typeof analysis.contexts)[number]) =>
+    `${t(c.encounter === "raid" ? "raid" : "rocketContext")} · ${weather(c.boosted)}`;
   const contextText = (c: (typeof analysis.contexts)[number]) =>
-    `${weather(c.boosted)} · ${t("level")} ${c.summary.raidLevel.level} · ${t("floor")} ${c.floor}/${c.floor}/${c.floor}`;
-  document
-    .querySelectorAll<HTMLButtonElement>("[data-encounter]")
-    .forEach((b) =>
-      b.setAttribute("aria-pressed", String(b.dataset.encounter === encounter)),
-    );
+    `${contextLabel(c)} · ${t("level")} ${c.summary.raidLevel.level} · ${t("floor")} ${c.floor}/${c.floor}/${c.floor}`;
+  const needsClarification = clarified === null && analysis.needsClarification;
   const committed = search.value === nameOf(selected);
   $("#species-meta").textContent = committed
     ? `#${String(selected.dex).padStart(3, "0")} · ${typesOf(selected)}`
     : t("select");
   $("#cp-context").textContent =
     cpText && matches.length === 1
-      ? `${t(encounter === "raid" ? "raid" : "rocketContext")} · ${weather(matches[0]!.boosted)}`
-      : t("auto");
+      ? `${t("compatible")}: ${contextLabel(matches[0]!)}`
+      : cpText && matches.length > 1
+        ? t("contextsCount", { count: matches.length })
+        : t("auto");
   let tone = "empty",
     icon = "◇",
     title = t("chooseTitle"),
@@ -232,6 +233,11 @@ function render() {
       icon = "?";
       title = t("invalidTitle");
       copy = t("invalidCopy");
+    } else if (outcome === "unsupported") {
+      tone = "invalid";
+      icon = "?";
+      title = t("unsupportedContextTitle");
+      copy = t("unsupportedContextCopy");
     } else if (outcome === "invalid") {
       tone = "invalid";
       icon = "?";
@@ -247,11 +253,12 @@ function render() {
       icon = "✓";
       title = t("allTitle");
       copy = t("allCopy");
-    } else if (outcome === "ambiguous") {
+    } else if (needsClarification) {
       tone = "mixed";
       icon = "?";
-      title = t("ambiguousTitle");
-      copy = t("ambiguousCopy");
+      const sameEncounter = new Set(matches.map((c) => c.encounter)).size === 1;
+      title = t(sameEncounter ? "ambiguousTitle" : "contextTitle");
+      copy = t(sameEncounter ? "ambiguousCopy" : "contextCopy");
     } else {
       tone = "mixed";
       icon = "◇";
@@ -275,16 +282,18 @@ function render() {
   const percentage = valid
     ? matches.length === 1
       ? chance(matches[0]!.summary)
-      : `<div class="context-chances">${matches.map((c) => `<section><h3>${weather(c.boosted)}</h3>${chance(c.summary)}${outcome === "ambiguous" ? `<button class="clarify" data-clarify="${c.boosted}">${weather(c.boosted)} →</button>` : ""}</section>`).join("")}<p class="field-note">${t("separate")}</p></div>`
+      : analysis.sameChance
+        ? chance(matches[0]!.summary, true)
+        : `<div class="context-chances">${matches.map((c) => `<section><h3>${contextLabel(c)}</h3>${chance(c.summary)}${needsClarification ? `<button class="clarify" data-clarify="${c.id}">${contextLabel(c)} →</button>` : ""}</section>`).join("")}<p class="field-note">${t("separate")}</p></div>`
     : "";
   $("#decision").innerHTML = waiting
     ? `<p class="empty-message">${t("empty")}</p>`
-    : `<div class="decision-top"><span class="decision-icon" aria-hidden="true">${icon}</span><span class="eyebrow">${t("resultEyebrow")}</span></div><h2>${title}</h2>${percentage}<p>${copy}</p>${valid ? `<div class="result-context"><strong>${escape(nameOf(selected))} · CP ${escape(cpText)}</strong><span>${matches.length === 1 ? `${t(encounter === "raid" ? "raid" : "rocketContext")} · ${weather(matches[0]!.boosted)}` : t("both")}</span></div><details class="result-details"><summary>${t("details")}</summary>${matches.map((c) => `<section class="context-calculation"><h3>${contextText(c)}</h3><p>${t("equalRolls")}</p><p class="original-perfect"><strong>${t("already")}: ${formatPercent(c.summary.combos.filter(isOriginalPerfect).length / c.summary.total)}</strong><br>${t("originalCount", { good: c.summary.combos.filter(isOriginalPerfect).length, total: c.summary.total })}. ${t("alreadyHint")}</p>${spreads(c.summary)}</section>`).join("")}</details>` : ""}`;
+    : `<div class="decision-top"><span class="decision-icon" aria-hidden="true">${icon}</span><span class="eyebrow">${t("resultEyebrow")}</span></div><h2>${title}</h2>${percentage}<p>${copy}</p>${valid ? `<div class="result-context"><strong>${escape(nameOf(selected))} · CP ${escape(cpText)}</strong><span>${matches.length === 1 ? `${t("compatible")}: ${contextLabel(matches[0]!)}` : t("both")}</span></div><details class="result-details"><summary>${t("details")}</summary>${matches.map((c) => `<section class="context-calculation"><h3>${contextText(c)}</h3><p>${t("equalRolls")}</p>${matches.length > 1 ? `<p>${t("matching", { good: c.summary.good, total: c.summary.total })} · ${formatPercent(c.summary.odds)}</p>` : ""}<p class="original-perfect"><strong>${t("already")}: ${formatPercent(c.summary.combos.filter(isOriginalPerfect).length / c.summary.total)}</strong><br>${t("originalCount", { good: c.summary.combos.filter(isOriginalPerfect).length, total: c.summary.total })}. ${t("alreadyHint")}</p>${spreads(c.summary)}</section>`).join("")}</details>` : ""}`;
   $("#decision")
     .querySelectorAll<HTMLButtonElement>("[data-clarify]")
     .forEach((b) =>
       b.addEventListener("click", () => {
-        clarified = b.dataset.clarify === "true";
+        clarified = b.dataset.clarify as ShadowContextId;
         render();
       }),
     );
@@ -293,7 +302,7 @@ function render() {
     : analysis.contexts
         .map(
           (c) =>
-            `<h3>${weather(c.boosted)}</h3><div class="cp-chips">${selected.shadow ? c.summary.watchlist.map((row) => `<button data-cp="${row.cp}"><strong>${row.cp}</strong><span>${row.good === row.total ? t("allMatches") : t("matches", { good: row.good, total: row.total })}</span></button>`).join("") : t("noShadow")}</div>`,
+            `<h3>${contextLabel(c)}</h3><div class="cp-chips">${selected.shadow ? c.summary.watchlist.map((row) => `<button data-cp="${row.cp}"><strong>${row.cp}</strong><span>${row.good === row.total ? t("allMatches") : t("matches", { good: row.good, total: row.total })}</span></button>`).join("") : t("noShadow")}</div>`,
         )
         .join("");
   $("#watchlist")
@@ -310,8 +319,8 @@ function render() {
     );
   if (committed) updateUrl();
 }
-function chance(summary: CpSummary) {
-  return `<section class="chance-panel" aria-label="${t("chanceLabel")}"><strong class="chance-value">${formatPercent(summary.odds)}</strong><div><span>${t("chanceLabel")}</span><small>${t("matching", { good: summary.good, total: summary.total })}</small></div></section>`;
+function chance(summary: CpSummary, common = false) {
+  return `<section class="chance-panel" aria-label="${t("chanceLabel")}"><strong class="chance-value">${formatPercent(summary.odds)}</strong><div><span>${t("chanceLabel")}</span><small>${common ? t("sameChance") : t("matching", { good: summary.good, total: summary.total })}</small></div></section>`;
 }
 function isOriginalPerfect(c: { a: number; d: number; s: number }) {
   return c.a === 15 && c.d === 15 && c.s === 15;
@@ -327,6 +336,75 @@ function spreads(s: CpSummary) {
     .join("")}</tbody></table></div>`;
 }
 let referenceLimit = 40;
+let referenceMode = params.get("refMode") === "raid" ? "raid" : "rocket";
+const referenceCache = new Map<string, ReturnType<typeof perfectReference>>();
+function referenceFor(
+  p: Species,
+  group: string,
+  boosted: boolean,
+  normalRaid = false,
+) {
+  const level = (group === "rocket" ? ROCKET_LEVELS : RAID_LEVELS)[
+    boosted ? 1 : 0
+  ]!;
+  const floor =
+    group === "rocket" ? (boosted ? 4 : 0) : normalRaid || !p.shadow ? 10 : 6;
+  const key = `${p.id}-${level.level}-${floor}`;
+  if (!referenceCache.has(key))
+    referenceCache.set(key, perfectReference(p, level, floor));
+  return referenceCache.get(key)!;
+}
+function referenceCell(p: Species, group: string, boosted: boolean) {
+  const r = referenceFor(p, group, boosted),
+    supported = group !== "rocket" || (p.shadow && p.rocketModelSupported);
+  const collision = supported && r.collision,
+    context = `${t(group === "rocket" ? "referenceRocket" : "referenceRaids")} · ${t(boosted ? "boosted" : "normal")}`;
+  const hint = t("collisionHint", { cp: r.cp, count: r.matches.length }),
+    id = `hint-${p.id}-${group}-${boosted}`;
+  return `<td data-reference-group="${group}"><button class="cp-reference" data-cp-species="${p.id}" data-cp-group="${group}" data-cp-boosted="${boosted}" aria-label="${escape(nameOf(p))} · ${context} · CP ${r.cp}${collision ? " · " + escape(hint) : ""}" ${collision ? `aria-describedby="${id}"` : ""}>${r.cp}${collision ? `<svg class="collision-icon" aria-hidden="true" viewBox="0 0 24 16"><circle cx="9" cy="8" r="6"/><circle cx="15" cy="8" r="6"/></svg><span id="${id}" class="collision-explanation" role="tooltip">${hint}</span>` : ""}</button></td>`;
+}
+const referenceDialog = $<HTMLDialogElement>("#reference-dialog");
+$("#reference-dialog-close").addEventListener("click", () =>
+  referenceDialog.close(),
+);
+function showReference(p: Species, group: string, boosted: boolean) {
+  const r = referenceFor(p, group, boosted),
+    supported = group !== "rocket" || (p.shadow && p.rocketModelSupported);
+  const context =
+    group === "rocket"
+      ? t("referenceRocket")
+      : t(p.shadow ? "shadowRaidRef" : "normalRaidRef");
+  $("#reference-dialog-title").textContent = `${nameOf(p)} · CP ${r.cp}`;
+  $("#reference-dialog-content").innerHTML =
+    `<p>${context} · ${t(boosted ? "boosted" : "normal")}</p><p>${supported ? t(r.collision ? "collisionHint" : "referenceUnique", { cp: r.cp, count: r.matches.length }) : t("refUnsupported")}</p>${supported ? `<p>${t("referenceFloor", { level: r.level, floor: r.floor })}</p>${group === "raid" && p.shadow ? `<p>${t("normalComparison", { count: referenceFor(p, group, boosted, true).matches.length })}</p>` : ""}<div class="reference-matches"><h3>${t("matchingIvs")}</h3>${r.matches.map((c) => `<code>${c.a} / ${c.d} / ${c.s}</code>`).join("")}</div>` : ""}<button id="use-reference-cp" class="secondary">${t("useCp")}</button>`;
+  $("#use-reference-cp").addEventListener("click", () => {
+    referenceDialog.close();
+    choose(p.id);
+    cpText = String(r.cp);
+    input.value = cpText;
+    clarified = null;
+    render();
+    setView("check");
+    input.focus();
+  });
+  referenceDialog.showModal();
+}
+function setReferenceMode(mode: string) {
+  referenceMode = mode;
+  $(".reference-table").dataset.mode = mode;
+  document
+    .querySelectorAll<HTMLButtonElement>("[data-ref-mode]")
+    .forEach((b) =>
+      b.setAttribute("aria-pressed", String(b.dataset.refMode === mode)),
+    );
+}
+document.querySelectorAll<HTMLButtonElement>("[data-ref-mode]").forEach((b) =>
+  b.addEventListener("click", () => {
+    setReferenceMode(b.dataset.refMode!);
+    updateUrl();
+  }),
+);
+setReferenceMode(referenceMode);
 function renderReference() {
   const results = matchSpecies(
     $<HTMLInputElement>("#reference-search").value.trim(),
@@ -340,20 +418,30 @@ function renderReference() {
       .slice(0, referenceLimit)
       .map(
         (p) =>
-          `<tr><th scope="row"><strong>${escape(nameOf(p))}</strong><small>#${String(p.dex).padStart(3, "0")} · ${typesOf(p)}</small></th><td>${cpFor(p, 15, 15, 15, ROCKET_LEVELS[0]!.cpm)}</td><td>${cpFor(p, 15, 15, 15, ROCKET_LEVELS[1]!.cpm)}</td><td><button data-reference="${p.id}" aria-label="${t("check")} ${escape(nameOf(p))} ${t("rocketContext")}">${t("check")} <span aria-hidden="true">↗</span></button></td></tr>`,
+          `<tr><th scope="row"><button class="species-reference" data-reference="${p.id}">${escape(nameOf(p))}</button><small>#${String(p.dex).padStart(3, "0")} · ${typesOf(p)}</small></th>${["rocket", "raid"].map((group) => [false, true].map((boosted) => referenceCell(p, group, boosted)).join("")).join("")}</tr>`,
       )
-      .join("") || `<tr><td colspan="4">${t("noResults")}</td></tr>`;
+      .join("") || `<tr><td colspan="5">${t("noResults")}</td></tr>`;
   $("#load-more").hidden = referenceLimit >= results.length;
   $("#reference-rows")
     .querySelectorAll<HTMLButtonElement>("[data-reference]")
     .forEach((b) =>
       b.addEventListener("click", () => {
-        encounter = "rocket";
         choose(b.dataset.reference!);
         setView("check");
         search.focus();
         closeSuggestions();
       }),
+    );
+  $("#reference-rows")
+    .querySelectorAll<HTMLButtonElement>("[data-cp-species]")
+    .forEach((b) =>
+      b.addEventListener("click", () =>
+        showReference(
+          all.find((p) => p.id === b.dataset.cpSpecies)!,
+          b.dataset.cpGroup!,
+          b.dataset.cpBoosted === "true",
+        ),
+      ),
     );
 }
 $<HTMLInputElement>("#reference-search").addEventListener("input", () => {

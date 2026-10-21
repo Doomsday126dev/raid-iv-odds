@@ -120,7 +120,7 @@ test("Japanese errors, ambiguity, empty state and existing language preferences"
     "75%",
     "0%",
   ]);
-  await page.locator("[data-clarify=false]").click();
+  await page.locator("[data-clarify=rocket-normal]").click();
   await expect(
     page.locator("#decision > .chance-panel .chance-value"),
   ).toHaveText("75%");
@@ -154,7 +154,7 @@ test("Japanese narrow layout and cross-language alias search retain context", as
     ),
   ).toBe(true);
   await page.goto("?species=SHUCKLE&encounter=rocket&cp=91&lang=ja");
-  await page.locator("[data-clarify=false]").click();
+  await page.locator("[data-clarify=rocket-normal]").click();
   await page.locator("[data-language=en]").click();
   await expect(
     page.locator("#decision > .chance-panel .chance-value"),
