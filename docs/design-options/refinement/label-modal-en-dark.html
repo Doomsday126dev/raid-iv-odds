@@ -1,0 +1,1446 @@
+<!doctype html><html lang="en" data-theme="dark" data-preview="label"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Option A label · isolated design preview</title>
+    <meta name="description" content="Check whether a Shadow Pokémon's catch CP could become a purified hundo. Search ordinary Pokémon and level 8 / 13 perfect CP references.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'sha256-ux9s6fR1Q99+mRCj9IfzPBH4oVomgDMmbURKFvdkY7Y='; img-src data:; style-src 'unsafe-inline'">
+    <meta name="theme-color" content="#a53b2a">
+    
+    
+    
+    
+  <style>:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  --bg: #f5f2eb;
+  --paper: #fffdf8;
+  --ink: #292722;
+  --muted: #665f56;
+  --line: #cec7bb;
+  --soft: #ece7dc;
+  --accent: #a63725;
+  --focus: #a63725;
+  color: var(--ink);
+  background: var(--bg);
+  color-scheme: light;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button,
+input {
+  font: inherit;
+}
+button {
+  color: inherit;
+  cursor: pointer;
+}
+button,
+a,
+input,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+}
+button {
+  border: 0;
+  background: none;
+}
+button:hover {
+  background: var(--soft);
+}
+[hidden] {
+  display: none !important;
+}
+.site-header {
+  max-width: 1060px;
+  margin: auto;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 0 28px;
+  border-bottom: 2px solid var(--ink);
+}
+.brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  font-size: 20px;
+  font-weight: 750;
+  letter-spacing: -0.7px;
+  color: var(--ink);
+}
+.brand > span:last-child {
+  font-weight: 400;
+}
+.brand-mark {
+  font:
+    700 12px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  letter-spacing: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--ink);
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
+  color: var(--accent);
+}
+.header-note {
+  font:
+    11px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  color: var(--muted);
+  margin-left: auto;
+}
+.theme-button {
+  border: 1px solid var(--line);
+  width: 34px;
+  height: 34px;
+  font-size: 21px;
+  padding: 0;
+  border-radius: 2px;
+}
+main {
+  max-width: 1060px;
+  padding: 0 28px;
+  margin: auto;
+}
+.intro {
+  padding: 24px 0 15px;
+}
+.eyebrow {
+  font:
+    10px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  letter-spacing: 1.1px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+h1 {
+  font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.6px;
+  font-weight: 550;
+  margin: 7px 0;
+}
+.intro > p:last-child {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+.intro strong {
+  color: var(--ink);
+  font-weight: 500;
+}
+.view-tabs {
+  display: flex;
+  gap: 27px;
+  margin-bottom: 23px;
+  border-bottom: 1px solid var(--line);
+}
+.view-tabs button {
+  padding: 12px 0;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+}
+.view-tabs button[aria-current="page"] {
+  color: var(--ink);
+  border-color: var(--accent);
+}
+.view-tabs button:hover {
+  background: transparent;
+  color: var(--accent);
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 1fr 1.03fr;
+  gap: 34px;
+  align-items: start;
+  margin-bottom: 25px;
+}
+.input-card {
+  padding: 0 26px 0 0;
+  border-right: 1px solid var(--line);
+}
+.section-heading {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.section-heading h2 {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  font-weight: 700;
+  margin: 0;
+}
+.section-heading:after {
+  content: "";
+  height: 1px;
+  background: var(--line);
+  flex: 1;
+  margin-left: 15px;
+}
+label,
+legend {
+  font-size: 12px;
+  font-weight: 650;
+  display: block;
+  margin: 0 0 8px;
+}
+label > span,
+legend > span {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 5px;
+}
+input[type="search"] {
+  width: 100%;
+  min-height: 45px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 11px 12px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+}
+input::placeholder {
+  color: var(--muted);
+}
+.species-picker {
+  position: relative;
+}
+#species-list {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  overflow: auto;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  box-shadow: 4px 5px 0 #29272215;
+}
+#species-list button {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+  width: 100%;
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+#species-list button:hover,
+#species-list button[aria-selected="true"] {
+  background: var(--soft);
+  box-shadow: inset 3px 0 var(--accent);
+}
+#species-list small {
+  color: var(--muted);
+  font-size: 11px;
+}
+#species-list p {
+  padding: 12px;
+  font-size: 13px;
+}
+.field-note {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 7px 0 0;
+}
+.quick-picks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  margin: 9px 0 20px;
+}
+.quick-picks button {
+  padding: 6px 10px 6px 0;
+  margin-right: 9px;
+  font-size: 11px;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 4px;
+  color: var(--muted);
+}
+fieldset {
+  padding: 0;
+  border: 0;
+  margin: 0 0 21px;
+}
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.segmented button {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 2px;
+  min-height: 54px;
+  font-size: 12px;
+  padding: 10px;
+  text-align: left;
+}
+.segmented small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.segmented button[aria-pressed="true"] {
+  border-color: var(--ink);
+  box-shadow: inset 3px 0 var(--accent);
+  font-weight: 650;
+  background: var(--soft);
+}
+.cp-entry {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--ink);
+  padding-left: 14px;
+  gap: 13px;
+  background: var(--paper);
+}
+.cp-entry:focus-within {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.cp-entry > span {
+  font:
+    12px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  color: var(--muted);
+}
+.cp-entry input {
+  font:
+    30px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  font-variant-numeric: tabular-nums;
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+}
+.cp-entry input:focus-visible {
+  outline: none;
+}
+.cp-entry input::placeholder {
+  font:
+    21px -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+.decision-column > .section-heading {
+  margin-bottom: 20px;
+}
+.decision {
+  border-top: 3px solid var(--ink);
+  padding: 17px 0 0;
+  min-height: 0;
+}
+.decision-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 17px;
+}
+.decision-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  font:
+    21px ui-monospace,
+    monospace;
+  color: var(--accent);
+  border: 1px solid var(--line);
+}
+.decision h2 {
+  font-size: 27px;
+  line-height: 1.18;
+  letter-spacing: -0.5px;
+  margin: 0 0 12px;
+  font-weight: 650;
+  max-width: 390px;
+}
+.decision > p {
+  font-size: 13px;
+  line-height: 1.75;
+  color: var(--muted);
+  margin: 0;
+}
+.decision.good,
+.decision.mixed {
+  border-top-color: var(--accent);
+}
+.decision.invalid {
+  border-top-style: dashed;
+}
+.decision.none .decision-icon {
+  color: var(--muted);
+}
+.decision.empty {
+  border: 0;
+  padding: 3px 0;
+}
+.decision.empty .empty-message {
+  font-size: 12px;
+  color: var(--muted);
+  max-width: 330px;
+  border-left: 2px solid var(--line);
+  padding: 5px 12px;
+}
+.decision-column:has(.decision.empty) {
+  align-self: center;
+}
+.result-context {
+  margin-top: 17px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+}
+.result-context > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.result-details {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.result-details summary {
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.result-details summary > span {
+  float: right;
+  font:
+    10px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  font-weight: 400;
+  color: var(--muted);
+}
+.result-details p {
+  font-size: 12px;
+  line-height: 1.75;
+  color: var(--muted);
+}
+.result-details h3,
+#watchlist h3 {
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 17px 0 7px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.spread-list {
+  max-height: 230px;
+  overflow: auto;
+  font-size: 11px;
+}
+.spread-list > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+  gap: 12px;
+}
+.spread-header {
+  font-size: 9px;
+  color: var(--muted);
+}
+.qualifies {
+  color: var(--accent);
+  font-weight: 700;
+}
+.appraisal-tip {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 14px 0 0;
+}
+.appraisal-tip > span {
+  margin-right: 5px;
+  color: var(--accent);
+}
+.disclosure {
+  border-top: 1px solid var(--line);
+  margin: 0;
+}
+.disclosure:last-of-type {
+  border-bottom: 1px solid var(--line);
+}
+.disclosure > summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 16px 0;
+  list-style: none;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+}
+.disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.disclosure summary small {
+  display: block;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.disclosure > summary > span:last-child {
+  font:
+    21px ui-monospace,
+    monospace;
+  color: var(--accent);
+}
+.disclosure[open] > summary > span:last-child {
+  transform: rotate(45deg);
+}
+#watchlist,
+.notes {
+  padding: 0 0 17px;
+}
+.cp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 10px 0 15px;
+}
+.cp-chips button {
+  display: grid;
+  gap: 5px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  text-align: left;
+}
+.cp-chips strong {
+  font:
+    14px ui-monospace,
+    monospace;
+}
+.cp-chips span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.notes {
+  max-width: 760px;
+}
+.notes h3 {
+  font-size: 13px;
+  margin-top: 17px;
+}
+.notes p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.reference-intro {
+  padding: 0 0 13px;
+}
+.reference-intro h2 {
+  font-family: "Iowan Old Style", Georgia, serif;
+  font-size: 25px;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin: 7px 0 10px;
+  font-weight: 500;
+}
+.reference-intro > p:last-child {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 0;
+}
+.context-note {
+  border-left: 2px solid var(--accent);
+  padding: 5px 12px;
+  font-size: 11px;
+  line-height: 1.7;
+  margin: 0 0 18px;
+  max-width: 730px;
+}
+.context-note strong {
+  font-weight: 650;
+}
+#reference-search {
+  max-width: 500px;
+}
+.reference-table {
+  margin-top: 15px;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  text-align: left;
+}
+thead {
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--soft);
+}
+th,
+td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+tr:last-child > * {
+  border-bottom: 0;
+}
+th small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: 5px;
+}
+tbody th {
+  font-weight: 500;
+  font-size: 12px;
+}
+tbody td {
+  font:
+    18px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  font-variant-numeric: tabular-nums;
+}
+tbody tr:hover {
+  background: var(--soft);
+}
+tbody button {
+  font-size: 11px;
+  color: var(--accent);
+  padding: 8px 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  min-height: 44px;
+}
+.secondary {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  padding: 12px 17px;
+  font-size: 12px;
+  margin-top: 15px;
+}
+.ambiguity-options {
+  display: grid;
+  gap: 7px;
+  margin: 15px 0;
+}
+.ambiguity-options button {
+  display: grid;
+  gap: 5px;
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  background: var(--paper);
+  text-align: left;
+  font-size: 12px;
+}
+.ambiguity-options small {
+  color: var(--muted);
+  font-size: 11px;
+}
+footer {
+  border-top: 1px solid var(--line);
+  padding: 22px 0 28px;
+  margin-top: 26px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 10px;
+  color: var(--muted);
+}
+footer div {
+  display: flex;
+  gap: 17px;
+}
+footer p {
+  font-size: 10px;
+  line-height: 1.7;
+  max-width: 650px;
+  margin: 0;
+}
+.sr-only,
+.skip {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+.skip:focus {
+  clip: auto;
+  width: auto;
+  height: auto;
+  padding: 12px;
+  background: var(--paper);
+  z-index: 50;
+}
+.decision:focus {
+  outline: none;
+}
+.decision:focus-visible {
+  outline: 2px solid var(--focus);
+}
+#mobile-result {
+  display: none;
+}
+html[data-theme="dark"] {
+  --bg: #242321;
+  --paper: #2c2a27;
+  --ink: #f3eee4;
+  --muted: #c1b8aa;
+  --line: #625c51;
+  --soft: #36322c;
+  --accent: #f1a28a;
+  --focus: #f1a28a;
+  background: var(--bg);
+  color: var(--ink);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] {
+    --bg: #242321;
+    --paper: #2c2a27;
+    --ink: #f3eee4;
+    --muted: #c1b8aa;
+    --line: #625c51;
+    --soft: #36322c;
+    --accent: #f1a28a;
+    --focus: #f1a28a;
+    background: var(--bg);
+    color: var(--ink);
+    color-scheme: dark;
+  }
+}
+@media (max-width: 700px) {
+  .site-header {
+    height: 54px;
+    padding: 0 18px;
+  }
+  .brand {
+    font-size: 19px;
+  }
+  .header-note {
+    display: none;
+  }
+  .theme-button {
+    margin-left: auto;
+    width: 36px;
+    height: 36px;
+  }
+  main {
+    padding: 0 18px;
+  }
+  .intro {
+    padding: 17px 0 11px;
+  }
+  h1 {
+    font-size: 27px;
+  }
+  .intro .eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.8px;
+  }
+  .intro > p:last-child {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .view-tabs {
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .view-tabs button {
+    font-size: 11px;
+    padding: 11px 0;
+    min-height: 44px;
+  }
+  .workspace {
+    grid-template-columns: 1fr;
+    gap: 17px;
+    margin-bottom: 19px;
+  }
+  .input-card {
+    padding: 0;
+    border: 0;
+  }
+  .section-heading {
+    margin-bottom: 15px;
+  }
+  .section-heading h2 {
+    font-size: 10px;
+  }
+  .quick-picks {
+    margin: 6px 0 15px;
+  }
+  .quick-picks button {
+    min-height: 30px;
+    font-size: 11px;
+  }
+  fieldset {
+    margin-bottom: 16px;
+  }
+  .segmented button {
+    min-height: 51px;
+  }
+  .decision-column > .section-heading {
+    display: none;
+  }
+  .decision {
+    padding-top: 14px;
+  }
+  .decision h2 {
+    font-size: 24px;
+    max-width: none;
+  }
+  .decision-top {
+    margin-bottom: 13px;
+  }
+  .decision > p {
+    font-size: 12px;
+    line-height: 1.7;
+  }
+  .decision.empty .empty-message {
+    max-width: none;
+    font-size: 12px;
+  }
+  .result-context {
+    margin-top: 13px;
+    padding: 10px 0;
+    gap: 5px;
+  }
+  .appraisal-tip {
+    font-size: 11px;
+    margin-top: 11px;
+  }
+  .reference-intro h2 {
+    font-size: 24px;
+  }
+  .context-note {
+    font-size: 11px;
+  }
+  .reference-table th,
+  .reference-table td {
+    padding: 10px 7px;
+  }
+  .reference-table thead th {
+    font-size: 10px;
+    max-width: 98px;
+  }
+  .reference-table tbody th {
+    font-size: 11px;
+  }
+  .reference-table tbody td {
+    font-size: 17px;
+  }
+  .reference-table th small {
+    font-size: 9px;
+  }
+  tbody th small {
+    max-width: 115px;
+  }
+  tbody button {
+    font-size: 10px;
+  }
+  body:has(#mobile-result:not([hidden])) {
+    padding-bottom: 70px;
+  }
+  #mobile-result:not([hidden]) {
+    position: fixed;
+    z-index: 20;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    left: 12px;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 15px;
+    background: var(--ink);
+    color: var(--bg);
+    border: 1px solid var(--line);
+    text-align: left;
+    min-height: 50px;
+    box-shadow: 0 3px 12px #0002;
+  }
+  #mobile-result span {
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 550;
+    max-width: 220px;
+  }
+  #mobile-result strong {
+    font-size: 10px;
+    white-space: nowrap;
+    font-weight: 400;
+  }
+  body:has(#cp-input:focus) #mobile-result {
+    display: none !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+  }
+}
+/* Approved Option A: compact paired inputs and explicit conditional chance. */
+.primary-inputs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 108px;
+  gap: 13px;
+  align-items: end;
+}
+.primary-inputs .cp-entry {
+  height: 45px;
+  padding-left: 0;
+}
+.primary-inputs .cp-entry input {
+  padding: 7px 10px;
+  font-size: 25px;
+  min-height: 43px;
+}
+.primary-inputs .cp-entry input::placeholder {
+  font-size: 18px;
+}
+.language-toggle {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+}
+.language-toggle button {
+  font-size: 11px;
+  padding: 8px 7px;
+  min-height: 34px;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+}
+.language-toggle button[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: var(--accent);
+  font-weight: 650;
+}
+.chance-panel {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 14px 0 16px;
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.chance-value {
+  font:
+    500 47px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.chance-panel > div {
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 240px;
+}
+.chance-panel small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.context-chances {
+  margin-top: 17px;
+}
+.context-chances > section {
+  border-top: 1px solid var(--line);
+  padding: 12px 0;
+}
+.context-chances h3 {
+  font-size: 12px;
+  margin: 0;
+  font-weight: 650;
+}
+.context-chances .chance-panel {
+  border: 0;
+  padding: 0;
+  margin: 9px 0;
+}
+.context-chances .chance-value {
+  font-size: 33px;
+  letter-spacing: -1px;
+}
+.clarify {
+  font-size: 11px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--accent);
+}
+.context-calculation {
+  margin-top: 15px;
+}
+.context-calculation > h3 {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.original-perfect {
+  border-left: 2px solid var(--line);
+  padding-left: 11px;
+}
+.original-perfect strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.iv-table-wrap {
+  max-height: 350px;
+  overflow: auto;
+  margin-top: 13px;
+  overscroll-behavior: contain;
+}
+.iv-table {
+  font-size: 11px;
+}
+.iv-table caption {
+  text-align: left;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+  padding-bottom: 9px;
+}
+.iv-table thead {
+  position: sticky;
+  top: 0;
+}
+.iv-table th {
+  font-size: 10px;
+  font-weight: 500;
+  background: var(--soft);
+}
+.iv-table th,
+.iv-table td {
+  padding: 8px 6px;
+}
+.iv-table td {
+  font:
+    11px -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+.iv-table code {
+  font:
+    10px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  white-space: nowrap;
+}
+.iv-table .qualifies {
+  font-weight: 600;
+}
+html[lang="ja"] h1 {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    sans-serif;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+}
+html[lang="ja"] .decision h2 {
+  font-size: 24px;
+  line-height: 1.4;
+}
+html[lang="ja"] .chance-panel > div {
+  font-size: 11px;
+}
+html[lang="ja"] .view-tabs button {
+  letter-spacing: 0;
+}
+@media (max-width: 700px) {
+  .site-header {
+    gap: 9px;
+  }
+  .brand {
+    font-size: 18px;
+  }
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+    margin-right: 7px;
+  }
+  .theme-button {
+    margin-left: 0;
+    width: 32px;
+    height: 32px;
+    flex: none;
+  }
+  .language-toggle button {
+    font-size: 10px;
+    padding: 7px 5px;
+    min-height: 32px;
+  }
+  .primary-inputs {
+    grid-template-columns: minmax(0, 1fr) 97px;
+    gap: 11px;
+  }
+  .chance-value {
+    font-size: 42px;
+    letter-spacing: -1.5px;
+  }
+  .chance-panel {
+    gap: 13px;
+    margin: 12px 0 13px;
+    padding: 12px 0;
+  }
+  .chance-panel > div {
+    font-size: 11px;
+  }
+  .chance-panel small {
+    font-size: 10px;
+  }
+  .result-details summary {
+    min-height: 30px;
+  }
+  .iv-table td {
+    font-size: 10px;
+  }
+  .iv-table th,
+  .iv-table td {
+    padding: 8px 4px;
+  }
+  html[lang="ja"] h1 {
+    font-size: 24px;
+  }
+  html[lang="ja"] .decision h2 {
+    font-size: 22px;
+  }
+  html[lang="ja"] .chance-value {
+    font-size: 39px;
+  }
+  html[lang="ja"] .reference-table tbody th {
+    max-width: 108px;
+    overflow-wrap: anywhere;
+  }
+}
+.iv-table-wrap {
+  max-height: none;
+  overflow: visible;
+}
+.iv-table-wrap.scrollable {
+  max-height: 350px;
+  overflow: auto;
+  scrollbar-width: thin;
+}
+.scope-hint {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+  border-left: 2px solid var(--line);
+  padding: 4px 10px;
+  margin: 10px 0;
+}
+.scope-hint + #cp-context {
+  margin-top: 10px;
+}
+.reference-modes {
+  display: none;
+  gap: 0;
+  margin: 1rem 0;
+}
+.reference-modes button {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: inherit;
+  padding: 0.65rem 1rem;
+}
+.reference-modes button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+.species-reference,
+.cp-reference {
+  border: 0;
+  background: none;
+  color: inherit;
+  padding: 0.4rem 0;
+  cursor: pointer;
+}
+.species-reference {
+  text-align: left;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.cp-reference {
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.collision-icon {
+  width: 20px;
+  height: 15px;
+  margin-left: 4px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.4;
+  vertical-align: middle;
+  opacity: 0.65;
+}
+.collision-explanation {
+  display: none;
+}
+.cp-reference:focus-visible .collision-explanation {
+  display: block;
+  position: fixed;
+  z-index: 20;
+  bottom: 1rem;
+  left: 1rem;
+  right: 1rem;
+  max-width: 42rem;
+  margin: auto;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.8rem;
+  white-space: normal;
+  text-align: left;
+  box-shadow: 0 3px 14px #0003;
+}
+.reference-table thead th {
+  text-align: center;
+}
+.reference-table thead th:first-child {
+  text-align: left;
+}
+.reference-table td {
+  text-align: center;
+}
+#reference-dialog {
+  width: min(36rem, calc(100% - 2rem));
+  max-height: 85dvh;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 1.5rem;
+  background: var(--paper);
+  color: var(--ink);
+  overflow: auto;
+}
+#reference-dialog::backdrop {
+  background: #17151188;
+}
+#reference-dialog-close {
+  float: right;
+  background: none;
+  color: inherit;
+  border: 0;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.reference-matches {
+  border-top: 1px solid var(--line);
+  margin: 1rem 0;
+  padding-top: 0.7rem;
+}
+.reference-ivs {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-variant-numeric: tabular-nums;
+}
+.reference-ivs caption {
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 650;
+  padding-bottom: 0.7rem;
+}
+.reference-ivs th,
+.reference-ivs td {
+  padding: 0.45rem 0.3rem;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.reference-ivs th {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.reference-ivs td {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.reference-ivs th:last-child {
+  width: 30%;
+}
+.reference-ivs td:last-child {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.reference-ivs tr[data-perfect="true"] {
+  background: var(--soft);
+  font-weight: 650;
+}
+.reference-legend {
+  max-width: 70ch;
+}
+@media (max-width: 640px) {
+  .reference-modes {
+    display: flex;
+  }
+  .reference-table[data-mode="rocket"] [data-reference-group="raid"],
+  .reference-table[data-mode="raid"] [data-reference-group="rocket"] {
+    display: none;
+  }
+  .reference-table th,
+  .reference-table td {
+    padding: 0.6rem 0.35rem;
+  }
+  .reference-table {
+    overflow: visible;
+  }
+  .reference-table table {
+    min-width: 0;
+    width: 100%;
+    table-layout: fixed;
+  }
+  .reference-table th:first-child {
+    width: 38%;
+  }
+  .reference-table thead th {
+    font-size: 0.73rem;
+    overflow-wrap: anywhere;
+  }
+  .reference-table small {
+    font-size: 0.65rem;
+  }
+  .species-reference {
+    font-size: 0.85rem;
+    overflow-wrap: anywhere;
+  }
+  .cp-reference {
+    font-size: 0.95rem;
+  }
+  .collision-icon {
+    width: 16px;
+    margin-left: 2px;
+  }
+}
+
+
+/* Proposed refinement, limited to this static preview. */
+.reference-table .species-reference,.reference-table .cp-reference{text-decoration:none}
+.reference-table .species-reference{font-size:.9rem;font-weight:600;padding:.35rem .2rem;margin-left:-.2rem}
+.reference-table .species-reference:hover,.reference-table .cp-reference:hover{background:var(--soft);color:var(--accent)}
+.reference-table .species-reference:active,.reference-table .cp-reference:active{background:var(--line)}
+.reference-table th,.reference-table td{padding:.35rem .8rem;border-bottom:1px solid var(--line)}
+.reference-table td{text-align:right}
+.reference-table tbody th{font-size:.9rem}
+.reference-table tbody small{margin-top:.12rem;font-size:.68rem}
+.reference-table thead tr:nth-child(2) th{text-align:right;padding-right:2.4rem;font-size:.72rem;font-weight:600}
+.reference-table .cp-reference{display:inline-grid;grid-template-columns:5ch 1.1rem;gap:.3rem;align-items:center;min-height:2.25rem;padding:.2rem .2rem;font-size:1rem;line-height:1.4;border-radius:2px}
+.cp-value{text-align:right;font-variant-numeric:tabular-nums}
+.marker-slot{display:flex;align-items:center;justify-content:center;width:1.1rem;height:1.1rem;color:var(--accent)}
+[data-preview=dotted] .reference-table .cp-reference{grid-template-columns:5ch;gap:0}
+[data-preview=dotted] .cp-reference[data-ambiguous=true] .cp-value{text-decoration:underline dotted var(--accent);text-decoration-thickness:1px;text-underline-offset:5px}
+[data-preview=label] .reference-table .cp-reference{grid-template-columns:5ch 5rem}
+[data-preview=label] .ambiguity-label{width:5rem;justify-content:flex-start;font-size:.65rem;line-height:1.3;color:var(--muted);white-space:nowrap;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+
+.reference-intro h2{font-size:1.8rem;margin-bottom:.8rem}
+.reference-legend{margin:.6rem 0;font-size:.73rem}
+#reference-dialog{position:fixed;width:min(28rem,calc(100% - 1.5rem));padding:1.15rem;border-radius:3px;max-height:90dvh}
+#reference-dialog h2{font-size:1.25rem;line-height:1.25;letter-spacing:-.025em;margin:0 2.3rem .5rem 0}
+#reference-dialog-close{position:absolute;right:.7rem;top:.7rem;display:grid;place-items:center;float:none;width:30px;height:30px;padding:0;border:1px solid var(--line);border-radius:2px;font-size:1.25rem;line-height:1}
+#reference-dialog-close:hover{background:var(--soft)}
+#reference-dialog-content>p:first-child{font-size:.78rem;line-height:1.4;color:var(--muted);margin:.4rem 0 .8rem}
+#reference-dialog-content>.combination-count{font-size:.92rem;font-weight:600;line-height:1.4;margin:.6rem 0}
+.reference-matches{border:0;padding:0;margin:.7rem 0}
+.reference-ivs th,.reference-ivs td{padding:.45rem .35rem}
+.reference-ivs th{font-size:.7rem;width:33.333%}
+.reference-ivs th:last-child{width:33.333%}
+.reference-ivs td,.reference-ivs td:last-child{font-size:1rem;color:var(--ink);font-weight:400}
+.reference-ivs tr[data-perfect=true]{background:var(--soft)}
+.reference-assumptions{border-bottom:1px solid var(--line);margin:.2rem 0 .8rem;padding:.2rem 0 .65rem;font-size:.75rem;color:var(--muted)}
+.reference-assumptions summary{cursor:pointer;min-height:1.6rem;display:list-item;font-weight:500}
+.reference-assumptions p{font-size:.75rem;line-height:1.5;margin:.5rem 0}
+#use-reference-cp{width:100%;min-height:38px;padding:.4rem .65rem;font-size:.8rem;margin-top:.25rem}
+@media(max-width:640px){.reference-table th,.reference-table td{padding:.35rem .25rem}.reference-table .cp-reference{grid-template-columns:4.5ch 1rem;gap:.15rem}.reference-table thead tr:nth-child(2) th{padding-right:1.4rem}.reference-table .species-reference{font-size:.8rem}[data-preview=dotted] .reference-table .cp-reference{grid-template-columns:4.5ch}[data-preview=label] .reference-table th:first-child{width:34%}[data-preview=label] .reference-table .cp-reference{grid-template-columns:1fr;grid-template-rows:1.2rem .9rem;min-width:4.5rem;width:100%;font-size:.95rem;padding:.2rem 0}[data-preview=label] .ambiguity-label{width:auto;justify-content:flex-end;font-size:.7rem;height:.9rem}.reference-ivs th,.reference-ivs td{padding:.48rem .3rem}}
+</style></head>
+  <body>
+    <a class="skip" href="#decision">Skip to result</a>
+    <div id="app">
+<header class="site-header"><a class="brand" href="./" aria-label="Hundo Check home"><span class="brand-mark" aria-hidden="true">IV</span> Hundo<span>Check</span></a><div class="language-toggle" role="group" aria-label="Language"><button data-language="en" aria-pressed="true" lang="en">English</button><button data-language="ja" aria-pressed="false" lang="ja">日本語</button></div><button class="theme-button" aria-label="Toggle dark mode">◐</button></header>
+<main><div class="intro"><p class="eyebrow">POKÉMON GO / CP FIELD GUIDE</p><h1>Purified hundo check</h1></div>
+<nav class="view-tabs" aria-label="Tools"><button data-view="check" aria-current="false">Purification check</button><button data-view="reference" aria-current="page">Pokémon CP reference</button></nav>
+<section id="check-view" hidden=""><div class="workspace"><section class="input-card" aria-labelledby="setup-heading"><div class="section-heading"><h2 id="setup-heading">Your encounter</h2></div>
+<div class="primary-inputs"><div><label for="species-search">Pokémon</label><div class="species-picker"><input id="species-search" type="search" autocomplete="off" placeholder="Search Pokémon…" role="combobox" aria-expanded="false" aria-controls="species-list" aria-autocomplete="list" value="Weedle"><div id="species-list" role="listbox" aria-label="Pokémon search results" hidden=""></div></div></div><div><label for="cp-input">Catch CP</label><div class="cp-entry"><input id="cp-input" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="CP" aria-describedby="cp-context" aria-invalid="false" value=""></div></div></div>
+<p id="species-meta" class="field-note">#013 · Bug / Poison</p><div class="quick-picks" aria-label="Quick picks"><button data-species="MEWTWO">Mewtwo</button><button data-species="RATTATA">Rattata</button><button data-species="MAGIKARP">Magikarp</button><button data-species="BULBASAUR">Bulbasaur</button></div>
+<p class="scope-hint">Shadow catch CP only. CP cannot prove encounter availability.</p><p id="cp-context" class="field-note">Raid, Rocket and weather checked from catch CP</p></section>
+<section class="decision-column"><div class="section-heading" hidden=""><h2>Result</h2></div><div id="decision" role="status" aria-live="polite" aria-atomic="true" tabindex="-1" class="decision empty"><p class="empty-message">Enter CP to check for a possible purified hundo.</p></div><p class="appraisal-tip" hidden="">Appraisal confirms the IVs. Each must be at least 13 before purification.</p></section></div>
+<details class="disclosure watch"><summary><span><strong>Purifiable CP candidates</strong><small>A shortlist for this Pokémon and encounter</small></span><span aria-hidden="true">+</span></summary><div id="watchlist"><h3>Rocket encounter · Non-weather boosted</h3><div class="cp-chips"><button data-cp="102"><strong>102</strong><span>All qualify</span></button><button data-cp="101"><strong>101</strong><span>5/7 qualify</span></button><button data-cp="100"><strong>100</strong><span>7/18 qualify</span></button><button data-cp="99"><strong>99</strong><span>7/25 qualify</span></button><button data-cp="98"><strong>98</strong><span>3/41 qualify</span></button><button data-cp="97"><strong>97</strong><span>1/54 qualify</span></button></div><h3>Rocket encounter · Weather boosted</h3><div class="cp-chips"><button data-cp="169"><strong>169</strong><span>All qualify</span></button><button data-cp="168"><strong>168</strong><span>All qualify</span></button><button data-cp="167"><strong>167</strong><span>2/3 qualify</span></button><button data-cp="166"><strong>166</strong><span>6/9 qualify</span></button><button data-cp="165"><strong>165</strong><span>3/10 qualify</span></button><button data-cp="164"><strong>164</strong><span>4/13 qualify</span></button><button data-cp="163"><strong>163</strong><span>4/19 qualify</span></button><button data-cp="162"><strong>162</strong><span>3/23 qualify</span></button><button data-cp="161"><strong>161</strong><span>1/28 qualify</span></button></div><h3>Shadow raid · Non-weather boosted</h3><div class="cp-chips"><button data-cp="260"><strong>260</strong><span>All qualify</span></button><button data-cp="259"><strong>259</strong><span>All qualify</span></button><button data-cp="258"><strong>258</strong><span>All qualify</span></button><button data-cp="257"><strong>257</strong><span>2/3 qualify</span></button><button data-cp="256"><strong>256</strong><span>3/4 qualify</span></button><button data-cp="255"><strong>255</strong><span>3/5 qualify</span></button><button data-cp="254"><strong>254</strong><span>3/7 qualify</span></button><button data-cp="253"><strong>253</strong><span>3/8 qualify</span></button><button data-cp="252"><strong>252</strong><span>3/10 qualify</span></button><button data-cp="251"><strong>251</strong><span>2/11 qualify</span></button><button data-cp="250"><strong>250</strong><span>2/13 qualify</span></button><button data-cp="249"><strong>249</strong><span>1/14 qualify</span></button><button data-cp="248"><strong>248</strong><span>1/17 qualify</span></button></div><h3>Shadow raid · Weather boosted</h3><div class="cp-chips"><button data-cp="325"><strong>325</strong><span>All qualify</span></button><button data-cp="324"><strong>324</strong><span>All qualify</span></button><button data-cp="323"><strong>323</strong><span>All qualify</span></button><button data-cp="322"><strong>322</strong><span>1/2 qualify</span></button><button data-cp="321"><strong>321</strong><span>2/3 qualify</span></button><button data-cp="320"><strong>320</strong><span>All qualify</span></button><button data-cp="319"><strong>319</strong><span>3/5 qualify</span></button><button data-cp="318"><strong>318</strong><span>2/6 qualify</span></button><button data-cp="317"><strong>317</strong><span>1/5 qualify</span></button><button data-cp="316"><strong>316</strong><span>3/7 qualify</span></button><button data-cp="315"><strong>315</strong><span>3/7 qualify</span></button><button data-cp="314"><strong>314</strong><span>1/10 qualify</span></button><button data-cp="313"><strong>313</strong><span>1/11 qualify</span></button><button data-cp="312"><strong>312</strong><span>2/12 qualify</span></button><button data-cp="311"><strong>311</strong><span>1/10 qualify</span></button><button data-cp="310"><strong>310</strong><span>1/13 qualify</span></button></div></div></details></section>
+<section id="reference-view" aria-labelledby="reference-heading"><div class="reference-intro"><h2 id="reference-heading">Perfect CP reference</h2></div><div class="context-note">Rocket and raid catch references. Wild levels vary. Matching CP alone does not prove perfect IVs.</div><label for="reference-search" class="sr-only">Search CP reference</label><input id="reference-search" type="search" placeholder="Search species, form or Pokédex number…" autocomplete="off" value="Weedle"><p id="reference-count" class="field-note" aria-live="polite">Showing 1 of 1 species/forms</p><div class="reference-modes" role="group" aria-label="Reference group"><button data-ref-mode="rocket" aria-pressed="true">Rocket encounters</button><button data-ref-mode="raid" aria-pressed="false">Raids</button></div><p class="field-note reference-legend">Multiple IVs: this CP has more than one IV combination. Tap for details.</p><div class="reference-table" data-mode="rocket"><table><thead><tr><th scope="col" rowspan="2">Pokémon</th><th scope="colgroup" colspan="2" data-reference-group="rocket">Rocket encounters</th><th scope="colgroup" colspan="2" data-reference-group="raid">Raids</th></tr><tr><th scope="col" data-reference-group="rocket">Non-weather boosted</th><th scope="col" data-reference-group="rocket">Weather boosted</th><th scope="col" data-reference-group="raid">Non-weather boosted</th><th scope="col" data-reference-group="raid">Weather boosted</th></tr></thead><tbody id="reference-rows"><tr><th scope="row"><button class="species-reference" data-reference="WEEDLE">Weedle</button><small>#013 · Bug / Poison</small></th><td data-reference-group="rocket"><button class="cp-reference" data-cp-species="WEEDLE" data-cp-group="rocket" data-cp-boosted="false" aria-label="Weedle · Rocket encounters · Non-weather boosted · CP 102 · CP 102 matches 4 IV spreads here; CP alone does not prove perfect IVs." aria-describedby="hint-WEEDLE-rocket-false" data-ambiguous="true"><span class="cp-value">102</span><span class="marker-slot ambiguity-label" aria-hidden="true">Multiple IVs</span><span id="hint-WEEDLE-rocket-false" class="collision-explanation" role="tooltip">CP 102 matches 4 IV spreads here; CP alone does not prove perfect IVs.</span></button></td><td data-reference-group="rocket"><button class="cp-reference" data-cp-species="WEEDLE" data-cp-group="rocket" data-cp-boosted="true" aria-label="Weedle · Rocket encounters · Weather boosted · CP 169" data-ambiguous="false"><span class="cp-value">169</span><span class="marker-slot ambiguity-label" aria-hidden="true"></span></button></td><td data-reference-group="raid"><button class="cp-reference" data-cp-species="WEEDLE" data-cp-group="raid" data-cp-boosted="false" aria-label="Weedle · Raids · Non-weather boosted · CP 260" data-ambiguous="false"><span class="cp-value">260</span><span class="marker-slot ambiguity-label" aria-hidden="true"></span></button></td><td data-reference-group="raid"><button class="cp-reference" data-cp-species="WEEDLE" data-cp-group="raid" data-cp-boosted="true" aria-label="Weedle · Raids · Weather boosted · CP 325" data-ambiguous="false"><span class="cp-value">325</span><span class="marker-slot ambiguity-label" aria-hidden="true"></span></button></td></tr></tbody></table></div><button id="load-more" class="secondary" hidden="">Show more Pokémon</button><p class="field-note">Released species/forms; Mega, Primal and duplicate Shadow variants are excluded. A listing is not a current encounter rotation.</p></section>
+<details class="disclosure"><summary><span><strong>How the check works</strong><small>Mechanics, assumptions &amp; data</small></span><span aria-hidden="true">+</span></summary><div class="notes"><h3>CP narrows the possibilities. Appraisal confirms the IVs.</h3><p>Purification adds 2 to each IV, capped at 15. Each IV must be at least 13 beforehand. Shadow battle damage bonuses do not change catch CP.</p><p>We enumerate every legal IV triple at both catch levels and count exact integer CP matches. Shadow raids use levels 20/25 and a 6/6/6 floor. Rocket Grunts/Leaders use levels 8/13 and floors 0/0/0 or weather-boosted 4/4/4. Giovanni, research, powered-up Pokémon and special-event floors need different settings.</p><p>Only Shadow raid and Rocket Grunt/Leader catch CPs are supported. Normal raids, wild catches, Giovanni, research and powered-up Pokémon are outside this check. CP compatibility does not prove where a Pokémon came from, or that this species/form is currently or historically available in a particular encounter. Legendary, mythical and Ultra Beast classifications are excluded from standard Grunt/Leader assumptions. Other per-encounter availability is not asserted.</p><p>Chances assume equally likely legal IV rolls and the correct species, form and encounter. If both weather contexts fit, their probabilities stay separate; no prior probability of weather is assumed. A purifiable hundo is not always the best battle choice.</p><h3>Catalog and Japanese names</h3><p>Released species/forms from pinned PvPoke data. Japanese species/form names use pinned PokeAPI data and documented GO form display labels. Historical Shadow eligibility is not proof of current availability.</p><p>1073 released species/forms · snapshot 2026-10-21 · <a href="https://github.com/pvpoke/pvpoke/tree/4d2908fac68d882bb6b4bdbbf1123a71fb62da31">PvPoke</a> / <a href="https://github.com/PokeAPI/pokeapi/tree/2bf639e5572812a67d2b94903fdcb9d095f5aeb2">PokeAPI</a></p><p><a href="./advanced.html?lang=en">Advanced calculator →</a> Custom raid IV floors, manual base stats and detailed comparisons.</p></div></details>
+<footer><span>Calculated on your device.</span><div><a href="./privacy.html">Privacy</a><a href="https://github.com/Doomsday126dev/raid-iv-odds/issues/new">Feedback</a></div><p>Unofficial fan tool. Pokémon and game data belong to their respective owners. Not affiliated with Niantic, Scopely, Nintendo or The Pokémon Company.</p></footer></main><dialog id="reference-dialog" aria-labelledby="reference-dialog-title" open=""><button id="reference-dialog-close" aria-label="Close">×</button><h2 id="reference-dialog-title">Weedle · CP 102</h2><div id="reference-dialog-content"><p>Rocket encounters · Non-weather boosted</p><p class="combination-count">4 matching IV combinations</p><div class="reference-matches"><table class="reference-ivs"><caption class="sr-only">Matching IV spreads</caption><thead><tr><th scope="col">Attack</th><th scope="col">Defense</th><th scope="col">HP</th></tr></thead><tbody><tr data-perfect="false"><td>15</td><td>14</td><td>15</td></tr><tr data-perfect="false"><td>15</td><td>15</td><td>13</td></tr><tr data-perfect="false"><td>15</td><td>15</td><td>14</td></tr><tr data-perfect="true"><td>15</td><td>15</td><td>15</td></tr></tbody></table></div><details class="reference-assumptions"><summary>Calculation assumptions</summary><p>Calculation assumptions: catch level 8, minimum IVs 0/0/0.</p></details><button id="use-reference-cp" class="secondary">Use this CP in the checker</button></div></dialog></div>
+  
+
+<script>const d=document.querySelector('dialog');if(d?.open){d.close();d.showModal();}document.querySelector('#reference-dialog-close').onclick=()=>d.close();document.querySelectorAll('[data-ref-mode]').forEach(b=>b.onclick=()=>{document.querySelector('.reference-table').dataset.mode=b.dataset.refMode;document.querySelectorAll('[data-ref-mode]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));});document.querySelectorAll('.cp-reference[data-ambiguous=true]').forEach(b=>b.onclick=()=>{document.querySelector('#reference-dialog-title').textContent=b.closest('tr').querySelector('.species-reference').textContent+' · CP '+b.querySelector('.cp-value').textContent;document.querySelector('#reference-dialog-content').textContent=b.querySelector('.collision-explanation').textContent;d.showModal();});</script></body></html>
