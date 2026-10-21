@@ -191,7 +191,8 @@ for (const lang of ["en", "ja"])
             "</head>",
             `<style>${css}\n${variant !== "before" ? refinedCss : ""}</style></head>`,
           )
-          .replace("</body>", script + "</body>"),
+          .replace("</body>", script + "</body>")
+          .replace(/[ \t]+$/gm, "") + "\n",
       );
     }
   }
