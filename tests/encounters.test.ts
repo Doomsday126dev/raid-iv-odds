@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
-import { encounterFloor, encounterLevel } from "../src/encounters.ts";
+import {
+  analyzeEncounter,
+  encounterFloor,
+  encounterLevel,
+} from "../src/encounters.ts";
 import {
   cpFor,
   summarizeCp,
@@ -105,5 +109,47 @@ test("catalog has ordinary species, distinct regional forms and no transformed d
     catalog.pokemon.every(
       (p: { id: string }) => !/(?:_shadow|_mega|_primal)(?:_|$)/i.test(p.id),
     ),
+  );
+});
+
+test("full precision CPM preserves Charizard CP640 collision boundary", () => {
+  const level = encounterLevel("rocket", false),
+    p = get("CHARIZARD");
+  assert.equal(level.cpm, 0.375235587358474);
+  assert.equal(cpFor(p, 14, 10, 15, level.cpm), 639);
+  const s = summarizeCp(p, level, 640, 0, 2);
+  assert.equal(s.total, 10);
+  assert.equal(s.good, 1);
+  assert.equal(encounterLevel("rocket", true).cpm, 0.481684952974319);
+});
+
+test("weather inference handles unique, conflicting, absent and same-conclusion contexts", () => {
+  const p = get("BULBASAUR");
+  assert.deepEqual(
+    analyzeEncounter(p, "rocket", 243).matches.map((c) => c.boosted),
+    [false],
+  );
+  assert.deepEqual(
+    analyzeEncounter(p, "rocket", 414).matches.map((c) => c.boosted),
+    [true],
+  );
+  assert.equal(analyzeEncounter(p, "rocket", 99999).outcome, "invalid");
+  const conflict = analyzeEncounter(get("SHUCKLE"), "rocket", 91);
+  assert.equal(conflict.outcome, "ambiguous");
+  assert.equal(conflict.matches.length, 2);
+  assert.deepEqual(
+    conflict.matches.map((c) => [c.summary.good, c.summary.total]),
+    [
+      [3, 4],
+      [0, 1],
+    ],
+  );
+  const same = analyzeEncounter({ atk: 1, def: 1, sta: 1 }, "rocket", 10);
+  assert.equal(same.matches.length, 2);
+  assert.equal(same.outcome, "candidate");
+  assert.equal(analyzeEncounter(p, "raid", 243).outcome, "invalid");
+  assert.equal(
+    analyzeEncounter(get("MEWTWO"), "raid", 2984).matches[0]!.boosted,
+    true,
   );
 });

@@ -62,13 +62,13 @@ export const RAID_LEVELS: readonly RaidLevel[] = Object.freeze([
     key: "normal",
     label: "Non-weather boosted",
     level: 20,
-    cpm: 0.59740001,
+    cpm: 0.597400009632110,
   }),
   Object.freeze({
     key: "boosted",
     label: "Weather boosted",
     level: 25,
-    cpm: 0.667934,
+    cpm: 0.667934000492096,
   }),
 ]);
 

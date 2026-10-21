@@ -10,10 +10,10 @@ const TEXT = {
     steps: [
       "Pick the raid boss before or during the encounter. The app fills in base stats automatically.",
       "Keep Shadow raid: 6/6/6 and purify bonus +2 for normal shadow legendary raids.",
-      "When the catch screen shows the CP, type that CP before spending extra balls, berries, or, most importantly, time.",
-      "If the result is 0%, you can save effort because that CP cannot purify to hundo. If it is mixed or guaranteed, keep trying and use the odds/watchlist to understand how strong the CP is.",
+      "When the catch screen shows the CP, type that CP to calculate compatible IV spreads.",
+      "For a valid encounter, a 0% result has no purified-hundo IV spread. Mixed results need appraisal to confirm.",
     ],
-    exampleTitle: "Why this saves time",
+    exampleTitle: "What CP can tell you",
     example:
       "Once you catch the Pokemon, you can just appraise the IVs in-game. This tool is mainly for the moment before you know the IVs: it checks whether the visible CP has any purified-hundo path, including CPs that come from multiple IV spreads.",
   },
@@ -135,4 +135,5 @@ function init(): void {
   });
 }
 
-document.addEventListener("DOMContentLoaded", init);
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
+else init();

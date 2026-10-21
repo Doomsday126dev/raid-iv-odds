@@ -4,7 +4,7 @@ test("primary check handles mixed, impossible and no-purification outcomes", asy
 }) => {
   await page.goto("?species=MAGIKARP&encounter=rocket&cp=61");
   await expect(page.locator("#decision h2")).toHaveText(
-    "Worth checking appraisal",
+    "Possible purified hundo",
   );
   await page.getByText("Why this result?").click();
   await expect(page.locator("#decision")).toContainText("80%");
@@ -21,9 +21,7 @@ test("primary check handles mixed, impossible and no-purification outcomes", asy
   await expect(page.locator("#decision h2")).toHaveText(
     "Cannot purify to a hundo",
   );
-  await expect(page.locator("#cp-context")).toContainText(
-    "Level 13 · IV floor 4/4/4",
-  );
+  await expect(page.locator("#cp-context")).toContainText("Weather boosted");
 });
 test("search supports keyboard selection, forms, weather and watchlist", async ({
   page,
@@ -40,14 +38,14 @@ test("search supports keyboard selection, forms, weather and watchlist", async (
   await expect(page.locator("#decision h2")).toHaveText(
     "Every match can purify to a hundo",
   );
-  await page.getByText("CPs worth checking", { exact: true }).click();
+  await page.getByText("Purifiable CP candidates", { exact: true }).click();
   await page.locator("[data-cp]").first().click();
   await expect(page.locator("#cp-input")).not.toHaveValue("");
   await search.fill("Rattata");
   await page.locator("[data-choice=RATTATA_ALOLAN]").click();
   await expect(search).toHaveValue("Rattata (Alolan)");
-  await page.locator("[data-weather=boosted]").click();
-  await expect(page.locator("#cp-context")).toContainText("Level 13");
+  await page.locator("#cp-input").fill("273");
+  await expect(page.locator("#cp-context")).toContainText("Weather boosted");
 });
 test("reference shows ordinary species CPs, collision caveat and routes to Rocket", async ({
   page,
@@ -58,18 +56,20 @@ test("reference shows ordinary species CPs, collision caveat and routes to Rocke
   await expect(row).toContainText("251");
   await expect(row).toContainText("414");
   await expect(page.locator(".context-note")).toContainText(
-    "matching CP alone does not prove perfect IVs",
+    "Matching CP alone does not prove perfect IVs",
   );
   await page.screenshot({
     path: `qa/${test.info().project.name}-reference.png`,
     fullPage: true,
   });
   await row.getByRole("button").click();
-  await expect(page.locator("#cp-context")).toContainText("Level 8");
+  await expect(page.locator("#cp-context")).toContainText(
+    "Weather boost detected",
+  );
   await expect(page.locator("#species-search")).toHaveValue("Bulbasaur");
   await page.locator("#cp-input").fill("243");
   await expect(page.locator("#decision h2")).toHaveText(
-    "Worth checking appraisal",
+    "Possible purified hundo",
   );
   await expect(page.locator("body")).not.toHaveJSProperty("scrollWidth", 0);
   expect(
@@ -103,4 +103,81 @@ test("visual QA: result, dark mode, mobile layout and legacy advanced", async ({
   await page.goto("advanced.html");
   await expect(page.locator("#pageTitle")).toHaveText("Purified Hundo Odds");
   expect(errors).toEqual([]);
+});
+
+test("legacy shared form URLs and custom/hash state retain original calculator contract", async ({
+  page,
+}) => {
+  for (const query of [
+    "?pokemon=Giratina%20Altered&cp=1931",
+    "?boss=Articuno%20Galarian&cp=1234&floor=3/4/5",
+    "#?boss=Giratina%20Origin&cp=2105&floor=4/5/6&weather=boosted",
+  ]) {
+    await page.goto(`./${query}`);
+    await expect(page).toHaveURL(/advanced\.html/);
+    const expected = query.includes("Altered")
+      ? "Giratina Altered"
+      : query.includes("Articuno")
+        ? "Articuno Galarian"
+        : "Giratina Origin";
+    await expect(page.locator("#pokemonSelect")).toHaveValue(expected);
+    if (query.includes("3/4/5")) {
+      await expect(page.locator("#floorAtkInput")).toHaveValue("3");
+      await expect(page.locator("#floorDefInput")).toHaveValue("4");
+      await expect(page.locator("#floorStaInput")).toHaveValue("5");
+    }
+  }
+});
+test("unknown species never silently calculates Mewtwo, and uncommitted searches suppress verdicts", async ({
+  page,
+}) => {
+  await page.goto("?species=UNKNOWN&encounter=rocket&cp=61");
+  await expect(page.locator("#species-search")).toHaveValue("");
+  await expect(page.locator("#decision h2")).toHaveText(
+    "Choose a Pokémon from the list",
+  );
+  await page.goto("?species=MAGIKARP&encounter=rocket&cp=61");
+  await page.locator("#species-search").fill("Missing Pokemon");
+  await expect(page.locator("#decision h2")).toHaveText(
+    "Choose a Pokémon from the list",
+  );
+  await expect(page.locator("#mobile-result")).toBeHidden();
+});
+test("empty result remains a compact contextual hint", async ({ page }) => {
+  await page.goto("");
+  const box = await page.locator("#decision").boundingBox();
+  expect(box!.height).toBeLessThan(85);
+  await expect(page.locator("#decision")).toContainText("Enter CP");
+  await expect(page.locator(".empty-guide")).toHaveCount(0);
+  await page.screenshot({
+    path: `qa/${test.info().project.name}-empty.png`,
+    fullPage: true,
+  });
+});
+test("weather is inferred automatically and only conflicting contexts ask for clarification", async ({
+  page,
+}) => {
+  await page.goto("?species=BULBASAUR&encounter=rocket&cp=243");
+  await expect(page.locator("[data-weather]")).toHaveCount(0);
+  await expect(page.locator("#cp-context")).toContainText(
+    "Non-weather boosted",
+  );
+  await page.locator("#cp-input").fill("414");
+  await expect(page.locator("#cp-context")).toContainText("Weather boosted");
+  await page.goto("?species=SHUCKLE&encounter=rocket&cp=91");
+  await expect(page.locator("#decision h2")).toHaveText(
+    "Confirm the weather boost",
+  );
+  await page.getByText("Why this result?").click();
+  await expect(page.locator("#decision")).toContainText(
+    "No combined probability",
+  );
+  await page.locator("[data-clarify=false]").click();
+  await expect(page.locator("#decision h2")).toHaveText(
+    "Possible purified hundo",
+  );
+  await page.locator("#cp-input").fill("92");
+  await expect(page.locator("[data-clarify]")).toHaveCount(0);
+  await page.locator("[data-encounter=raid]").click();
+  await expect(page.locator("#cp-input")).toHaveValue("");
 });

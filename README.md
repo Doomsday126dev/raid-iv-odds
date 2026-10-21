@@ -3,8 +3,8 @@
 A mobile-first Pokémon GO tool for deciding whether a Shadow catch is worth checking for a purified hundo.
 
 - Search 1,073 released species/forms, including ordinary Pokémon.
-- Select Shadow raid (20/25) or Rocket Grunt/Leader (8/13), weather and catch CP.
-- Get one clear next step; expand exact IV matches and probability details when needed.
+- Select Shadow raid or Rocket Grunt/Leader and enter catch CP; weather conditions are inferred automatically.
+- Get one factual result; expand exact IV matches and probability details when needed.
 - Search a separate level 8/13 **15/15/15 CP reference**. These are Rocket catch levels; normal wild levels vary. Matching CP alone does not prove perfect IVs.
 - Use the advanced calculator for custom raid floors, manual stats, Japanese and detailed comparisons.
 
@@ -21,7 +21,7 @@ npm run build
 npm run test:ui
 ```
 
-`npm run preview` serves the production build locally. UI tests use installed Chrome, with desktop and iPhone 13 viewport/device emulation. Screenshots go to qa/.
+`npm run preview` serves the production build locally. UI tests use installed Chrome and Playwright WebKit, with desktop and iPhone 13 viewport/device emulation. Install matching WebKit with `npx playwright install webkit` first. Four service-worker cases are explicitly skipped in WebKit; Chromium covers them. Screenshots go to qa/.
 
 Catalog refresh, sources, mechanics, audit, verification and limitations: [docs/REDESIGN.md](docs/REDESIGN.md). PvPoke MIT attribution: [docs/PVPOKE-LICENSE.txt](docs/PVPOKE-LICENSE.txt).
 

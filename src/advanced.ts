@@ -1,5 +1,6 @@
 import { DATA_LAST_REVIEWED, POKEMON, type Pokemon } from "./data";
 import "../styles.css";
+import "./advanced-theme.css";
 import "./ux-enhancements";
 import {
   MAX_IV,
@@ -109,10 +110,10 @@ const TEXT = {
     quickPicksLabel: "Quick picks",
     advancedSettings: "Advanced Settings",
     viewControls: "View controls",
-    prioritySkip: "Skip",
+    prioritySkip: "No hundo path",
     priorityMaybe: "Maybe",
-    priorityHigh: "High priority",
-    priorityCatch: "Catch",
+    priorityHigh: "High probability",
+    priorityCatch: "All matches qualify",
     whyLabel: "Why?",
     manualBaseStats: "Manual base stats",
     baseAttack: "Base attack",
@@ -1469,12 +1470,13 @@ function loadStateFromUrl(): SavedState {
   const weather = params.get("weather");
 
   if (pokemon && POKEMON.some((entry) => pokemonNameMatches(entry, pokemon))) {
+    state.manualStats = false;
     state.selectedName =
       POKEMON.find((entry) => pokemonNameMatches(entry, pokemon))?.name || pokemon;
   }
 
   if (cp) state.cp = clampInt(cp, MIN_CP, 99999, MIN_CP);
-  if (floor) state.raidFloor = parseFloorParam(floor);
+  if (floor) { state.raidFloor = parseFloorParam(floor); state.customFloor = normalizeIvFloor(state.raidFloor); }
   if (weather === "boosted" || weather === "normal") state.weather = weather;
   return state;
 }
@@ -1634,4 +1636,5 @@ function byId<T extends HTMLElement>(id: string): T {
   return element as T;
 }
 
-document.addEventListener("DOMContentLoaded", init);
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once: true });
+else init();

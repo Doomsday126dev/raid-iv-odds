@@ -1,0 +1,34 @@
+/* Preserve advanced controls, with the same warm-paper/ink palette. */
+:root,
+:root[data-accent] {
+  --bg: #f5f2eb;
+  --bg-top: #ece7dc;
+  --surface-muted: #ece7dc;
+  --ink: #292722;
+  --muted: #665f56;
+  --line: #cec7bb;
+  --line-strong: #aaa192;
+  --accent: #a63725;
+  --accent-line: #c7988a;
+  --accent-soft: #f1e4dc;
+  --green: #924332;
+  --green-soft: #efe2da;
+  --accent-ink: #fffdf8;
+}
+:root[data-theme="dark"],
+:root[data-theme="dark"][data-accent] {
+  --bg: #242321;
+  --bg-top: #36322c;
+  --surface-solid: #2c2a27;
+  --surface-muted: #36322c;
+  --ink: #f3eee4;
+  --muted: #c1b8aa;
+  --line: #625c51;
+  --line-strong: #8e8475;
+  --accent: #f1a28a;
+  --accent-line: #a87361;
+  --accent-soft: #453830;
+  --green: #e9bca5;
+  --green-soft: #453830;
+  --accent-ink: #242321;
+}
