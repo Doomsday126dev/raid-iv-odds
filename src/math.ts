@@ -4,16 +4,18 @@ export type BaseStats = {
   sta: number;
 };
 
-export type IvFloor = number | {
-  a: number;
-  d: number;
-  s: number;
-};
+export type IvFloor =
+  | number
+  | {
+      a: number;
+      d: number;
+      s: number;
+    };
 
 export type RaidLevel = {
   key: "normal" | "boosted";
   label: string;
-  level: 20 | 25;
+  level: 8 | 13 | 20 | 25;
   cpm: number;
 };
 
@@ -62,13 +64,13 @@ export const RAID_LEVELS: readonly RaidLevel[] = Object.freeze([
     key: "normal",
     label: "Non-weather boosted",
     level: 20,
-    cpm: 0.59740001,
+    cpm: 0.59740000963211,
   }),
   Object.freeze({
     key: "boosted",
     label: "Weather boosted",
     level: 25,
-    cpm: 0.667934,
+    cpm: 0.667934000492096,
   }),
 ]);
 
@@ -77,16 +79,29 @@ function toInt(value: unknown, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-export function clampInt(value: unknown, min: number, max: number, fallback: number): number {
+export function clampInt(
+  value: unknown,
+  min: number,
+  max: number,
+  fallback: number,
+): number {
   return Math.min(max, Math.max(min, toInt(value, fallback)));
 }
 
-export function cpFor(baseStats: BaseStats, ivAtk: number, ivDef: number, ivSta: number, cpm: number): number {
+export function cpFor(
+  baseStats: BaseStats,
+  ivAtk: number,
+  ivDef: number,
+  ivSta: number,
+  cpm: number,
+): number {
   const attack = Number(baseStats.atk) + Number(ivAtk);
   const defense = Number(baseStats.def) + Number(ivDef);
   const stamina = Number(baseStats.sta) + Number(ivSta);
 
-  const cp = Math.floor((attack * Math.sqrt(defense) * Math.sqrt(stamina) * cpm * cpm) / 10);
+  const cp = Math.floor(
+    (attack * Math.sqrt(defense) * Math.sqrt(stamina) * cpm * cpm) / 10,
+  );
   return Math.max(MIN_CP, cp);
 }
 
@@ -94,7 +109,10 @@ export function purifiedIv(iv: number, purifyBonus: number): number {
   return Math.min(MAX_IV, Number(iv) + Number(purifyBonus));
 }
 
-export function isPurifiedHundo(combo: Pick<IvCombo, "a" | "d" | "s">, purifyBonus: number): boolean {
+export function isPurifiedHundo(
+  combo: Pick<IvCombo, "a" | "d" | "s">,
+  purifyBonus: number,
+): boolean {
   return (
     purifiedIv(combo.a, purifyBonus) === MAX_IV &&
     purifiedIv(combo.d, purifyBonus) === MAX_IV &&
@@ -106,7 +124,11 @@ export function purifiedThreshold(purifyBonus: number): number {
   return Math.max(0, MAX_IV - Math.max(0, Number(purifyBonus)));
 }
 
-export function normalizeIvFloor(raidFloor: IvFloor): { a: number; d: number; s: number } {
+export function normalizeIvFloor(raidFloor: IvFloor): {
+  a: number;
+  d: number;
+  s: number;
+} {
   if (typeof raidFloor === "object" && raidFloor) {
     return {
       a: clampInt(raidFloor.a, 0, MAX_IV, 6),
@@ -143,7 +165,7 @@ export function combinationTotals(
     total,
     good,
     bad: total - good,
-    odds: totalOptions ? good / total : 0,
+    odds: total ? good / total : 0,
   };
 }
 
@@ -191,7 +213,12 @@ export function summarizeCp(
   raidFloor: IvFloor,
   purifyBonus: number,
 ): CpSummary {
-  const buckets = enumerateCpBuckets(baseStats, raidLevel, raidFloor, purifyBonus);
+  const buckets = enumerateCpBuckets(
+    baseStats,
+    raidLevel,
+    raidFloor,
+    purifyBonus,
+  );
   const targetCp = toInt(cp, 0);
   const combos = buckets.get(targetCp) || [];
   const goodCombos = combos.filter((combo) => combo.good);
@@ -215,7 +242,9 @@ export function summarizeCp(
   };
 }
 
-function watchlistRowsFromBuckets(buckets: Map<number, IvCombo[]>): WatchlistRow[] {
+function watchlistRowsFromBuckets(
+  buckets: Map<number, IvCombo[]>,
+): WatchlistRow[] {
   return Array.from(buckets.entries())
     .map(([cp, combos]) => {
       const goodCombos = combos.filter((combo) => combo.good);
@@ -232,7 +261,11 @@ function watchlistRowsFromBuckets(buckets: Map<number, IvCombo[]>): WatchlistRow
     .sort((a, b) => b.cp - a.cp);
 }
 
-function nearestRows(rows: WatchlistRow[], cp: number, limit: number): WatchlistRow[] {
+function nearestRows(
+  rows: WatchlistRow[],
+  cp: number,
+  limit: number,
+): WatchlistRow[] {
   return rows
     .slice()
     .sort((a, b) => {
@@ -247,7 +280,10 @@ export function maxCpFor(baseStats: BaseStats, raidLevel: RaidLevel): number {
   return cpFor(baseStats, MAX_IV, MAX_IV, MAX_IV, raidLevel.cpm);
 }
 
-function simplifyFraction(numerator: number, denominator: number): { numerator: number; denominator: number } {
+function simplifyFraction(
+  numerator: number,
+  denominator: number,
+): { numerator: number; denominator: number } {
   if (!denominator) return { numerator: 0, denominator: 0 };
 
   function gcd(a: number, b: number): number {
@@ -266,9 +302,9 @@ export function formatPercent(value: number): string {
   if (value === 1) return "100%";
 
   const percent = value * 100;
-  if (percent < 1) return `${percent.toFixed(2)}%`;
-  if (percent < 10) return `${percent.toFixed(1)}%`;
-  return `${percent.toFixed(0)}%`;
+  if (percent < 0.01) return "<0.01%";
+  if (percent > 99.99) return ">99.99%";
+  return `${Number(percent.toFixed(2))}%`;
 }
 
 export function formatRatio(good: number, total: number): string {

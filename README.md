@@ -1,52 +1,30 @@
-# Raid IV Odds
+# Hundo Check / Raid IV Odds
 
-A mobile-friendly calculator for checking Shadow Raid catch CPs and purified-hundo odds in Pokemon GO.
+A mobile-first Pokémon GO tool for checking whether a Shadow catch can become a purified hundo.
 
-Live app:
+- Search 1,073 released species/forms, including ordinary Pokémon.
+- Enter Pokémon and catch CP; supported Shadow raid/Rocket and weather contexts are inferred automatically.
+- Get one factual result; expand exact IV matches and probability details when needed.
+- Search grouped Rocket and raid perfect-CP references for both weather conditions. Tap a CP to inspect exact IV collisions; normal wild levels vary. Matching CP alone does not prove perfect IVs.
+- Switch the complete main interface and species/form search between English and 日本語.
+- Read conditional purified-hundo percentages and exact qualifying IV tables, separately from already-perfect IV odds.
+- Use the advanced calculator for custom raid floors, manual stats and detailed comparisons.
 
-```text
-https://doomsday126dev.github.io/raid-iv-odds/
-```
+Live: https://doomsday126dev.github.io/raid-iv-odds/ (review branches do not change production).
 
-Feedback and corrections:
-
-```text
-https://github.com/doomsday126dev/raid-iv-odds/issues/new?template=feedback.yml
-```
-
-## What It Does
-
-- Checks level 20 and weather-boosted level 25 raid catch CPs.
-- Calculates the odds that a matching IV spread purifies to 15/15/15.
-- Handles CP collisions where the same CP can come from multiple IV spreads.
-- Supports custom raid IV floors and purification bonuses.
-- Shows eligible CP watchlists for the selected boss.
-- Supports English and Japanese, dark mode, shareable URLs, and Add to Home Screen.
-
-There is also an Excel workbook in `outputs/raid-iv-odds/` for people who want an offline spreadsheet version.
-
-## Local Development
+## Development
 
 ```sh
-npm install
+npm ci
 npm run dev
-```
-
-Useful checks:
-
-```sh
-npm run test
+npm test
 npm run build
+# With local preview running and Google Chrome installed:
+npm run test:ui
 ```
 
-## Data
+`npm run preview` serves the production build locally. UI tests use installed Chrome and Playwright WebKit, with desktop and iPhone 13 viewport/device emulation. Install matching WebKit with `npx playwright install webkit` first. Four service-worker cases are explicitly skipped in WebKit; Chromium covers them. Screenshots go to qa/.
 
-Pokemon base stats and localized names live in `src/data.ts`. CP and IV calculations live in `src/math.ts`.
+Catalog refresh, sources, mechanics, audit, verification and limitations: [docs/REDESIGN.md](docs/REDESIGN.md). PvPoke MIT attribution: [docs/PVPOKE-LICENSE.txt](docs/PVPOKE-LICENSE.txt).
 
-If a boss/form is missing or a stat looks wrong, please open a feedback issue with the boss name, CP, and raid scenario.
-
-## Privacy And Disclaimer
-
-The app runs in the browser and does not require an account. Calculator inputs are processed on-device.
-
-Unofficial fan-made calculator. Not affiliated with, sponsored by, endorsed by, or approved by Niantic, Scopely, The Pokemon Company, Nintendo, Creatures, or GAME FREAK. Pokemon and related names are trademarks of their respective owners.
+The app runs on-device, requires no account, and sends no calculator inputs to a server. Unofficial fan tool, not affiliated with Niantic, Scopely, The Pokémon Company, Nintendo, Creatures or GAME FREAK. Pokémon/game data belong to their owners. Confirm encounter settings and appraisal in-game.

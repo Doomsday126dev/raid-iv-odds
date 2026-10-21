@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shadow Raid Purified Hundo Odds</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'none'; script-src 'self' https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com https://formspree.io; img-src 'self' data:; style-src 'self' 'unsafe-inline'; manifest-src 'self'; worker-src 'self'"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="robots" content="index,follow" />
+    <meta
+      name="description"
+      content="A mobile-friendly Shadow Raid IV calculator for checking purified hundo odds from catch CP."
+    />
+    <meta name="theme-color" content="#0a7775" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Raid IV Odds" />
+    <link rel="manifest" href="/raid-iv-odds/manifest.json" />
+    <link rel="icon" href="/raid-iv-odds/assets/icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/raid-iv-odds/assets/apple-touch-icon.png" />
+    <script type="module" src="/src/advanced.ts"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#resultsGrid" data-i18n="skipToResults">Skip to results</a>
+    <main class="app-shell"><a href="./">← Back to Hundo Check</a>
+      <section class="topline" aria-labelledby="pageTitle">
+        <div class="brand-block">
+          <div class="app-mark" aria-hidden="true">IV</div>
+          <div>
+            <p class="eyebrow" data-i18n="eyebrow">Unofficial raid IV tool</p>
+            <h1 id="pageTitle" data-i18n="appTitle">Purified Hundo Odds</h1>
+          </div>
+        </div>
+
+        <details class="settings-drawer">
+          <summary class="settings-summary">Settings</summary>
+          <div class="appearance-panel" aria-label="Display options" data-i18n-aria-label="displayOptions">
+            <div class="appearance-group">
+              <span class="appearance-label"><span aria-hidden="true">🌐</span> <span data-i18n="languageLabel">Language</span></span>
+              <div class="segmented language-segment" aria-label="Language" data-i18n-aria-label="languageLabel">
+                <button type="button" data-language-choice="en">EN</button>
+                <button type="button" data-language-choice="ja">日本語</button>
+              </div>
+            </div>
+            <div class="appearance-group">
+              <span class="appearance-label"><span aria-hidden="true">🌓</span> <span data-i18n="themeLabel">Theme</span></span>
+              <div class="segmented" aria-label="Theme" data-i18n-aria-label="themeLabel">
+                <button type="button" data-theme-choice="system" data-i18n="themeSystem">System</button>
+                <button type="button" data-theme-choice="light" data-i18n="themeLight">Light</button>
+                <button type="button" data-theme-choice="dark" data-i18n="themeDark">Dark</button>
+              </div>
+            </div>
+            <div class="appearance-group">
+              <span class="appearance-label"><span aria-hidden="true">🎨</span> <span data-i18n="accentLabel">Accent</span></span>
+              <div class="segmented palette-segment" aria-label="Accent color" data-i18n-aria-label="accentLabel">
+                <button type="button" data-accent-choice="aqua" data-i18n="accentAqua">Aqua</button>
+                <button type="button" data-accent-choice="mystic" data-i18n="accentMystic">Mystic</button>
+                <button type="button" data-accent-choice="valor" data-i18n="accentValor">Valor</button>
+                <button type="button" data-accent-choice="instinct" data-i18n="accentInstinct">Instinct</button>
+                <button type="button" data-accent-choice="harmony" data-i18n="accentHarmony">Harmony</button>
+              </div>
+            </div>
+          </div>
+        </details>
+        <div class="sr-only" id="languageStatus" aria-live="polite"></div>
+
+        <div class="hundo-hints" id="hundoHints" aria-live="polite"></div>
+      </section>
+
+      <section class="raid-flow" aria-label="Raid lookup" data-i18n-aria-label="raidLookup">
+        <div class="field raid-field boss-field">
+          <label for="flowPokemonSelect" data-i18n="pokemonLabel">Pokémon</label>
+          <select id="flowPokemonSelect"></select>
+          <span class="field-help" data-i18n="pokemonSearchHelp">Type a boss name in English or Japanese.</span>
+          <div class="quick-picks" aria-label="Quick picks" data-i18n-aria-label="quickPicksLabel">
+            <span data-i18n="quickPicksLabel">Quick picks</span>
+            <div id="quickPickButtons" class="quick-pick-buttons"></div>
+          </div>
+        </div>
+
+        <div class="field raid-field cp-field">
+          <label for="flowCpInput" data-i18n="observedCpLabel">Observed CP</label>
+          <div class="cp-stepper">
+            <button class="stepper-button" type="button" data-flow-cp-step="-1" aria-label="Decrease CP" data-i18n-aria-label="decreaseCp">-</button>
+            <input id="flowCpInput" inputmode="numeric" pattern="[0-9]*" type="text" />
+            <button class="stepper-button" type="button" data-flow-cp-step="1" aria-label="Increase CP" data-i18n-aria-label="increaseCp">+</button>
+          </div>
+          <span class="field-help" data-i18n="observedCpHelp">Enter the CP shown on the catch screen.</span>
+          <span class="field-help cp-validation" id="flowCpValidation"></span>
+        </div>
+
+        <div class="field raid-field weather-field">
+          <span data-i18n="weatherSelectorLabel">Weather</span>
+          <div class="segmented weather-segment" aria-label="Weather" data-i18n-aria-label="weatherSelectorLabel">
+            <button type="button" data-weather-choice="normal" data-i18n="nonWeatherShort">Not boosted</button>
+            <button type="button" data-weather-choice="boosted" data-i18n="weatherBoostedShort">Boosted</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="insight-surface" aria-label="Current verdict">
+        <div class="primary-insight" id="primaryInsight"></div>
+      </section>
+
+      <div class="state-controls" aria-hidden="true">
+        <input id="pokemonInput" autocomplete="off" spellcheck="false" />
+        <input id="pokemonSelect" type="hidden" value="Mewtwo" />
+        <span id="pokemonHelp"></span>
+        <input id="cpInput" min="10" type="number" />
+        <span id="cpValidation"></span>
+        <input id="manualStats" type="checkbox" />
+        <input id="atkInput" min="1" type="number" />
+        <input id="defInput" min="1" type="number" />
+        <input id="staInput" min="1" type="number" />
+        <select id="floorInput">
+          <option value="6" data-i18n="floorShadow">Shadow raid: 6/6/6</option>
+          <option value="10" data-i18n="floorStandard">Standard raid: 10/10/10</option>
+          <option value="0" data-i18n="floorWild">Wild/no floor: 0/0/0</option>
+          <option value="custom" data-i18n="floorCustom">Custom</option>
+        </select>
+        <input id="floorAtkInput" min="0" max="15" type="number" />
+        <input id="floorDefInput" min="0" max="15" type="number" />
+        <input id="floorStaInput" min="0" max="15" type="number" />
+        <span id="floorHint"></span>
+      </div>
+
+      <details class="advanced-settings">
+        <summary class="advanced-summary"><span data-i18n="advancedSettings">Advanced Settings</span></summary>
+        <div class="context-strip" id="contextStrip"></div>
+        <section class="utility-bar" aria-label="View controls" data-i18n-aria-label="viewControls">
+          <div class="utility-control">
+            <label class="toggle-row" for="showDetails">
+              <input id="showDetails" type="checkbox" checked />
+              <span data-i18n="showIvSpreads">Show IV spreads</span>
+            </label>
+          </div>
+          <div class="field compact-field utility-control">
+            <label for="watchFilter" data-i18n="watchlistFilter">Watchlist filter</label>
+            <select id="watchFilter">
+              <option value="all" data-i18n="filterAll">All eligible CPs</option>
+              <option value="partial" data-i18n="filterPartial">Partial odds only</option>
+              <option value="strong" data-i18n="filterStrong">50% or better</option>
+              <option value="guaranteed" data-i18n="filterGuaranteed">Guaranteed only</option>
+            </select>
+          </div>
+          <button class="secondary-button install-button" id="installButton" type="button" hidden>
+            <span data-i18n="installApp">Install app</span>
+          </button>
+        </section>
+      </details>
+
+      <section class="results-grid" id="resultsGrid" aria-live="polite"></section>
+
+      <section class="watchlist-grid" id="watchlistGrid" aria-label="CP watchlists"></section>
+
+      <section class="notes-panel" aria-label="Calculation notes">
+        <h2 data-i18n="calculationNotes">Calculation Notes</h2>
+        <div class="note-list">
+          <p data-i18n="noteFloor">Each IV spread from the raid floor through 15/15/15 is counted once.</p>
+          <p data-i18n="notePurify">A spread purifies to a hundo when each IV plus the purify bonus reaches 15.</p>
+          <p data-i18n="noteShadow">Shadow battle modifiers do not change the catch CP calculation.</p>
+          <p id="dataHint">The seeded list is a convenience list; manual stats cover missing or future forms.</p>
+        </div>
+      </section>
+
+      <section class="feedback-panel">
+        <details>
+          <summary data-i18n="feedbackSummary">Feedback</summary>
+          <form id="feedbackForm" class="feedback-form">
+            <label>
+              <span data-i18n="feedbackMessageLabel">Message</span>
+              <textarea
+                id="feedbackMessage"
+                name="message"
+                rows="4"
+                required
+                data-i18n-placeholder="feedbackPlaceholder"
+                placeholder="Suggestions, bug reports, or missing Pokémon…"
+              ></textarea>
+            </label>
+            <label>
+              <span data-i18n="feedbackEmailLabel">Email</span>
+              <input
+                id="feedbackEmail"
+                name="email"
+                type="email"
+                data-i18n-placeholder="feedbackEmailPlaceholder"
+                placeholder="Email (optional)"
+              />
+            </label>
+            <button class="secondary-button" type="submit" data-i18n="feedbackSubmit">Send feedback</button>
+            <p class="feedback-status" id="feedbackStatus" role="status" aria-live="polite"></p>
+          </form>
+          <p class="feedback-advanced">
+            <a
+              href="https://github.com/doomsday126dev/raid-iv-odds/issues/new?template=feedback.yml"
+              rel="noopener noreferrer"
+              target="_blank"
+              data-i18n="feedbackAdvanced"
+            >Advanced: GitHub Issues</a>
+          </p>
+        </details>
+      </section>
+
+      <footer class="legal-footer">
+        <p data-i18n="legalDisclaimer">
+          Unofficial fan-made calculator. Not affiliated with, sponsored by, endorsed by, or approved by
+          Niantic, Scopely, The Pokemon Company, Nintendo, Creatures, or GAME FREAK. Pokemon and related
+          names are trademarks of their respective owners.
+        </p>
+        <p data-i18n="legalAccuracy">
+          This tool is informational only and depends on current game data and assumptions. Always verify
+          important raid decisions in-game.
+        </p>
+        <div class="footer-links">
+          <a href="/raid-iv-odds/privacy.html" data-i18n="privacyLink">Privacy</a>
+        </div>
+      </footer>
+    </main>
+    <script type="module" src="/register-sw.js"></script>
+    <!-- Cloudflare Web Analytics -->
+    <!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

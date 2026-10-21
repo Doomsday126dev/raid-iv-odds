@@ -1,64 +1,31 @@
-const CACHE_NAME = "raid-iv-odds-shell-v8";
+// Build replaces these two values with a content-derived version and complete asset list.
+const CACHE_NAME = "raid-iv-odds-shell-__BUILD_ID__";
 const scopePath = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const withScope = (path) => `${scopePath}${path}`;
-const APP_SHELL = [
-  withScope("/"),
-  withScope("/index.html"),
-  withScope("/manifest.json"),
-  withScope("/manifest.webmanifest"),
-  withScope("/register-sw.js"),
-  withScope("/assets/icon.svg"),
-  withScope("/assets/icon-192.png"),
-  withScope("/assets/icon-512.png"),
-  withScope("/assets/apple-touch-icon.png"),
-  withScope("/privacy.html"),
-];
+const APP_SHELL = __BUILD_FILES__.map(withScope);
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
-  self.skipWaiting();
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
 });
-
 self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))),
-      ),
-  );
-  self.clients.claim();
+  event.waitUntil(caches.keys().then((keys) => Promise.all(
+    keys.filter((key) => key.startsWith("raid-iv-odds-shell-") && key !== CACHE_NAME).map((key) => caches.delete(key)),
+  )).then(() => self.clients.claim()));
 });
-
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
-  const requestUrl = new URL(event.request.url);
-  if (requestUrl.origin !== self.location.origin) return;
-
+  const url = new URL(event.request.url);
+  if (url.origin !== self.location.origin || !url.pathname.startsWith(`${scopePath}/`)) return;
   if (event.request.mode === "navigate") {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          return response;
-        })
-        .catch(() => caches.match(event.request).then((cached) => cached || caches.match(withScope("/index.html")))),
-    );
+    event.respondWith(fetch(event.request).catch(async () => {
+      const cache = await caches.open(CACHE_NAME);
+      return await cache.match(url.pathname) || await cache.match(withScope("/index.html"));
+    }));
     return;
   }
-
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((response) => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-        return response;
-      }).catch((error) => {
-        if (event.request.mode === "navigate") return caches.match(withScope("/index.html"));
-        throw error;
-      });
-    }),
-  );
+  // Only pre-cached build resources are served offline. Never cache error pages or
+  // arbitrary query URLs, and never mutate other apps' caches on the same origin.
+  event.respondWith(caches.open(CACHE_NAME).then(async (cache) =>
+    await cache.match(event.request) || fetch(event.request),
+  ));
 });
