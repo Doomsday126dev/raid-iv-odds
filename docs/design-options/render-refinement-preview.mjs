@@ -74,6 +74,25 @@ for (const engine of ["chrome", "webkit"]) {
           }
         }
         if (variant === "ring" && mode === "reference") {
+          const stroke = await page
+            .locator(
+              ".reference-table .cp-reference[data-ambiguous=true] .cp-number",
+            )
+            .first()
+            .evaluate((e) => {
+              const s = getComputedStyle(e, "::after");
+              return {
+                style: s.borderTopStyle,
+                width: s.borderTopWidth,
+                background: s.backgroundColor,
+              };
+            });
+          expect(stroke).toEqual({
+            style: "solid",
+            width: "1px",
+            background: "rgba(0, 0, 0, 0)",
+          });
+
           for (const group of ["rocket", "raid"])
             for (const boosted of ["false", "true"]) {
               const edges = await page
@@ -179,26 +198,22 @@ for (const engine of ["chrome", "webkit"]) {
                 (palette) => (document.documentElement.dataset.theme = palette),
                 palette,
               );
-              await page
-                .locator(".reference-table")
-                .screenshot({
-                  path: fileURLToPath(
-                    new URL(
-                      `ring-table-${mobile ? "mobile" : "desktop"}-${lang}-${palette}.png`,
-                      root,
-                    ),
+              await page.locator(".reference-table").screenshot({
+                path: fileURLToPath(
+                  new URL(
+                    `ring-table-${mobile ? "mobile" : "desktop"}-${lang}-${palette}.png`,
+                    root,
                   ),
-                });
-              await page
-                .locator(".ring-sizing")
-                .screenshot({
-                  path: fileURLToPath(
-                    new URL(
-                      `ring-sizing-${mobile ? "mobile" : "desktop"}-${lang}-${palette}.png`,
-                      root,
-                    ),
+                ),
+              });
+              await page.locator(".ring-sizing").screenshot({
+                path: fileURLToPath(
+                  new URL(
+                    `ring-sizing-${mobile ? "mobile" : "desktop"}-${lang}-${palette}.png`,
+                    root,
                   ),
-                });
+                ),
+              });
             }
         }
         reports.push({ engine, lang, mode, variant, status: "passed" });

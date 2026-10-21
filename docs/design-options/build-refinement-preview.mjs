@@ -25,9 +25,12 @@ const refinedCss = `
 .marker-slot{display:flex;align-items:center;justify-content:center;width:1.1rem;height:1.1rem;color:var(--accent)}
 [data-preview=dotted] .reference-table .cp-reference{grid-template-columns:5ch;gap:0}
 [data-preview=dotted] .cp-reference[data-ambiguous=true] .cp-value{text-decoration:underline dotted var(--accent);text-decoration-thickness:1px;text-underline-offset:5px}
+[data-preview=ring]{--ring-stroke:#c9322e}
+[data-preview=ring][data-theme=dark]{--ring-stroke:#ff6b63}
+@media(prefers-color-scheme:dark){[data-preview=ring][data-theme=system]{--ring-stroke:#ff6b63}}
 [data-preview=ring] .reference-table .cp-reference{grid-template-columns:5ch;gap:0;min-height:2.6rem;padding:.45rem .7rem}
 [data-preview=ring] .cp-number{display:inline-block;position:relative}
-[data-preview=ring] .cp-reference[data-ambiguous=true] .cp-number::after{content:"";position:absolute;inset:-.25rem -.45rem;border:1px dotted var(--accent);border-radius:50%;opacity:.78;pointer-events:none}
+[data-preview=ring] .cp-reference[data-ambiguous=true] .cp-number::after{content:"";position:absolute;inset:-.25rem -.45rem;border:1px solid var(--ring-stroke);border-radius:50%;opacity:1;pointer-events:none}
 .ring-sizing{border-top:1px solid var(--line);padding:1rem 0;margin-top:1rem}
 .ring-sizing h3{font-size:.8rem;margin:.2rem 0}
 .ring-sizing p{font-size:.72rem;color:var(--muted);margin:.3rem 0 .8rem}
@@ -139,12 +142,12 @@ for (const lang of ["en", "ja"])
             clone.querySelector(".reference-legend").textContent =
               lang === "en"
                 ? variant === "ring"
-                  ? "Dotted ring: multiple IV combinations. Tap for details."
+                  ? "Red outline: multiple IV combinations. Tap for details."
                   : variant === "dotted"
                     ? "Dotted CP: multiple IV combinations. Tap for details."
                     : "Multiple IVs: this CP has more than one IV combination. Tap for details."
                 : variant === "ring"
-                  ? "点線の囲み：複数の個体値が一致。選ぶと詳細を表示。"
+                  ? "赤い囲み：複数の個体値が一致。選ぶと詳細を表示。"
                   : variant === "dotted"
                     ? "点線のCP：複数の個体値が一致。選ぶと詳細を表示。"
                     : "複数個体値：同じCPに複数の組み合わせ。選ぶと詳細を表示。";

@@ -1,8 +1,8 @@
 # Option A refinement — review only
 
-## Latest: dotted number ring
+## Latest: solid red number ring
 
-`ring-*` is the latest requested refinement. Only ambiguous CPs get a thin dotted accent ring around their digits; two-digit values are near-circular and longer values oval. An absolutely positioned border keeps numeric edges, button size and table cell geometry identical to unmarked values. There is no separate symbol or marker slot. The compact three-column modal is unchanged.
+`ring-*` is the latest requested refinement. Only ambiguous CPs get a thin solid red outline around their digits; two-digit values are near-circular and longer values oval. An absolutely positioned border keeps numeric edges, button size and table cell geometry identical to unmarked values. There is no fill, separate symbol or marker slot. The light-mode red is #c9322e; the dark-mode red is #ff6b63. Previous dotted-ring images remain available at commit867be2c. The compact three-column modal is unchanged.
 
 Real two-/three-digit collision examples use the released calculation data. An audit found **no four-digit perfect-CP collisions** in the current catalog at the supported reference levels/floors. The separate, clearly labeled ring-sizing study therefore shows a four-digit *layout fixture*, not a factual collision marker. That sizing study is review material, not proposed product UI; actual four-digit reference values remain unmarked.
 
