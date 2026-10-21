@@ -26,23 +26,22 @@ test("collision IV table separates Weedle and Magikarp spreads in both themes an
           )
           .click();
         const table = page.locator(".reference-ivs");
+        await expect(
+          page.locator(".reference-assumptions"),
+        ).not.toHaveAttribute("open");
+        await expect(page.locator(".combination-count")).toContainText(
+          String(count),
+        );
         await expect(table.locator("tbody tr")).toHaveCount(count);
         await expect(table.locator("thead th")).toHaveText(
-          lang === "en"
-            ? ["Attack", "Defense", "HP", "Note"]
-            : ["攻撃", "防御", "HP", "備考"],
+          lang === "en" ? ["Attack", "Defense", "HP"] : ["攻撃", "防御", "HP"],
         );
         const perfect = table.locator("tr[data-perfect=true]");
         await expect(perfect).toHaveCount(1);
-        await expect(perfect.locator("td")).toHaveText([
-          "15",
-          "15",
-          "15",
-          lang === "en" ? "Perfect" : "100％",
-        ]);
+        await expect(perfect.locator("td")).toHaveText(["15", "15", "15"]);
         for (const row of await table.locator("tbody tr").all()) {
           const cells = await row.locator("td").all();
-          expect(cells).toHaveLength(4);
+          expect(cells).toHaveLength(3);
           const boxes = await Promise.all(
             cells.slice(0, 3).map((c) => c.boundingBox()),
           );

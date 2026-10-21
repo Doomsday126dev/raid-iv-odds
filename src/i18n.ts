@@ -25,8 +25,7 @@ const en = {
   referenceRocket: "Rocket encounters",
   referenceRaids: "Raids",
   referenceMode: "Reference group",
-  markerLegend:
-    "Overlapping circles: same CP, different IVs. Tap a CP for details.",
+  markerLegend: "Red outline: multiple IV combinations. Tap for details.",
   markerScope:
     "Raid markers use Shadow raid rules where supported; normal raid comparison is in details.",
   shadowRaidRef: "Shadow raid reference",
@@ -47,8 +46,9 @@ const en = {
   ivAttack: "Attack",
   ivDefense: "Defense",
   ivHp: "HP",
-  ivNote: "Note",
-  perfectIv: "Perfect",
+  combinationOne: "1 matching IV combination",
+  combinationCount: "{count} matching IV combinations",
+  calculationAssumptions: "Calculation assumptions",
   referenceDetails: "CP reference details",
   referenceFloor:
     "Calculation assumptions: catch level {level}, minimum IVs {floor}/{floor}/{floor}.",
@@ -189,8 +189,7 @@ const ja: typeof en = {
   referenceRocket: "ロケット団との遭遇",
   referenceRaids: "レイド",
   referenceMode: "早見表の表示対象",
-  markerLegend:
-    "重なる円：同じCPに複数の個体値。CPを選ぶと詳細を確認できます。",
+  markerLegend: "赤い囲み：複数の個体値が一致。選ぶと詳細を表示。",
   markerScope:
     "対応する種族のレイド印はシャドウレイドの条件です。通常レイドとの比較は詳細に表示します。",
   shadowRaidRef: "シャドウレイドの参考値",
@@ -211,8 +210,9 @@ const ja: typeof en = {
   ivAttack: "攻撃",
   ivDefense: "防御",
   ivHp: "HP",
-  ivNote: "備考",
-  perfectIv: "100％",
+  combinationOne: "一致する個体値は1通り",
+  combinationCount: "一致する個体値は{count}通り",
+  calculationAssumptions: "計算条件",
   referenceFloor:
     "計算条件：捕獲レベル{level}、最低個体値{floor}/{floor}/{floor}。",
   referenceDetails: "CP参考値の詳細",

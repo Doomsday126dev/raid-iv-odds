@@ -40,13 +40,14 @@ test("collision marker opens touch and keyboard accessible exact IV details in b
   const cell = page.locator(
     "[data-cp-species=MAGIKARP][data-cp-group=rocket][data-cp-boosted=false]",
   );
-  await expect(cell.locator(".collision-icon")).toHaveCount(1);
+  await expect(cell).toHaveAttribute("data-ambiguous", "true");
+  await expect(cell.locator(".collision-icon")).toHaveCount(0);
   await cell.focus();
   await expect(cell.locator("[role=tooltip]")).toBeVisible();
   await page.keyboard.press("Enter");
   await expect(page.locator("#reference-dialog")).toBeVisible();
   await expect(page.locator("#reference-dialog")).toContainText(
-    "10 IV spreads",
+    "10 matching IV combinations",
   );
   await expect(page.locator(".reference-ivs tbody tr")).toHaveCount(10);
   expect(
@@ -82,6 +83,10 @@ test("collision marker opens touch and keyboard accessible exact IV details in b
       "[data-cp-species=MAGIKARP][data-cp-group=raid][data-cp-boosted=false]",
     )
     .click();
+  await expect(page.locator(".reference-assumptions")).not.toHaveAttribute(
+    "open",
+  );
+  await page.locator(".reference-assumptions summary").click();
   await expect(page.locator("#reference-dialog")).toContainText(
     "通常レイドとの比較",
   );
