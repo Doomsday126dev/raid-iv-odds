@@ -48,7 +48,7 @@ test("collision marker opens touch and keyboard accessible exact IV details in b
   await expect(page.locator("#reference-dialog")).toContainText(
     "10 IV spreads",
   );
-  await expect(page.locator(".reference-matches code")).toHaveCount(10);
+  await expect(page.locator(".reference-ivs tbody tr")).toHaveCount(10);
   expect(
     (
       await new AxeBuilder({ page })

@@ -1291,12 +1291,44 @@ html[lang="ja"] .view-tabs button {
   margin: 1rem 0;
   padding-top: 0.7rem;
 }
-.reference-matches code {
-  display: inline-block;
-  margin: 0.25rem 0.8rem 0.25rem 0;
+.reference-ivs {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-variant-numeric: tabular-nums;
 }
-.reference-matches h3 {
-  font-size: 0.85rem;
+.reference-ivs caption {
+  text-align: left;
+  font-size: 0.9rem;
+  font-weight: 650;
+  padding-bottom: 0.7rem;
+}
+.reference-ivs th,
+.reference-ivs td {
+  padding: 0.45rem 0.3rem;
+  text-align: center;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.reference-ivs th {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.reference-ivs td {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.reference-ivs th:last-child {
+  width: 30%;
+}
+.reference-ivs td:last-child {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+.reference-ivs tr[data-perfect="true"] {
+  background: var(--soft);
+  font-weight: 650;
 }
 .reference-legend {
   max-width: 70ch;
