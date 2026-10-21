@@ -928,3 +928,255 @@ html[data-theme="dark"] {
     scroll-behavior: auto !important;
   }
 }
+/* Approved Option A: compact paired inputs and explicit conditional chance. */
+.primary-inputs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 108px;
+  gap: 13px;
+  align-items: end;
+}
+.primary-inputs .cp-entry {
+  height: 45px;
+  padding-left: 0;
+}
+.primary-inputs .cp-entry input {
+  padding: 7px 10px;
+  font-size: 25px;
+  min-height: 43px;
+}
+.primary-inputs .cp-entry input::placeholder {
+  font-size: 18px;
+}
+.language-toggle {
+  margin-left: auto;
+  display: flex;
+  gap: 2px;
+}
+.language-toggle button {
+  font-size: 11px;
+  padding: 8px 7px;
+  min-height: 34px;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+}
+.language-toggle button[aria-pressed="true"] {
+  color: var(--ink);
+  border-color: var(--accent);
+  font-weight: 650;
+}
+.chance-panel {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 14px 0 16px;
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.chance-value {
+  font:
+    500 47px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  color: var(--accent);
+  white-space: nowrap;
+}
+.chance-panel > div {
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 240px;
+}
+.chance-panel small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.context-chances {
+  margin-top: 17px;
+}
+.context-chances > section {
+  border-top: 1px solid var(--line);
+  padding: 12px 0;
+}
+.context-chances h3 {
+  font-size: 12px;
+  margin: 0;
+  font-weight: 650;
+}
+.context-chances .chance-panel {
+  border: 0;
+  padding: 0;
+  margin: 9px 0;
+}
+.context-chances .chance-value {
+  font-size: 33px;
+  letter-spacing: -1px;
+}
+.clarify {
+  font-size: 11px;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--accent);
+}
+.context-calculation {
+  margin-top: 15px;
+}
+.context-calculation > h3 {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.original-perfect {
+  border-left: 2px solid var(--line);
+  padding-left: 11px;
+}
+.original-perfect strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.iv-table-wrap {
+  max-height: 350px;
+  overflow: auto;
+  margin-top: 13px;
+  overscroll-behavior: contain;
+}
+.iv-table {
+  font-size: 11px;
+}
+.iv-table caption {
+  text-align: left;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--muted);
+  padding-bottom: 9px;
+}
+.iv-table thead {
+  position: sticky;
+  top: 0;
+}
+.iv-table th {
+  font-size: 10px;
+  font-weight: 500;
+  background: var(--soft);
+}
+.iv-table th,
+.iv-table td {
+  padding: 8px 6px;
+}
+.iv-table td {
+  font:
+    11px -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+.iv-table code {
+  font:
+    10px ui-monospace,
+    SFMono-Regular,
+    Consolas,
+    monospace;
+  white-space: nowrap;
+}
+.iv-table .qualifies {
+  font-weight: 600;
+}
+html[lang="ja"] h1 {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    sans-serif;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+}
+html[lang="ja"] .decision h2 {
+  font-size: 24px;
+  line-height: 1.4;
+}
+html[lang="ja"] .chance-panel > div {
+  font-size: 11px;
+}
+html[lang="ja"] .view-tabs button {
+  letter-spacing: 0;
+}
+@media (max-width: 700px) {
+  .site-header {
+    gap: 9px;
+  }
+  .brand {
+    font-size: 18px;
+  }
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+    margin-right: 7px;
+  }
+  .theme-button {
+    margin-left: 0;
+    width: 32px;
+    height: 32px;
+    flex: none;
+  }
+  .language-toggle button {
+    font-size: 10px;
+    padding: 7px 5px;
+    min-height: 32px;
+  }
+  .primary-inputs {
+    grid-template-columns: minmax(0, 1fr) 97px;
+    gap: 11px;
+  }
+  .chance-value {
+    font-size: 42px;
+    letter-spacing: -1.5px;
+  }
+  .chance-panel {
+    gap: 13px;
+    margin: 12px 0 13px;
+    padding: 12px 0;
+  }
+  .chance-panel > div {
+    font-size: 11px;
+  }
+  .chance-panel small {
+    font-size: 10px;
+  }
+  .result-details summary {
+    min-height: 30px;
+  }
+  .iv-table td {
+    font-size: 10px;
+  }
+  .iv-table th,
+  .iv-table td {
+    padding: 8px 4px;
+  }
+  html[lang="ja"] h1 {
+    font-size: 24px;
+  }
+  html[lang="ja"] .decision h2 {
+    font-size: 22px;
+  }
+  html[lang="ja"] .chance-value {
+    font-size: 39px;
+  }
+  html[lang="ja"] .reference-table tbody th {
+    max-width: 108px;
+    overflow-wrap: anywhere;
+  }
+}
+.iv-table-wrap {
+  max-height: none;
+  overflow: visible;
+}
+.iv-table-wrap.scrollable {
+  max-height: 350px;
+  overflow: auto;
+  scrollbar-width: thin;
+}

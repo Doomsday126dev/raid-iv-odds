@@ -90,6 +90,10 @@ test("fresh installation opens check, reference and advanced offline", async ({
   await page.locator("[data-view=reference]").click();
   await page.locator("#reference-search").fill("Bulbasaur");
   await expect(page.locator("#reference-rows")).toContainText("414");
+  await page.locator('[data-language="ja"]').click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "ja");
+  await expect(page.locator("#reference-rows")).toContainText("フシギダネ");
+  await expect(page.locator("#reference-rows")).toContainText("414");
   await page.goto(`${origin}advanced.html`);
   await expect(page.locator("#pageTitle")).toHaveText("Purified Hundo Odds");
 });

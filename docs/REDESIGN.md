@@ -1,73 +1,55 @@
-# Purified-hundo redesign: audit → implementation → verification
+# Purified-hundo checker: audit, implementation and verification
 
-## Audit
+## Audit and roadmap
 
-Inspected main at clone time, README, SECURITY, deployment workflow, the deployed desktop interface, calculator implementation, data, and tests. No AGENTS.md exists in the repository. Work is isolated in a fresh clone on `redesign/purified-hundo-focus`; no unrelated checkout was modified.
+Inspected the repository, README, SECURITY, deployment workflow, original calculation logic, tests and deployed interface. No repository AGENTS.md was present. Work is isolated in a fresh clone on `redesign/purified-hundo-focus`; unrelated checkouts were not modified.
 
-The previous interface repeated the verdict, two weather panels, ratios, statistics and watchlists. A 78-entry hand-maintained list emphasized legendary bosses. Integer CP bucket enumeration correctly handled IV collisions and was retained. The redesigned primary page replaces the presentation; the original calculator remains in advanced.html, retaining Japanese support, custom floors, manual base stats, themes and detailed comparisons.
+The original screen repeated verdicts, weather panels and ratios, while a 78-entry hand-maintained catalog emphasized legendary bosses. Its exact integer CP bucket enumeration was correct and retained. The roadmap was to simplify the primary decision, broaden species coverage, distinguish perfect CP from purifiable candidates, verify mechanics/edge cases, perform browser QA, then prepare a draft PR without production deployment.
 
-## Completed roadmap
+## Approved Option A
 
-1. Audit math, existing features, deployed interface and deployment scope.
-2. Define a single selected encounter and actionable result hierarchy.
-3. Add broad searchable species/forms and a distinct level 8/13 perfect-CP reference.
-4. Separate original 15/15/15 CP from pre-purification candidates, use exact buckets, and disclose assumptions progressively.
-5. Verify unit fixtures, desktop/mobile flows, production build and screenshots.
-6. Prepare review branch/PR. Production deployment is deliberately pending the parent's scope confirmation.
+The user selected the warm-paper/vermilion field-guide design. The main app now pairs species and CP compactly, uses restrained dividers and tabular numerals, and keeps the empty result to one hint. There are no green/purple accents, oversized instructional cards or visible level/IV subcaptions beneath reference headers. The archived static options remain in `docs/design-options/` for provenance.
 
-## Mechanics
+Entering CP checks both weather contexts automatically. A unique compatible context is inferred. If compatible contexts support the same safe conclusion, the result states it; differing outcomes request clarification. Labels are **Non-weather boosted / Weather boosted**. No unsupported combined probability is produced across unknown weather contexts.
 
-Rocket Grunt/Leader catches use levels 8/13 and floors 0/4 for normal/weather boosted encounters. Shadow raids use levels 20/25 and floor 6. Giovanni, research, powered-up Pokémon and special event floors need separate settings; advanced calculator supports custom raid floors. Ordinary wild Pokémon do not have fixed level 8/13 encounters. The reference shows exact *15/15/15 CP at those levels*, without claiming that a matching CP proves IVs or that every species currently spawns.
+Valid results show a prominent conditional purified-hundo percentage and matching-spread counts. Calculation details separate already-perfect IV probability, explain uniform-roll assumptions, and list exact IV triples before/after purification with textual qualifying indicators. Magikarp CP61 has 8/10 purifiable spreads (80%), versus 1/10 already perfect (10%). Weedle CP102 has 4/4 purifiable spreads (100%), versus 1/4 already perfect (25%). No-match input is distinct from a valid CP with no purifiable spread. Percentage formatting cannot round non-certainty to 100%.
 
-Purification adds 2 to each IV, capped at 15. All IVs must be at least 13 beforehand. The shadow damage modifier is not applied to catch CP. The same final floored CP can belong to different triples. A positive result means to catch/check appraisal, not that purification is the best battle decision. All-match certainty is conditional on the selected species, form, level and floor. Probabilities assume uniform permitted triples.
+## Mechanics and scope
 
-Sources verified during development:
+Purification adds 2 to each IV, capped at 15; each IV must be at least 13 beforehand. Shadow battle damage bonuses do not change catch CP. CP collisions are enumerated exactly, not approximated by a minimum-to-maximum candidate interval. Full-precision CPMs come from pinned PvPoke calculation data. Charizard at level8 CP640 has 1/10 purifiable spreads; 14/10/15 belongs to CP639.
+
+Rocket presets cover Grunts/Leaders: catch levels 8/13 and IV floors 0/4 for non-weather/weather boosted contexts. Shadow raids use levels 20/25 and floor6. Giovanni, research, powered-up Pokémon and special events may differ. A valid all-match result is conditional on the correct species/form/encounter. Being purifiable is not advice that purification is the best battle choice.
+
+The separate reference shows perfect 15/15/15 CPs at Rocket catch levels; normal wild Pokémon have varying levels. Matching a reference CP alone does not prove perfect IVs. The catalog contains 1,073 released species/forms with positive stats, omitting Mega/Primal and duplicate Shadow variants. Historical Shadow eligibility is not a current encounter rotation; evolutions/forms in the reference are not all currently catchable. Non-eligible forms do not receive a purification verdict.
+
+Sources:
 - https://niantic.helpshift.com/hc/en/6-pokemon-go/faq/2396-shadow-pokemon-purified-pokemon/
 - https://pokemongo.com/news/delightful-days-tgr-2025 (event exceptions)
 - https://bulbapedia.bulbagarden.net/wiki/Shadow_Pok%C3%A9mon_(GO)
 - https://github.com/pvpoke/pvpoke/blob/4d2908fac68d882bb6b4bdbbf1123a71fb62da31/src/js/pokemon/Pokemon.js
 
-## Catalog and attribution
+## Data, localization and compatibility
 
-The bundled catalog contains 1,073 released species/forms derived from PvPoke's speciesName, speciesId, dex, baseStats, types, released and shadoweligible data. Mega/Primal and duplicate Shadow variants are excluded; current availability is not inferred. Pokémon with no historical Shadow eligibility are routed to references rather than a purification verdict. Historical eligibility is not a current Rocket rotation list. Gameplay forms retain source names. Costume variants are outside the catalog.
+Base stats and gameplay metadata derive from pinned PvPoke commit `4d2908fac68d882bb6b4bdbbf1123a71fb62da31`; MIT attribution is in PVPOKE-LICENSE.txt. `level25CP` is deliberately unused because it is not perfect-IV CP. All reference values are computed from base stats and full CPMs locally.
 
-Pinned source: https://github.com/pvpoke/pvpoke/blob/4d2908fac68d882bb6b4bdbbf1123a71fb62da31/src/data/gamemaster/pokemon.json
+Refresh: download `src/data/gamemaster/pokemon.json` at a reviewed full commit, then run `node scripts/update-catalog.mjs /path/to/pokemon.json FULL_COMMIT`. Review the catalog diff and run unit/build/browser checks. Catalog metadata records source revision, input SHA256 and generation date. Refresh Japanese labels alongside catalog changes.
 
-The MIT notice is preserved in PVPOKE-LICENSE.txt. Numeric factual stats and selected metadata are imported, not third-party sprites or runtime code. `level25CP` is intentionally unused: it is not perfect-IV CP. Every reference is computed locally from base stats. No runtime network fetch is needed.
+The new main UI fully supports English/日本語: labels, result/error states, weather context, reference, help, details, type names and species/form search. All 1,073 entries have Japanese display names using pinned PokeAPI names and documented GO-specific display labels. English aliases, canonical IDs and Pokédex numbers remain searchable. Hiragana/katakana and half-width input normalize consistently. Language preference persists and preserves species, CP, encounter, confirmed weather context and reference query. Earlier language links/preferences migrate. Attribution, source limitations and refresh instructions are in JAPANESE-DATA.md and POKEAPI-LICENSE.txt.
 
-Refresh: download pokemon.json at a reviewed full commit, then run `node scripts/update-catalog.mjs /path/to/pokemon.json <full-commit-sha>`. Review catalog diff, run tests/build/UI tests, and retain the upstream license. JSON records source commit, input SHA256 and generation date. Do not treat tags as evidence of present-day availability.
+Original pokemon/boss/hash/custom-floor URLs route intact to advanced.html, preserving historical names, Japanese aliases and hash precedence. CP-only and language-only legacy hashes are supported. URL custom floors override saved floors, and unknown canonical species or unfinished search text never silently calculate a fallback Mewtwo. The advanced calculator retains custom floors/manual stats and detailed comparisons.
 
-## Verification and limits
+## Offline and privacy
 
-15 unit tests cover existing raid behavior, exact CP fixtures, Magikarp/Weedle max-CP collisions, Bulbasaur non-contiguous candidate buckets, floors, minimum CP, purification cap and catalog scope. The expanded Playwright suite runs desktop and iPhone 13 layouts in Chromium and WebKit, checking primary result states, keyboard search, regional forms, weather, watchlist selection, reference lookup/routing, dark mode, advanced page and horizontal overflow. Screenshots in qa/ were visually reviewed, with a mobile result shortcut added after the first review.
+The build generates the complete service-worker asset manifest and a content-derived cache key. Fresh installs cache both entrypoints and all emitted JS/CSS/name data. Activation removes only this app's older caches. Chromium tests install the actual prior v8 worker, update to the generated worker, preserve an unrelated origin cache, and reload offline. Offline language switching and Japanese reference search are also verified.
 
-Build includes TypeScript checking and both entrypoints. Production bundle for the primary page is about 32KB gzipped JS including catalog. Mobile QA is emulation in installed Chrome and Playwright WebKit, not a physical iPhone. Japanese remains available through the advanced calculator; the new primary interface is English. Native Safari rendering and a fresh-install/offline fixture were also verified; physical iOS home-screen lifecycle remains unverified.
+Native Safari installed the generated worker and opened the cached calculator after a localhost fixture began rejecting build-resource network requests. No production-origin cache or Mac network setting changed. Playwright WebKit lacks service-worker support, so its four offline cases are explicit skips. Native Safari v8 migration, physical iPhone/home-screen lifecycle and storage eviction are not claimed.
 
-The pre-existing lockfile reports nine npm advisories (including Capacitor/native tooling and Vite/build dependencies). This redesign adds Playwright but does not perform a broad dependency upgrade. Review/update those dependencies separately before native packaging; this is a static browser app without a backend or credentials.
+The localized primary JS is about 50KB gzipped, including catalog and both languages; there are no runtime name/data requests. Calculator inputs stay on-device. Screenshot delivery uses committed PNGs with verified public GitHub/raw URLs; no Library upload is claimed.
 
-## Release follow-up
+## Verification and remaining caveats
 
-The final user-directed visual language is a compact field guide: warm off-white paper, ink-black typography, restrained vermilion, crisp dividers, tabular CP numerals, modest corners and few nested cards. Both green and purple are removed. Dark mode uses warm charcoal and paper text. The empty result is a single contextual hint rather than a tall instructional card. Weather selection is inferred from both level/floor contexts; only conflicting compatible contexts request clarification. Labels say **Non-weather boosted / Weather boosted**, with levels secondary. Possible results are factual, without catch-time marketing or skip advice.
+17 unit tests pass, including known CPs, Magikarp/Weedle collisions, non-contiguous Bulbasaur candidates, full-precision Charizard boundary, floors, caps, percent precision and Japanese coverage. Complete browser run: **60 passed, 4 explicitly skipped** across Chrome/WebKit desktop and iPhone-size layouts. Coverage includes 320px Japanese overflow, keyboard/form search, aliases, language persistence, 0/80/100% and ambiguous percentages, original-perfect distinction, IV row counts, reference routing, legacy URLs, light/dark, axe WCAG checks in both languages, fresh offline use and migration. Actual EN/JA screenshots in qa/ were visually reviewed. Production TypeScript/Vite build and git diff --check pass.
 
-Precision uses the pinned full CPMs for levels 8, 13, 20 and 25. Charizard level 8 CP640 has one purifiable spread among ten (14/10/15 is CP639). Existing pokemon/boss/custom-floor/hash URLs route intact to the advanced calculator, including historical form names and Japanese aliases. URL floors override saved custom floors. Unknown canonical species and uncommitted search text suppress fallback verdicts.
+Nine pre-existing dependency advisory package findings were classified against the dependency tree and generated runtime. No demonstrated static Pages runtime path was found; native platform findings require patches before native releases. See DEPENDENCY-REVIEW.md. No broad native/tooling upgrade was performed.
 
-The build now generates the service worker's complete cache manifest from emitted files and derives a build-specific cache key from file content. Fresh installs cache both entrypoints and all JS/CSS/data assets. Activation removes only this app's older caches, preserving unrelated apps on the GitHub Pages origin. Local regression tests install the actual prior v8 worker, update to the production worker and reload offline. This is an isolated localhost test, not a production update.
-
-Chrome and Playwright WebKit both run desktop and iPhone-size flows. Playwright WebKit does not support service workers, so those four offline cases are explicitly skipped there; Chromium covers them. Native installed Safari was also opened and visually inspected independently. These checks do not claim physical iPhone, installed iOS home-screen lifecycle, low-storage eviction or real production-origin migration coverage.
-
-
-Final primary copy is neutral: “Enter CP to check for a possible purified hundo”, “Possible purified hundo” and “Cannot purify to a hundo”. Appraisal is a factual confirmation instruction, not a promoted time-saving proposition. Primary result context is human-readable encounter/weather text; IV floors and levels are in calculation details. A compact result shortcut is hidden while typing CP.
-
-Native Safari verification: a localhost fixture installed the generated worker and reported its content-derived build cache. After the fixture began rejecting subsequent build-resource network requests, Safari loaded the cached calculator and correctly showed Magikarp CP61 as a possible purified hundo. The fixture was stopped afterward; no production-origin cache or Mac network setting changed. Native old-v8 migration was not separately automated; that transition is covered in Chromium.
-
-Accessibility checks use axe-core WCAG A/AA rules on empty, possible, ambiguous and reference states in both engines, in addition to keyboard search/selection and viewport-overflow tests. This is not a claim of exhaustive screen-reader or physical-device certification.
-
-Dependency-specific review and static-web versus native-release assessment: see DEPENDENCY-REVIEW.md.
-
-## Design approval gate
-
-The user subsequently requested design options before further implementation. Main-app visual changes are now paused; the current work is preserved for review. Three structurally distinct static mobile studies live in `docs/design-options/` (light field-guide/vermilion, graphite/amber instrument, editorial white/cobalt). None is selected or applied. All omit the rejected level/IV subcaptions under reference headers. No merge or deployment is authorized by this review state.
-
-Screenshot transfer: current Library skill helper availability changed during the task, preventing completion of its required upload workflow. No Library upload was attempted and no Library delivery is claimed. The alternative review route is committed PNG files with verified public GitHub/raw URLs in the draft PR; no local Mac path is required to view them.
-
-Latest preserved implementation verification: `npm test` passed 15 unit tests; the complete cross-browser run passed 40 Playwright cases with 4 explicit service-worker skips in WebKit. That run includes axe checks on four states in each engine/layout. TypeScript/Vite production build and `git diff --check` passed. Static design studies were separately rendered and visually inspected. Design approval remains pending despite functional verification.
+Physical iPhone, exhaustive assistive-technology QA, low-storage eviction and real production-origin migration remain unverified. The draft PR is unmerged and production deployment awaits an explicit release decision.

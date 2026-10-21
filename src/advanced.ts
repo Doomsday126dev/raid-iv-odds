@@ -105,8 +105,8 @@ const TEXT = {
     decreaseCp: "Decrease CP",
     increaseCp: "Increase CP",
     weatherSelectorLabel: "Weather",
-    nonWeatherShort: "Not boosted",
-    weatherBoostedShort: "Boosted",
+    nonWeatherShort: "Non-weather boosted",
+    weatherBoostedShort: "Weather boosted",
     quickPicksLabel: "Quick picks",
     advancedSettings: "Advanced Settings",
     viewControls: "View controls",
@@ -153,8 +153,8 @@ const TEXT = {
     privacyLink: "Privacy",
     feedbackLink: "Feedback",
     selectedBossHundoCps: "Selected boss hundo CPs",
-    nonWeather: "Non-Weather Boosted",
-    weatherBoosted: "Weather Boosted",
+    nonWeather: "Non-weather boosted",
+    weatherBoosted: "Weather boosted",
     cpResult: "CP result",
     cpNotPossibleTitle: "CP not possible for this boss",
     cpNotPossibleCopy:
@@ -1468,6 +1468,8 @@ function loadStateFromUrl(): SavedState {
   const cp = params.get("cp");
   const floor = params.get("floor");
   const weather = params.get("weather");
+  const language = params.get("lang") || params.get("language");
+  if(language === "ja" || language === "en")state.language = language;
 
   if (pokemon && POKEMON.some((entry) => pokemonNameMatches(entry, pokemon))) {
     state.manualStats = false;

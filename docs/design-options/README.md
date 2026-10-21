@@ -1,6 +1,6 @@
-# Design options — choice pending
+# Design options — Option A selected
 
-Three isolated static studies, using the same Magikarp CP61 result and ordinary-species reference rows. No study is selected or applied to the main app. They demonstrate automatic weather inference; they are visual mockups, not functioning calculators.
+Three isolated static studies, using the same Magikarp CP61 result and ordinary-species reference rows. The user selected Option A. It is now implemented in the main app with prominent conditional percentages, improved IV details and full Japanese localization. These original studies remain archived for comparison; they are static mockups, not functioning calculators.
 
 | A · Light field guide | B · Graphite instrument | C · Editorial utility |
 | --- | --- | --- |

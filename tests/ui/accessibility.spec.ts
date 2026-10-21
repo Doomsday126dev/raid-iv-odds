@@ -8,6 +8,8 @@ test("primary and reference views have no serious accessibility violations", asy
     "?species=MAGIKARP&encounter=rocket&cp=61",
     "?species=SHUCKLE&encounter=rocket&cp=91",
     "?view=reference",
+    "?species=MAGIKARP&encounter=rocket&cp=61&lang=ja",
+    "?view=reference&lang=ja",
   ]) {
     await page.goto(query || "./");
     const result = await new AxeBuilder({ page })

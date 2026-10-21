@@ -6,7 +6,7 @@ test("primary check handles mixed, impossible and no-purification outcomes", asy
   await expect(page.locator("#decision h2")).toHaveText(
     "Possible purified hundo",
   );
-  await page.getByText("Why this result?").click();
+  await page.getByText("Calculation details").click();
   await expect(page.locator("#decision")).toContainText("80%");
   await expect(page.locator("#decision")).toContainText("15 / 12 / 15");
   await page.locator("#cp-input").fill("99999");
@@ -64,7 +64,7 @@ test("reference shows ordinary species CPs, collision caveat and routes to Rocke
   });
   await row.getByRole("button").click();
   await expect(page.locator("#cp-context")).toContainText(
-    "Weather boost detected",
+    "Weather condition inferred",
   );
   await expect(page.locator("#species-search")).toHaveValue("Bulbasaur");
   await page.locator("#cp-input").fill("243");
@@ -128,6 +128,29 @@ test("legacy shared form URLs and custom/hash state retain original calculator c
     }
   }
 });
+test("CP-only legacy hashes preserve inputs and hash precedence", async ({
+  page,
+}) => {
+  await page.goto("./#?cp=2387&weather=normal");
+  await expect(page).toHaveURL(/advanced\.html/);
+  await expect(page.locator("#cpInput")).toHaveValue("2387");
+  await expect(page.locator('[data-weather-choice="normal"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+
+  await page.goto("./?cp=2387&weather=normal#?cp=2984&weather=boosted");
+  await expect(page).toHaveURL(/advanced\.html/);
+  await expect(page.locator("#cpInput")).toHaveValue("2984");
+  await expect(page.locator('[data-weather-choice="boosted"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+
+  await page.goto("./?species=MEWTWO&encounter=raid&cp=2387");
+  await expect(page).not.toHaveURL(/advanced\.html/);
+  await expect(page.locator("#cp-input")).toHaveValue("2387");
+});
 test("unknown species never silently calculates Mewtwo, and uncommitted searches suppress verdicts", async ({
   page,
 }) => {
@@ -168,7 +191,7 @@ test("weather is inferred automatically and only conflicting contexts ask for cl
   await expect(page.locator("#decision h2")).toHaveText(
     "Confirm the weather boost",
   );
-  await page.getByText("Why this result?").click();
+  await page.getByText("Calculation details").click();
   await expect(page.locator("#decision")).toContainText(
     "No combined probability",
   );

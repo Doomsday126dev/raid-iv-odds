@@ -5,10 +5,13 @@ const query = new URLSearchParams(location.search);
 const hash = location.hash.startsWith("#?")
   ? new URLSearchParams(location.hash.slice(2))
   : null;
-const legacy = [query, hash].some(
-  (params) =>
-    params && ["pokemon", "boss", "floor"].some((key) => params.has(key)),
-);
+const legacyQuery = ["pokemon", "boss", "floor"].some((key) => query.has(key));
+const legacyHash =
+  hash &&
+  ["pokemon", "boss", "floor", "cp", "weather", "lang", "language"].some(
+    (key) => hash.has(key),
+  );
+const legacy = legacyQuery || legacyHash;
 if (legacy) {
   location.replace(`./advanced.html${location.search}${location.hash}`);
 } else {

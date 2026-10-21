@@ -8,6 +8,7 @@ import {
 } from "../src/encounters.ts";
 import {
   cpFor,
+  formatPercent,
   summarizeCp,
   purifiedIv,
   combinationTotals,
@@ -151,5 +152,34 @@ test("weather inference handles unique, conflicting, absent and same-conclusion 
   assert.equal(
     analyzeEncounter(get("MEWTWO"), "raid", 2984).matches[0]!.boosted,
     true,
+  );
+});
+
+test("chance formatting preserves 0/100 distinctions and useful precision", () => {
+  assert.equal(formatPercent(0), "0%");
+  assert.equal(formatPercent(1), "100%");
+  assert.equal(formatPercent(8 / 10), "80%");
+  assert.equal(formatPercent(1 / 3), "33.33%");
+  assert.equal(formatPercent(0.0000001), "<0.01%");
+  assert.equal(formatPercent(0.9999999), ">99.99%");
+});
+test("Japanese names cover ordinary species and distinct regional forms", () => {
+  const data = JSON.parse(
+    readFileSync(
+      new URL("../src/japanese-names.json", import.meta.url),
+      "utf8",
+    ),
+  );
+  assert.equal(data.names.MAGIKARP, "コイキング");
+  assert.equal(data.names.BULBASAUR, "フシギダネ");
+  assert.match(data.names.RATTATA_ALOLAN, /コラッタ.*アローラ/);
+  assert.notEqual(data.names.RATTATA, data.names.RATTATA_ALOLAN);
+  assert.equal(Object.keys(data.names).length, catalog.pokemon.length);
+  assert.ok(
+    catalog.pokemon.every(
+      (p: { id: string }) =>
+        typeof data.names[p.id] === "string" &&
+        /[\u3040-\u30ff]/.test(data.names[p.id]),
+    ),
   );
 });

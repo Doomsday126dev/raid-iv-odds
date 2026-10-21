@@ -6,7 +6,9 @@ A mobile-first Pokémon GO tool for deciding whether a Shadow catch is worth che
 - Select Shadow raid or Rocket Grunt/Leader and enter catch CP; weather conditions are inferred automatically.
 - Get one factual result; expand exact IV matches and probability details when needed.
 - Search a separate level 8/13 **15/15/15 CP reference**. These are Rocket catch levels; normal wild levels vary. Matching CP alone does not prove perfect IVs.
-- Use the advanced calculator for custom raid floors, manual stats, Japanese and detailed comparisons.
+- Switch the complete main interface and species/form search between English and 日本語.
+- Read conditional purified-hundo percentages and exact qualifying IV tables, separately from already-perfect IV odds.
+- Use the advanced calculator for custom raid floors, manual stats and detailed comparisons.
 
 Live: https://doomsday126dev.github.io/raid-iv-odds/ (review branches do not change production).
 
