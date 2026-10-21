@@ -615,6 +615,13 @@ function bindEvents(): void {
   elements.languageButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const nextLanguage = button.dataset.languageChoice as LanguageChoice;
+      // An explicit choice must also update the main checker's preference,
+      // including when the chosen language is already active in Advanced.
+      try {
+        window.localStorage.setItem("hundo-check-language", nextLanguage);
+      } catch {
+        // The calculator still works when optional storage is unavailable.
+      }
       if (nextLanguage === prefs.language) return;
       prefs.language = nextLanguage;
       announceLanguageChange();
