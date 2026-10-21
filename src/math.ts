@@ -13,7 +13,7 @@ export type IvFloor = number | {
 export type RaidLevel = {
   key: "normal" | "boosted";
   label: string;
-  level: 20 | 25;
+  level: 8 | 13 | 20 | 25;
   cpm: number;
 };
 
@@ -143,7 +143,7 @@ export function combinationTotals(
     total,
     good,
     bad: total - good,
-    odds: totalOptions ? good / total : 0,
+    odds: total ? good / total : 0,
   };
 }
 

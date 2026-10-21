@@ -10,7 +10,8 @@
     "test": "node --experimental-strip-types --test tests/*.test.ts",
     "cap:sync": "npm run build && cap sync",
     "cap:open:ios": "cap open ios",
-    "cap:open:android": "cap open android"
+    "cap:open:android": "cap open android",
+    "test:ui": "playwright test"
   },
   "dependencies": {
     "@capacitor/android": "8.3.4",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "8.3.4",
+    "@playwright/test": "^1.64.1",
     "typescript": "6.0.3",
     "vite": "8.0.13"
   }
