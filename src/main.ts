@@ -376,7 +376,16 @@ function showReference(p: Species, group: string, boosted: boolean) {
       : t(p.shadow ? "shadowRaidRef" : "normalRaidRef");
   $("#reference-dialog-title").textContent = `${nameOf(p)} · CP ${r.cp}`;
   $("#reference-dialog-content").innerHTML =
-    `<p>${context} · ${t(boosted ? "boosted" : "normal")}</p><p>${supported ? t(r.collision ? "collisionHint" : "referenceUnique", { cp: r.cp, count: r.matches.length }) : t("refUnsupported")}</p>${supported ? `<p>${t("referenceFloor", { level: r.level, floor: r.floor })}</p>${group === "raid" && p.shadow ? `<p>${t("normalComparison", { count: referenceFor(p, group, boosted, true).matches.length })}</p>` : ""}<div class="reference-matches"><h3>${t("matchingIvs")}</h3>${r.matches.map((c) => `<code>${c.a} / ${c.d} / ${c.s}</code>`).join("")}</div>` : ""}<button id="use-reference-cp" class="secondary">${t("useCp")}</button>`;
+    `<p>${context} · ${t(boosted ? "boosted" : "normal")}</p><p>${supported ? t(r.collision ? "collisionHint" : "referenceUnique", { cp: r.cp, count: r.matches.length }) : t("refUnsupported")}</p>${
+      supported
+        ? `<p>${t("referenceFloor", { level: r.level, floor: r.floor })}</p>${group === "raid" && p.shadow ? `<p>${t("normalComparison", { count: referenceFor(p, group, boosted, true).matches.length })}</p>` : ""}<div class="reference-matches"><table class="reference-ivs"><caption>${t("matchingIvs")}</caption><thead><tr><th scope="col">${t("ivAttack")}</th><th scope="col">${t("ivDefense")}</th><th scope="col">${t("ivHp")}</th><th scope="col">${t("ivNote")}</th></tr></thead><tbody>${r.matches
+            .map((c) => {
+              const perfect = c.a === 15 && c.d === 15 && c.s === 15;
+              return `<tr data-perfect="${perfect}"><td>${c.a}</td><td>${c.d}</td><td>${c.s}</td><td>${perfect ? t("perfectIv") : ""}</td></tr>`;
+            })
+            .join("")}</tbody></table></div>`
+        : ""
+    }<button id="use-reference-cp" class="secondary">${t("useCp")}</button>`;
   $("#use-reference-cp").addEventListener("click", () => {
     referenceDialog.close();
     choose(p.id);
