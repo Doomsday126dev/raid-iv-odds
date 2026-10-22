@@ -904,6 +904,7 @@ function render(options: RenderOptions = {}): void {
     elements.primaryInsight.innerHTML = `<div class="insight-copy"><span class="insight-title">${copy("unknownSpeciesTitle")}</span><p>${copy("unknownSpeciesCopy")}</p></div>`;
     elements.resultsGrid.replaceChildren();
     elements.watchlistGrid.replaceChildren();
+    updateControlState();
     return;
   }
   unresolvedSharedSpecies = null;

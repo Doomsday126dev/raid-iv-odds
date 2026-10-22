@@ -47,6 +47,11 @@ test("hash species takes precedence and unknown explicit species cannot calculat
   await expect(page.locator("#flowPokemonSelect")).toHaveValue("");
   await expect(page.locator("#resultsGrid")).toBeEmpty();
   await expect(page.locator("#flowCpInput")).toHaveValue("157");
+  await page.locator(".settings-drawer summary").click();
+  await page.locator('[data-language-choice="en"]').click();
+  await expect(page.locator('[data-language-choice="en"]')).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator("#primaryInsight")).toContainText("Choose a valid Pokémon");
+  await expect(page.locator("#resultsGrid")).toBeEmpty();
   await page.locator("#flowPokemonSelect").selectOption("Mewtwo");
   expect(await saved(page)).toMatchObject({selectedName:"Mewtwo",cp:157,raidFloor:10});
 });
