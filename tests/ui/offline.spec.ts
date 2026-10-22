@@ -95,7 +95,15 @@ test("fresh installation opens check, reference and advanced offline", async ({
   await expect(page.locator("#reference-rows")).toContainText("フシギダネ");
   await expect(page.locator("#reference-rows")).toContainText("414");
   await page.goto(`${origin}advanced.html`);
-  await expect(page.locator("#pageTitle")).toHaveText("Purified Hundo Odds");
+  await expect(page.locator("#pageTitle")).toHaveText("リトレーン100%個体値の確率");
+  await page.locator('.settings-drawer summary').click();
+  await page.locator('[data-language-choice=de]').click();
+  await expect(page.locator('#pageTitle')).toHaveText('Chance auf ein erlöstes Hundo');
+  await page.locator('a[href="./"]').click();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'de');
+  await page.goto(`${origin}?species=MAGIKARP&cp=61&lang=de`);
+  await expect(page.locator('#species-search')).toHaveValue('Karpador');
+  await expect(page.locator('.chance-value')).toHaveText('80%');
 });
 test("v8 cache and controller migrate to new build without deleting unrelated caches", async ({
   page,

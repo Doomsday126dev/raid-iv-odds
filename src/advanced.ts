@@ -1,3 +1,6 @@
+import germanText from "./german-advanced.json";
+import germanNames from "./german-names.json";
+import fullCatalog from "./catalog.json";
 import { DATA_LAST_REVIEWED, POKEMON, type Pokemon } from "./data";
 import "../styles.css";
 import "./advanced-theme.css";
@@ -7,7 +10,7 @@ import {
   MIN_CP,
   RAID_LEVELS,
   clampInt,
-  formatPercent,
+  formatPercent as rawFormatPercent,
   formatRatio,
   maxCpFor,
   normalizeIvFloor,
@@ -19,11 +22,12 @@ import {
   type WatchlistRow,
 } from "./math";
 
+const formatPercent = (value:number) => prefs.language === "de" ? rawFormatPercent(value).replace(".", ",") : rawFormatPercent(value);
 const STORAGE_KEY = "raidIvOdds:v4";
 
 type ThemeChoice = "system" | "light" | "dark";
 type AccentChoice = "aqua" | "mystic" | "valor" | "instinct" | "harmony";
-type LanguageChoice = "en" | "ja";
+type LanguageChoice = "en" | "ja" | "de";
 type WatchFilter = "all" | "partial" | "strong" | "guaranteed";
 type ResultTone = "good" | "mixed" | "none";
 type WeatherChoice = "normal" | "boosted";
@@ -80,7 +84,10 @@ const QUICK_PICK_BOSSES = ["Mewtwo", "Rayquaza", "Kyogre", "Groudon"] as const;
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/mwvzlypv";
 
 const TEXT = {
+  de: germanText,
   en: {
+    currentVerdict: "Current verdict", cpWatchlists: "CP watchlists",
+    backMain: "← Back to Hundo Check",
     skipToResults: "Skip to results",
     displayOptions: "Display options",
     eyebrow: "Unofficial raid IV tool",
@@ -225,6 +232,8 @@ const TEXT = {
       "This CP can come from {total} possible IV spreads. {good} purify to 15/15/15 and {bad} do not.",
   },
   ja: {
+    currentVerdict: "現在の判定", cpWatchlists: "CP一覧",
+    backMain: "← HundoCheckへ戻る",
     skipToResults: "結果へスキップ",
     displayOptions: "表示設定",
     eyebrow: "非公式レイド個体値ツール",
@@ -448,7 +457,12 @@ function renderQuickPickButtons(): void {
 }
 
 function restoreState(): void {
-  const saved = { ...loadSavedState(), ...loadStateFromUrl() };
+  const saved = loadSavedState();
+  try {
+    const current = localStorage.getItem("hundo-check-language");
+    saved.language = validateOption<LanguageChoice>(current, ["en", "ja", "de"], saved.language ?? (navigator.language.startsWith("de") ? "de" : navigator.language.startsWith("ja") ? "ja" : "en"));
+  } catch { /* Optional preference. */ }
+  Object.assign(saved, loadStateFromUrl());
   const savedPokemon =
     typeof saved.selectedName === "string" && POKEMON.some((pokemon) => pokemon.name === saved.selectedName)
       ? saved.selectedName
@@ -458,7 +472,7 @@ function restoreState(): void {
     ...DEFAULT_PREFS,
     theme: validateOption(saved.theme, ["system", "light", "dark"], DEFAULT_PREFS.theme),
     accent: validateOption(saved.accent, ["aqua", "mystic", "valor", "instinct", "harmony"], DEFAULT_PREFS.accent),
-    language: validateOption(saved.language, ["en", "ja"], DEFAULT_PREFS.language),
+    language: validateOption(saved.language, ["en", "ja", "de"], DEFAULT_PREFS.language),
     showDetails: typeof saved.showDetails === "boolean" ? saved.showDetails : DEFAULT_PREFS.showDetails,
     weather: validateOption(saved.weather, ["normal", "boosted"], DEFAULT_PREFS.weather),
     watchFilter: validateOption(
@@ -907,8 +921,8 @@ function watchlistRenderSignature(settings: {
 }
 
 function renderStaticText(): void {
-  document.documentElement.lang = prefs.language === "ja" ? "ja" : "en";
-  document.title = prefs.language === "ja" ? "シャドウレイド リトレーン100%個体値の確率" : "Shadow Raid Purified Hundo Odds";
+  document.documentElement.lang = prefs.language;
+  document.title = prefs.language === "de" ? "Chance auf ein erlöstes Hundo" : prefs.language === "ja" ? "シャドウレイド リトレーン100%個体値の確率" : "Shadow Raid Purified Hundo Odds";
   renderPokemonOptions();
 
   document.querySelectorAll<HTMLElement>("[data-i18n]").forEach((element) => {
@@ -977,7 +991,7 @@ function renderCpValidation(
     elements.cpInput.setCustomValidity("");
     elements.cpValidation.className = `field-help cp-validation ${possibleClass}`;
     elements.cpValidation.textContent = formatCopy("rareOverlap", {
-      scenarios: possible.map(scenarioLabel).join(prefs.language === "ja" ? "と" : " and "),
+      scenarios: possible.map(scenarioLabel).join(prefs.language === "ja" ? "と" : prefs.language === "de" ? " und " : " and "),
     });
     return;
   }
@@ -1476,7 +1490,7 @@ function loadStateFromUrl(): SavedState {
   const floor = params.get("floor");
   const weather = params.get("weather");
   const language = params.get("lang") || params.get("language");
-  if(language === "ja" || language === "en")state.language = language;
+  if(language === "ja" || language === "en" || language === "de")state.language = language;
 
   if (pokemon && POKEMON.some((entry) => pokemonNameMatches(entry, pokemon))) {
     state.manualStats = false;
@@ -1498,6 +1512,7 @@ function parseFloorParam(value: string): IvFloor {
 
 function syncUrl(settings: { cp: number; raidFloor: IvFloor }): void {
   const params = new URLSearchParams();
+  params.set("lang", prefs.language);
   params.set("pokemon", selectedPokemon().name);
   params.set("cp", String(settings.cp));
   if (prefs.weather === "boosted") params.set("weather", "boosted");
@@ -1557,19 +1572,26 @@ function scenarioLabel(summary: Pick<CpSummary, "raidLevel">): string {
 }
 
 function sortedPokemon(): Pokemon[] {
-  const locale = prefs.language === "ja" ? "ja" : "en";
+  const locale = prefs.language;
   return POKEMON.slice().sort((left, right) =>
     pokemonDisplayName(left).localeCompare(pokemonDisplayName(right), locale),
   );
 }
 
+function germanBossName(pokemon: Pokemon): string {
+  if (pokemon.name === "Deoxys Normal") return "Deoxys (Normalform)";
+  if (pokemon.name === "Hoopa Confined") return "Gebanntes Hoopa";
+  const key = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
+  const species = fullCatalog.pokemon.find(p => key(p.name) === key(pokemon.name));
+  return species ? (germanNames.names as Record<string,string>)[species.id]! : pokemon.name;
+}
 function pokemonDisplayName(pokemon: Pokemon): string {
-  return prefs.language === "ja" ? pokemon.nameJa : pokemon.name;
+  return prefs.language === "de" ? germanBossName(pokemon) : prefs.language === "ja" ? pokemon.nameJa : pokemon.name;
 }
 
 function pokemonInputValue(pokemon: Pokemon): string {
   // Keep English visible in Japanese mode so native datalist search still accepts English boss names.
-  return prefs.language === "ja" ? `${pokemon.nameJa} (${pokemon.name})` : pokemon.name;
+  return prefs.language !== "en" ? `${pokemonDisplayName(pokemon)} (${pokemon.name})` : pokemon.name;
 }
 
 function pokemonNameMatches(pokemon: Pokemon, value: string): boolean {
@@ -1591,17 +1613,17 @@ function resolvePokemonInput(value: string, mode: "exact" | "unique-prefix"): Po
 }
 
 function pokemonSearchTokens(pokemon: Pokemon): string[] {
-  return [pokemon.name, pokemon.nameJa, pokemonInputValue(pokemon)];
+  return [pokemon.name, pokemon.nameJa, germanBossName(pokemon), pokemonInputValue(pokemon)];
 }
 
 function normalizeSearch(value: string): string {
-  return value.trim().normalize("NFKC").toLowerCase();
+  return value.trim().normalize("NFKC").toLowerCase().replace(/ß/g,"ss").replace(/[äöüéèêáàâíóú]/g,c=>c.normalize("NFD")[0]!);
 }
 
 function formatReviewedDate(value: string): string {
   const [year, month, day] = value.split("-").map(Number);
   const date = new Date(year, month - 1, day);
-  return new Intl.DateTimeFormat(prefs.language === "ja" ? "ja-JP" : "en-US", {
+  return new Intl.DateTimeFormat(prefs.language === "ja" ? "ja-JP" : prefs.language === "de" ? "de-DE" : "en-US", {
     dateStyle: "long",
   }).format(date);
 }

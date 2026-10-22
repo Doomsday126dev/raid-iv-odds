@@ -1,5 +1,7 @@
+import {cosmeticSearchAliases} from "./catalog-aliases";
+import cosmeticAliases from "./cosmetic-aliases.json";
 import catalog from "./catalog.json";
-import { RAID_LEVELS, formatPercent, type CpSummary } from "./math";
+import { RAID_LEVELS, formatPercent as rawFormatPercent, type CpSummary } from "./math";
 import {
   ROCKET_LEVELS,
   analyzeShadowCatch,
@@ -15,8 +17,10 @@ import {
   typesOf,
   normalizeSearch,
   japaneseName,
+  germanName,
 } from "./i18n";
 
+const formatPercent = (value:number) => language === "de" ? rawFormatPercent(value).replace(".", ",") : rawFormatPercent(value);
 type Species = (typeof catalog.pokemon)[number];
 const all = catalog.pokemon;
 const params = new URLSearchParams(location.search);
@@ -28,6 +32,8 @@ const escape = (text: string) =>
         c
       ]!,
   );
+const cosmeticAlias = (cosmeticAliases as Record<string,{target:string;english:string}>)[params.get("species") ?? ""];
+if (cosmeticAlias) params.set("species", cosmeticAlias.target);
 const unknownSpecies =
   params.has("species") && !all.some((p) => p.id === params.get("species"));
 const oldName = params.get("pokemon")?.toLowerCase();
@@ -78,7 +84,7 @@ function matchSpecies(query: string) {
   const q = normalizeSearch(query);
   return all.filter(
     (p) =>
-      [p.name, p.id, japaneseName(p.id)].some((name) =>
+      [p.name, p.id, japaneseName(p.id), germanName(p.id), ...cosmeticSearchAliases(p.id)].some((name) =>
         normalizeSearch(name).includes(q),
       ) || String(p.dex) === query,
   );
@@ -303,7 +309,7 @@ function render() {
     : "";
   $("#decision").innerHTML = waiting
     ? `<p class="empty-message">${t("empty")}</p>`
-    : `<div class="decision-top"><span class="decision-icon" aria-hidden="true">${icon}</span><span class="eyebrow">${t("resultEyebrow")}</span></div><h2>${title}</h2>${percentage}<p>${copy}</p>${valid ? `<div class="result-context"><strong>${escape(nameOf(selected))} · CP ${escape(cpText)}</strong><span>${matches.length === 1 ? `${t("compatible")}: ${contextLabel(matches[0]!)}` : t("both")}</span></div><details class="result-details"><summary>${t("details")}</summary>${matches.map((c) => `<section class="context-calculation"><h3>${contextText(c)}</h3><p>${t("equalRolls")}</p>${matches.length > 1 ? `<p>${t("matching", { good: c.summary.good, total: c.summary.total })} · ${formatPercent(c.summary.odds)}</p>` : ""}<p class="original-perfect"><strong>${t("already")}: ${formatPercent(c.summary.combos.filter(isOriginalPerfect).length / c.summary.total)}</strong><br>${t("originalCount", { good: c.summary.combos.filter(isOriginalPerfect).length, total: c.summary.total })}. ${t("alreadyHint")}</p>${spreads(c.summary)}</section>`).join("")}</details>` : ""}`;
+    : `<div class="decision-top"><span class="decision-icon" aria-hidden="true">${icon}</span><span class="eyebrow">${t("resultEyebrow")}</span></div><h2>${title}</h2>${percentage}<p>${copy}</p>${valid ? `<div class="result-context"><strong>${escape(nameOf(selected))} · ${language === "de" ? "WP" : "CP"} ${escape(cpText)}</strong><span>${matches.length === 1 ? `${t("compatible")}: ${contextLabel(matches[0]!)}` : t("both")}</span></div><details class="result-details"><summary>${t("details")}</summary>${matches.map((c) => `<section class="context-calculation"><h3>${contextText(c)}</h3><p>${t("equalRolls")}</p>${matches.length > 1 ? `<p>${t("matching", { good: c.summary.good, total: c.summary.total })} · ${formatPercent(c.summary.odds)}</p>` : ""}<p class="original-perfect"><strong>${t("already")}: ${formatPercent(c.summary.combos.filter(isOriginalPerfect).length / c.summary.total)}</strong><br>${t("originalCount", { good: c.summary.combos.filter(isOriginalPerfect).length, total: c.summary.total })}. ${t("alreadyHint")}</p>${spreads(c.summary)}</section>`).join("")}</details>` : ""}`;
   $("#decision")
     .querySelectorAll<HTMLButtonElement>("[data-clarify]")
     .forEach((b) =>
@@ -376,7 +382,7 @@ function referenceCell(p: Species, group: string, boosted: boolean) {
     context = `${t(group === "rocket" ? "referenceRocket" : "referenceRaids")} · ${t(boosted ? "boosted" : "normal")}`;
   const hint = t("collisionHint", { cp: r.cp, count: r.matches.length }),
     id = `hint-${p.id}-${group}-${boosted}`;
-  return `<td data-reference-group="${group}"><button class="cp-reference" data-cp-species="${p.id}" data-cp-group="${group}" data-cp-boosted="${boosted}" data-ambiguous="${collision}" aria-label="${escape(nameOf(p))} · ${context} · CP ${r.cp}${collision ? " · " + escape(hint) : ""}" ${collision ? `aria-describedby="${id}"` : ""}><span class="cp-value"><span class="cp-number">${r.cp}</span></span>${collision ? `<span id="${id}" class="collision-explanation" role="tooltip">${hint}</span>` : ""}</button></td>`;
+  return `<td data-reference-group="${group}"><button class="cp-reference" data-cp-species="${p.id}" data-cp-group="${group}" data-cp-boosted="${boosted}" data-ambiguous="${collision}" aria-label="${escape(nameOf(p))} · ${context} · ${language === "de" ? "WP" : "CP"} ${r.cp}${collision ? " · " + escape(hint) : ""}" ${collision ? `aria-describedby="${id}"` : ""}><span class="cp-value"><span class="cp-number">${r.cp}</span></span>${collision ? `<span id="${id}" class="collision-explanation" role="tooltip">${hint}</span>` : ""}</button></td>`;
 }
 const referenceDialog = $<HTMLDialogElement>("#reference-dialog");
 $("#reference-dialog-close").addEventListener("click", () =>
@@ -389,7 +395,7 @@ function showReference(p: Species, group: string, boosted: boolean) {
     group === "rocket"
       ? t("referenceRocket")
       : t(p.shadow ? "shadowRaidRef" : "normalRaidRef");
-  $("#reference-dialog-title").textContent = `${nameOf(p)} · CP ${r.cp}`;
+  $("#reference-dialog-title").textContent = `${nameOf(p)} · ${language === "de" ? "WP" : "CP"} ${r.cp}`;
   $("#reference-dialog-content").innerHTML =
     `<p>${context} · ${t(boosted ? "boosted" : "normal")}</p>${supported ? `<p class="combination-count">${t(r.matches.length === 1 ? "combinationOne" : "combinationCount", { count: r.matches.length })}</p><div class="reference-matches"><table class="reference-ivs"><caption class="sr-only">${t("matchingIvs")}</caption><thead><tr><th scope="col">${t("ivAttack")}</th><th scope="col">${t("ivDefense")}</th><th scope="col">${t("ivHp")}</th></tr></thead><tbody>${r.matches.map((c) => `<tr data-perfect="${isOriginalPerfect(c)}"><td>${c.a}</td><td>${c.d}</td><td>${c.s}</td></tr>`).join("")}</tbody></table></div><details class="reference-assumptions"><summary>${t("calculationAssumptions")}</summary><p>${t("referenceFloor", { level: r.level, floor: r.floor })}</p><p>${t(r.collision ? "collisionHint" : "referenceUnique", { cp: r.cp, count: r.matches.length })}</p>${group === "raid" && p.shadow ? `<p>${t("normalComparison", { count: referenceFor(p, group, boosted, true).matches.length })}</p>` : ""}</details>` : `<p>${t("refUnsupported")}</p>`}<button id="use-reference-cp" class="secondary">${t("useCp")}</button>`;
   $("#use-reference-cp").addEventListener("click", () => {

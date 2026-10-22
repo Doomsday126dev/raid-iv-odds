@@ -1,0 +1,42 @@
+{
+  "PIKACHU_5TH_ANNIVERSARY": {
+    "target": "PIKACHU",
+    "english": "Pikachu (5th Anniversary)",
+    "japanese": "ピカチュウ（そらをとぶ・5周年）"
+  },
+  "PIKACHU_FLYING": {
+    "target": "PIKACHU",
+    "english": "Pikachu (Flying)",
+    "japanese": "ピカチュウ（そらをとぶ）"
+  },
+  "PIKACHU_HORIZONS": {
+    "target": "PIKACHU",
+    "english": "Pikachu (Horizons)",
+    "japanese": "ピカチュウ（キャップ）"
+  },
+  "PIKACHU_KARIYUSHI": {
+    "target": "PIKACHU",
+    "english": "Pikachu (Kariyushi)",
+    "japanese": "ピカチュウ（かりゆし）"
+  },
+  "PIKACHU_LIBRE": {
+    "target": "PIKACHU",
+    "english": "Pikachu (Libre)",
+    "japanese": "ピカチュウ（マスクド・ピカチュウ）"
+  },
+  "PIKACHU_POP_STAR": {
+    "target": "PIKACHU",
+    "english": "Pikachu (Pop Star)",
+    "japanese": "ピカチュウ（アイドル・ピカチュウ）"
+  },
+  "PIKACHU_ROCK_STAR": {
+    "target": "PIKACHU",
+    "english": "Pikachu (Rock Star)",
+    "japanese": "ピカチュウ（ハードロック・ピカチュウ）"
+  },
+  "PIKACHU_SHAYMIN": {
+    "target": "PIKACHU",
+    "english": "Pikachu (Shaymin Scarf)",
+    "japanese": "ピカチュウ（シェイミのスカーフ）"
+  }
+}

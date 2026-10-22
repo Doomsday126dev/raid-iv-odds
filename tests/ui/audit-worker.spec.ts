@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { createServer, type Server } from "node:http";
-import { readFileSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { resolve, extname } from "node:path";
 let server: Server,
   origin: string,
@@ -40,7 +40,7 @@ test.beforeAll(async () => {
       if (
         path.includes("/main-") &&
         path.endsWith(".js") &&
-        statSync(file).size > 100000
+        body.includes(Buffer.from("#species-search"))
       )
         setTimeout(() => res.end(body), 350);
       else res.end(body);
