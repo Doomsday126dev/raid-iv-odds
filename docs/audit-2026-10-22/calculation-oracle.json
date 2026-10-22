@@ -1,0 +1,12 @@
+{
+  "baseline": "ecea09581b2f18b6c96b26de745cfcb10527e6fb",
+  "species": 1073,
+  "contexts": 4,
+  "cpComparisons": 17580032,
+  "bucketSpreads": 8395152,
+  "purificationChecks": 8395152,
+  "referenceChecks": 6438,
+  "mismatches": [],
+  "method": "Exact BigInt squared inequalities using independently pinned decimal CPMs. k=floor(sqrt(A²DS × CPM⁴ /100)), min10.",
+  "durationMs": 2044
+}
