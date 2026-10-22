@@ -1,3 +1,4 @@
+import { recordTraffic } from "./traffic";
 import {cosmeticSearchAliases} from "./catalog-aliases";
 import cosmeticAliases from "./cosmetic-aliases.json";
 import catalog from "./catalog.json";
@@ -540,3 +541,5 @@ if (
   if (document.readyState === "complete") void registerOfflineWorker();
   else window.addEventListener("load", registerOfflineWorker, { once: true });
 }
+
+recordTraffic("checker");
