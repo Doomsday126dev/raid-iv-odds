@@ -1562,3 +1562,10 @@ html[lang="ja"] .view-tabs button {
     padding: 0.48rem 0.3rem;
   }
 }
+/* Three explicit language choices remain readable on narrow phones. */
+@media (max-width: 430px) {
+  .site-header { display: grid; grid-template-columns: minmax(0, 1fr) 32px; gap: 3px 9px; height: auto; padding: 8px 18px 4px; }
+  .language-toggle { grid-column: 1 / -1; grid-row: 2; justify-self: end; margin-left: 0; }
+  .theme-button { grid-column: 2; grid-row: 1; }
+}
+html[lang="de"] .decision h2 { hyphens: auto; }

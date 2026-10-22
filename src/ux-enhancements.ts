@@ -17,6 +17,15 @@ const TEXT = {
     example:
       "Once you catch the Pokemon, you can just appraise the IVs in-game. This tool is mainly for the moment before you know the IVs: it checks whether the visible CP has any purified-hundo path, including CPs that come from multiple IV spreads.",
   },
+  de: {
+    settings: "Einstellungen", share: "Link teilen", copied: "Link kopiert", error: "Link konnte nicht kopiert werden",
+    title: "Prüfung vor dem Fangen", steps: [
+      "Wähle den Raid-Boss. Die Basiswerte werden automatisch ausgefüllt.",
+      "Für übliche Crypto-Raids gelten Mindest-IVs 6/6/6 und ein Erlösungsbonus von +2.",
+      "Gib die WP vom Fangbildschirm ein, um passende IV-Kombinationen zu berechnen.",
+      "Bei gültigen Fangbedingungen bedeutet 0 %, dass keine passende Kombination ein erlöstes Hundo ergibt. Gemischte Ergebnisse lassen sich durch die Bewertung bestätigen."
+    ], exampleTitle: "Was WP aussagen", example: "Die Bewertung im Spiel bestätigt die IVs. Vorher prüft dieses Werkzeug anhand der Fang-WP, ob ein Hundo nach dem Erlösen möglich ist. Es berücksichtigt auch mehrere IV-Kombinationen mit denselben WP."
+  },
   ja: {
     settings: "設定",
     share: "リンクを共有",
@@ -38,7 +47,7 @@ const TEXT = {
 type Lang = keyof typeof TEXT;
 
 function lang(): Lang {
-  return document.documentElement.lang === "ja" ? "ja" : "en";
+  return document.documentElement.lang === "de" ? "de" : document.documentElement.lang === "ja" ? "ja" : "en";
 }
 
 function labels() {

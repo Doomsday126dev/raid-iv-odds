@@ -6,10 +6,17 @@ if (!path || !/^[a-f0-9]{40}$/.test(revision ?? ""))
   throw Error("Provide a snapshot path and full commit SHA");
 const raw = readFileSync(path);
 const source = JSON.parse(raw);
+const cosmeticAliases = JSON.parse(readFileSync(new URL("../src/cosmetic-aliases.json", import.meta.url)));
+for (const [id, alias] of Object.entries(cosmeticAliases)) {
+  const cosmetic=source.find(p=>p.speciesId.toUpperCase()===id);
+  const base=source.find(p=>p.speciesId.toUpperCase()===alias.target);
+  if (!cosmetic || !base || JSON.stringify(cosmetic.baseStats)!==JSON.stringify(base.baseStats) || JSON.stringify(cosmetic.types)!==JSON.stringify(base.types)) throw Error(`Cosmetic stat equivalence changed: ${id}`);
+}
 const pokemon = source
   .filter(
     (p) =>
       p.released === true &&
+      !Object.hasOwn(cosmeticAliases, p.speciesId.toUpperCase()) &&
       !p.tags?.some((t) => ["shadow", "mega", "primal"].includes(t)) &&
       !/_(shadow|mega|primal)(_|$)/.test(p.speciesId) &&
       [p.baseStats.atk, p.baseStats.def, p.baseStats.hp].every(

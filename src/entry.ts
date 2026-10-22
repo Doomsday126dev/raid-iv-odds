@@ -1,3 +1,4 @@
+import { cosmeticTarget } from "./catalog-aliases";
 // Existing shared links belong to the original calculator's parameter contract.
 // Preserve its species aliases, Japanese names, hash precedence and custom floor
 // semantics instead of silently translating unsupported state into defaults.
@@ -11,9 +12,16 @@ const legacyHash =
   ["pokemon", "boss", "floor", "cp", "weather", "lang", "language"].some(
     (key) => hash.has(key),
   );
-const legacy = legacyQuery || legacyHash;
-if (legacy) {
-  location.replace(`./advanced.html${location.search}${location.hash}`);
+const originalSpecies = query.get("species") ?? query.get("pokemon") ?? query.get("boss");
+const cosmetic = originalSpecies ? cosmeticTarget(originalSpecies) : undefined;
+if (cosmetic && !legacyHash) {
+  query.set("species", cosmetic); query.delete("pokemon"); query.delete("boss");
+  location.replace(`./?${query}`);
 } else {
-  void import("./main");
+  const legacy = legacyQuery || legacyHash;
+  if (legacy) {
+    location.replace(`./advanced.html${location.search}${location.hash}`);
+  } else {
+    void import("./main");
+  }
 }

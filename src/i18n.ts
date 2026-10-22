@@ -1,19 +1,21 @@
+import german from "./german-names.json";
+import germanUi from "./german-ui.json";
 import japanese from "./japanese-names.json";
-export type Language = "en" | "ja";
+export type Language = "en" | "ja" | "de";
 export function initialLanguage(params: URLSearchParams): Language {
   const link = params.get("lang") ?? params.get("language");
-  if (link === "ja" || link === "en") return link;
+  if (link === "ja" || link === "en" || link === "de") return link;
   try {
     const saved = localStorage.getItem("hundo-check-language");
-    if (saved === "ja" || saved === "en") return saved;
+    if (saved === "ja" || saved === "en" || saved === "de") return saved;
     const old = JSON.parse(
       localStorage.getItem("raidIvOdds:v4") ?? "{}",
     ).language;
-    if (old === "ja" || old === "en") return old;
+    if (old === "ja" || old === "en" || old === "de") return old;
   } catch {
     /* Optional preferences. */
   }
-  return navigator.language.startsWith("ja") ? "ja" : "en";
+  return navigator.language.startsWith("ja") ? "ja" : navigator.language.startsWith("de") ? "de" : "en";
 }
 export const language = initialLanguage(new URLSearchParams(location.search));
 document.documentElement.lang = language;
@@ -99,7 +101,7 @@ const en = {
   check: "Check",
   more: "Show more Pokémon",
   referenceScope:
-    "Released species/forms; Mega, Primal and duplicate Shadow variants are excluded. A listing is not a current encounter rotation.",
+    "Released species/forms; Mega, Primal, cosmetic costumes and duplicate Shadow variants are excluded. A listing is not a current encounter rotation.",
   how: "How the check works",
   howHint: "Mechanics, assumptions & data",
   howTitle: "CP narrows the possibilities. Appraisal confirms the IVs.",
@@ -109,9 +111,9 @@ const en = {
     "We enumerate every legal IV triple at both catch levels and count exact integer CP matches. Shadow raids use levels 20/25 and a 6/6/6 floor. Rocket Grunts/Leaders use levels 8/13 and floors 0/0/0 or weather-boosted 4/4/4. Giovanni, research, powered-up Pokémon and special-event floors need different settings.",
   assumption:
     "Chances assume equally likely legal IV rolls and the correct species, form and encounter. If both weather contexts fit, their probabilities stay separate; no prior probability of weather is assumed. A purifiable hundo is not always the best battle choice.",
-  scope: "Catalog and Japanese names",
+  scope: "Catalog and localized names",
   source:
-    "Released species/forms from pinned PvPoke data. Japanese species/form names use pinned PokeAPI data and documented GO form display labels. Historical Shadow eligibility is not proof of current availability.",
+    "Released species/forms from pinned PvPoke data. Japanese and German species/form names use pinned PokeAPI data and documented GO form display labels. Historical Shadow eligibility is not proof of current availability.",
   advanced: "Advanced calculator",
   advancedHint:
     "Custom raid IV floors, manual base stats and detailed comparisons.",
@@ -180,6 +182,7 @@ const en = {
   languageNote:
     "Language changes preserve the selected species, CP and encounter.",
 };
+const de: typeof en = germanUi;
 const ja: typeof en = {
   shadowScope:
     "シャドウの捕獲時CP専用。入手元や出現状況はCPだけでは確定できません。",
@@ -346,13 +349,13 @@ export function t(
   key: keyof typeof en,
   values: Record<string, string | number> = {},
 ) {
-  let text = (language === "ja" ? ja : en)[key];
+  let text = ({ en, ja, de })[language][key];
   for (const [k, v] of Object.entries(values))
     text = text.replaceAll(`{${k}}`, String(v));
   return text;
 }
 export function nameOf(p: { id: string; name: string }) {
-  return language === "ja"
+  return language === "de" ? germanName(p.id) : language === "ja"
     ? ((japanese.names as Record<string, string>)[p.id] ?? p.name)
     : p.name;
 }
@@ -378,16 +381,21 @@ const types: Record<string, string> = {
 };
 export function typesOf(p: { types: string[] }) {
   return p.types
-    .map((type) => (language === "ja" ? (types[type] ?? type) : type))
+    .map((type) => (language === "de" ? (germanTypes[type] ?? type) : language === "ja" ? (types[type] ?? type) : type))
     .join(" / ");
 }
 export function normalizeSearch(value: string) {
   return value
     .normalize("NFKC")
     .toLowerCase()
+    .replace(/ß/g, "ss")
+    .replace(/[äöüéèêáàâíóú]/g, c => c.normalize("NFD")[0]!)
     .replace(/[ぁ-ゖ]/g, (c) => String.fromCharCode(c.charCodeAt(0) + 0x60))
     .replace(/[\s\-_()（）.'’]/g, "");
 }
 export function japaneseName(id: string) {
   return (japanese.names as Record<string, string>)[id] ?? "";
 }
+
+export function germanName(id: string) { return (german.names as Record<string,string>)[id] ?? ""; }
+const germanTypes: Record<string,string> = {Normal:"Normal",Fire:"Feuer",Water:"Wasser",Electric:"Elektro",Grass:"Pflanze",Ice:"Eis",Fighting:"Kampf",Poison:"Gift",Ground:"Boden",Flying:"Flug",Psychic:"Psycho",Bug:"Käfer",Rock:"Gestein",Ghost:"Geist",Dragon:"Drache",Dark:"Unlicht",Steel:"Stahl",Fairy:"Fee"};
