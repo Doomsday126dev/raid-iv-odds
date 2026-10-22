@@ -1,3 +1,4 @@
+import { recordTraffic } from "./traffic";
 import { cosmeticTarget } from "./catalog-aliases";
 import japaneseNames from "./japanese-names.json";
 import germanText from "./german-advanced.json";
@@ -438,6 +439,7 @@ function init(): void {
   applyAppearance();
   bindEvents();
   render();
+  recordTraffic("advanced");
 }
 
 function renderPokemonOptions(): void {
