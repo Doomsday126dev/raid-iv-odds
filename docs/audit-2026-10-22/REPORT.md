@@ -64,3 +64,7 @@ PLAYWRIGHT_BROWSERS_PATH=/tmp/raid-playwright npm run test:ui -- tests/ui/audit-
 - [HTML script processing](https://html.spec.whatwg.org/multipage/scripting.html)
 
 The official Shadow/Purified help link redirected to Scopely support and was unavailable to the web reader during this audit; no new official-mechanics claim relies on that failed fetch. Dataset provenance/licenses and known encounter assumptions remain documented in the existing project docs.
+
+## Independent second pass
+
+A fresh read-only reviewer found no reportable regression at a44bea8. An additional isolated Chrome check reproduced a low-risk native-validation inconsistency: pasted `　６１　` returned 80% with aria-invalid=false but patternMismatch=true. The native pattern now accepts the same surrounding whitespace as normalization; browser regression coverage includes ASCII and fullwidth spaces. No calculation or visual-design changes.

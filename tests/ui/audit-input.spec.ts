@@ -74,6 +74,12 @@ test("fullwidth Japanese CP digits preserve exact odds and canonical shared link
     "aria-invalid",
     "false",
   );
+  for (const value of [" 61 ", "　６１　"]) {
+    await page.locator("#cp-input").fill(value);
+    await expect(page.locator(".chance-value")).toHaveText("80%");
+    expect(await page.locator("#cp-input").evaluate((e: HTMLInputElement) => e.validity.valid)).toBe(true);
+    await expect(page.locator("#cp-input")).toHaveAttribute("aria-invalid", "false");
+  }
   await page.locator("#cp-input").fill("６１.５");
   await expect(page.locator(".chance-value")).toHaveCount(0);
 });
