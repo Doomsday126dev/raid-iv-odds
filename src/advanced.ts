@@ -1,7 +1,9 @@
+import { cosmeticTarget } from "./catalog-aliases";
+import japaneseNames from "./japanese-names.json";
 import germanText from "./german-advanced.json";
 import germanNames from "./german-names.json";
 import fullCatalog from "./catalog.json";
-import { DATA_LAST_REVIEWED, POKEMON, type Pokemon } from "./data";
+import { DATA_LAST_REVIEWED, POKEMON as RAID_POKEMON, type Pokemon } from "./data";
 import "../styles.css";
 import "./advanced-theme.css";
 import "./ux-enhancements";
@@ -23,6 +25,10 @@ import {
 } from "./math";
 
 const formatPercent = (value:number) => prefs.language === "de" ? rawFormatPercent(value).replace(".", ",") : rawFormatPercent(value);
+// Keep the existing advanced list, adding a catalog species only when a link or
+// saved selection needs it. Never substitute a different species for a valid ID.
+const POKEMON: Pokemon[] = [...RAID_POKEMON];
+let unresolvedSharedSpecies: string | null = null;
 const STORAGE_KEY = "raidIvOdds:v4";
 
 type ThemeChoice = "system" | "light" | "dark";
@@ -87,6 +93,8 @@ const TEXT = {
   de: germanText,
   en: {
     currentVerdict: "Current verdict", cpWatchlists: "CP watchlists",
+    unknownSpeciesTitle: "Choose a valid Pokémon",
+    unknownSpeciesCopy: "The shared species is not recognized. Choose a Pokémon before calculating; the shared CP and IV floor are retained.",
     backMain: "← Back to Hundo Check",
     skipToResults: "Skip to results",
     displayOptions: "Display options",
@@ -233,6 +241,8 @@ const TEXT = {
   },
   ja: {
     currentVerdict: "現在の判定", cpWatchlists: "CP一覧",
+    unknownSpeciesTitle: "有効なポケモンを選んでください",
+    unknownSpeciesCopy: "リンクの種族を認識できません。計算前にポケモンを選んでください。入力CPと最低個体値は保持しています。",
     backMain: "← HundoCheckへ戻る",
     skipToResults: "結果へスキップ",
     displayOptions: "表示設定",
@@ -458,6 +468,10 @@ function renderQuickPickButtons(): void {
 
 function restoreState(): void {
   const saved = loadSavedState();
+  if (typeof saved.selectedName === "string") {
+    const restored = resolveSharedPokemon(saved.selectedName);
+    if (restored) saved.selectedName = restored.name;
+  }
   try {
     const current = localStorage.getItem("hundo-check-language");
     saved.language = validateOption<LanguageChoice>(current, ["en", "ja", "de"], saved.language ?? (navigator.language.startsWith("de") ? "de" : navigator.language.startsWith("ja") ? "ja" : "en"));
@@ -505,6 +519,7 @@ function restoreState(): void {
   elements.flowCpInput.value = elements.cpInput.value;
   elements.showDetails.checked = prefs.showDetails;
   elements.watchFilter.value = prefs.watchFilter;
+  if (unresolvedSharedSpecies) elements.pokemonSelect.value = "";
 }
 
 function bindEvents(): void {
@@ -879,6 +894,20 @@ function readSettings(): {
 }
 
 function render(options: RenderOptions = {}): void {
+  if (unresolvedSharedSpecies && !elements.pokemonSelect.value) {
+    renderStaticText();
+    elements.pokemonSelect.value = "";
+    elements.flowPokemonSelect.value = "";
+    elements.pokemonInput.value = unresolvedSharedSpecies;
+    renderQuickPickButtons();
+    elements.primaryInsight.className = "primary-insight none";
+    elements.primaryInsight.innerHTML = `<div class="insight-copy"><span class="insight-title">${copy("unknownSpeciesTitle")}</span><p>${copy("unknownSpeciesCopy")}</p></div>`;
+    elements.resultsGrid.replaceChildren();
+    elements.watchlistGrid.replaceChildren();
+    updateControlState();
+    return;
+  }
+  unresolvedSharedSpecies = null;
   const settings = readSettings();
   const summaries = RAID_LEVELS.map((raidLevel) =>
     summarizeCp(settings.baseStats, raidLevel, settings.cp, settings.raidFloor, settings.purifyBonus),
@@ -1479,23 +1508,47 @@ function loadSavedState(): SavedState {
   }
 }
 
+function resolveSharedPokemon(value: string): Pokemon | null {
+  const existing = POKEMON.find(p => pokemonNameMatches(p, value));
+  if (existing) return existing;
+  const target = cosmeticTarget(value) ?? value;
+  const key = (name: string) => normalizeSearch(name).replace(/[\s_()（）-]/g, "");
+  const species = fullCatalog.pokemon.find(p =>
+    [p.id, p.name, (japaneseNames.names as Record<string,string>)[p.id], (germanNames.names as Record<string,string>)[p.id]]
+      .some(name => name && key(name) === key(target)));
+  if (!species) return null;
+  const legacy = POKEMON.find(p => key(p.name) === key(species.name));
+  if (legacy) return legacy;
+  const pokemon: Pokemon = {
+    name: species.name,
+    nameJa: (japaneseNames.names as Record<string,string>)[species.id] ?? species.name,
+    atk: species.atk, def: species.def, sta: species.sta,
+  };
+  POKEMON.push(pokemon);
+  return pokemon;
+}
+
 function loadStateFromUrl(): SavedState {
   const state: SavedState = {};
   const query = new URLSearchParams(window.location.search);
   const hash = window.location.hash.startsWith("#?") ? new URLSearchParams(window.location.hash.slice(2)) : null;
   const params = hash && Array.from(hash.keys()).length ? hash : query;
 
-  const pokemon = params.get("pokemon") || params.get("boss");
+  const pokemon = params.get("species") || params.get("pokemon") || params.get("boss");
   const cp = params.get("cp");
   const floor = params.get("floor");
   const weather = params.get("weather");
   const language = params.get("lang") || params.get("language");
   if(language === "ja" || language === "en" || language === "de")state.language = language;
 
-  if (pokemon && POKEMON.some((entry) => pokemonNameMatches(entry, pokemon))) {
-    state.manualStats = false;
-    state.selectedName =
-      POKEMON.find((entry) => pokemonNameMatches(entry, pokemon))?.name || pokemon;
+  if (pokemon) {
+    const match = resolveSharedPokemon(pokemon);
+    if (match) {
+      state.manualStats = false;
+      state.selectedName = match.name;
+    } else {
+      unresolvedSharedSpecies = pokemon;
+    }
   }
 
   if (cp) state.cp = clampInt(cp, MIN_CP, 99999, MIN_CP);

@@ -135,5 +135,7 @@
   "whyMixed": "Diese WP passen zu {total} IV-Kombinationen. {good} erreichen nach dem Erlösen 15/15/15, {bad} nicht.",
   "backMain": "← Zurück zu HundoCheck",
   "currentVerdict": "Aktuelles Ergebnis",
-  "cpWatchlists": "WP-Listen"
+  "cpWatchlists": "WP-Listen",
+  "unknownSpeciesTitle": "Gültiges Pokémon wählen",
+  "unknownSpeciesCopy": "Die Art im geteilten Link wird nicht erkannt. Wähle vor der Berechnung ein Pokémon; WP und Mindest-IVs bleiben erhalten."
 }
