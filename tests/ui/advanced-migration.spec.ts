@@ -37,6 +37,8 @@ test("catalog IDs and form aliases preserve custom triples, weather and language
 });
 
 test("hash species takes precedence and unknown explicit species cannot calculate a fallback", async ({page}) => {
+  await page.goto("?species=MEWTWO#?species=PIKACHU_FLYING");
+  await expect(page.locator("#flowPokemonSelect")).toHaveValue("Pikachu");
   await page.goto("?species=MEWTWO&cp=2387#?species=PIKACHU_FLYING&cp=157&floor=10&lang=de");
   await expect(page.locator("#flowPokemonSelect")).toHaveValue("Pikachu");
   expect(await saved(page)).toMatchObject({selectedName:"Pikachu",cp:157,raidFloor:10,language:"de"});

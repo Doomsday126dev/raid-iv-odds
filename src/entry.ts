@@ -9,7 +9,7 @@ const hash = location.hash.startsWith("#?")
 const legacyQuery = ["pokemon", "boss", "floor"].some((key) => query.has(key));
 const legacyHash =
   hash &&
-  ["pokemon", "boss", "floor", "cp", "weather", "lang", "language"].some(
+  ["species", "pokemon", "boss", "floor", "cp", "weather", "lang", "language"].some(
     (key) => hash.has(key),
   );
 const originalSpecies = query.get("species") ?? query.get("pokemon") ?? query.get("boss");
