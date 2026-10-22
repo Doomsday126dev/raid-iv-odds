@@ -1,0 +1,11 @@
+{
+  "revision": "4d2908fac68d882bb6b4bdbbf1123a71fb62da31",
+  "inputSha256": "ab89c4b2258b07d4e736f921c51ca9942297a849a83919f8aeee7f4dd5f1bfdb",
+  "recordsCompared": 1073,
+  "statMismatches": 0,
+  "classificationMismatches": 0,
+  "historicalShadowFlags": 483,
+  "japaneseLabels": 1073,
+  "duplicateJapaneseLabels": 0,
+  "currentEncounterAvailabilityValidated": false
+}

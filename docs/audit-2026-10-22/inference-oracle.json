@@ -1,0 +1,22 @@
+{
+  "species": [
+    "BULBASAUR",
+    "CHARIZARD",
+    "WEEDLE",
+    "MAGIKARP",
+    "CATERPIE",
+    "SHUCKLE",
+    "MEWTWO",
+    "GIRATINA_ALTERED",
+    "GIRATINA_ORIGIN",
+    "RATTATA_ALOLAN",
+    "WOBBUFFET",
+    "CHANSEY",
+    "BLISSEY",
+    "YAMASK_GALARIAN"
+  ],
+  "contextQueries": 770,
+  "matchingContextComparisons": 533,
+  "mismatches": [],
+  "method": "Independent loop/CP expression; compares exact matching counts, good counts, verdicts and rational equality without pooling contexts."
+}

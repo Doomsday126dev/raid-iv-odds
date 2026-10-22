@@ -52,7 +52,16 @@ let clarified: ShadowContextId | null = contextIds.includes(
 )
   ? (linkedContext as ShadowContextId)
   : null;
-let cpText = params.get("cp") ?? "";
+function normalizeCpText(value: string): string {
+  // Accept decimal digits commonly pasted/entered with Japanese input methods.
+  // Keep other syntax intact so the strict integer validation still rejects it.
+  return value
+    .replace(/[０-９]/g, (digit) =>
+      String.fromCharCode(digit.charCodeAt(0) - 0xfee0),
+    )
+    .trim();
+}
+let cpText = normalizeCpText(params.get("cp") ?? "");
 let view = params.get("view") === "reference" ? "reference" : "check";
 const app = document.querySelector<HTMLDivElement>("#app")!;
 app.innerHTML = shell();
@@ -81,7 +90,7 @@ function showSuggestions() {
     ? matches
         .map(
           (p, i) =>
-            `<button role="option" aria-selected="false" id="option-${i}" data-choice="${p.id}"><strong>${escape(nameOf(p))}</strong><small>#${String(p.dex).padStart(3, "0")} · ${typesOf(p)}</small></button>`,
+            `<button role="option" tabindex="-1" aria-selected="false" id="option-${i}" data-choice="${p.id}"><strong>${escape(nameOf(p))}</strong><small>#${String(p.dex).padStart(3, "0")} · ${typesOf(p)}</small></button>`,
         )
         .join("")
     : `<p>${t("noResults")}</p>`;
@@ -114,6 +123,9 @@ search.addEventListener("focus", () => {
   showSuggestions();
 });
 search.addEventListener("keydown", (event) => {
+  // Enter may confirm IME text rather than select a species. Safari can report
+  // the composition keyCode after isComposing has already become false.
+  if (event.isComposing || event.keyCode === 229) return;
   if (event.key === "Escape") {
     closeSuggestions();
     return;
@@ -157,7 +169,7 @@ document.addEventListener("focusin", (e) => {
 input.value = cpText;
 search.value = unknownSpecies ? "" : nameOf(selected);
 input.addEventListener("input", () => {
-  cpText = input.value.trim();
+  cpText = normalizeCpText(input.value);
   clarified = null;
   render();
 });
@@ -213,12 +225,15 @@ function render() {
   $("#species-meta").textContent = committed
     ? `#${String(selected.dex).padStart(3, "0")} · ${typesOf(selected)}`
     : t("select");
+  $("#cp-context").hidden = !committed || !selected.shadow;
   $("#cp-context").textContent =
-    cpText && matches.length === 1
-      ? `${t("compatible")}: ${contextLabel(matches[0]!)}`
-      : cpText && matches.length > 1
-        ? t("contextsCount", { count: matches.length })
-        : t("auto");
+    !committed || !selected.shadow
+      ? ""
+      : cpText && matches.length === 1
+        ? `${t("compatible")}: ${contextLabel(matches[0]!)}`
+        : cpText && matches.length > 1
+          ? t("contextsCount", { count: matches.length })
+          : t("auto");
   let tone = "empty",
     icon = "◇",
     title = t("chooseTitle"),
@@ -510,9 +525,12 @@ if (
   "serviceWorker" in navigator &&
   !["127.0.0.1", "localhost"].includes(location.hostname)
 ) {
-  window.addEventListener("load", () => {
+  const registerOfflineWorker = () =>
     navigator.serviceWorker
       .register(`${import.meta.env.BASE_URL}sw.js`)
       .catch(() => {});
-  });
+  // main is dynamically imported: slow networks can finish that import after
+  // load has already fired, so a load-only listener misses registration.
+  if (document.readyState === "complete") void registerOfflineWorker();
+  else window.addEventListener("load", registerOfflineWorker, { once: true });
 }
