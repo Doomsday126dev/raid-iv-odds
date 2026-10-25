@@ -1,3 +1,4 @@
+import { allMatchesAlreadyPerfect } from "./presentation";
 import { recordTraffic } from "./traffic";
 import {cosmeticSearchAliases} from "./catalog-aliases";
 import cosmeticAliases from "./cosmetic-aliases.json";
@@ -73,7 +74,6 @@ let view = params.get("view") === "reference" ? "reference" : "check";
 const app = document.querySelector<HTMLDivElement>("#app")!;
 app.innerHTML = shell();
 document.title = `${t("title")} · HundoCheck`;
-document.querySelector(".skip")!.textContent = t("skip");
 const $ = <T extends HTMLElement = HTMLElement>(s: string) =>
   document.querySelector<T>(s)!;
 const search = $<HTMLInputElement>("#species-search");
@@ -229,6 +229,7 @@ function render() {
     `${contextLabel(c)} · ${t("level")} ${c.summary.raidLevel.level} · ${t("floor")} ${c.floor}/${c.floor}/${c.floor}`;
   const needsClarification = clarified === null && analysis.needsClarification;
   const committed = search.value === nameOf(selected);
+  const alreadyPerfect = allMatchesAlreadyPerfect(matches);
   $("#species-meta").textContent = committed
     ? `#${String(selected.dex).padStart(3, "0")} · ${typesOf(selected)}`
     : t("select");
@@ -273,8 +274,8 @@ function render() {
     } else if (outcome === "all") {
       tone = "good";
       icon = "✓";
-      title = t("allTitle");
-      copy = t("allCopy");
+      title = t(alreadyPerfect ? "alreadyTitle" : "allTitle");
+      copy = t(alreadyPerfect ? "alreadyCopy" : "allCopy");
     } else if (needsClarification) {
       tone = "mixed";
       icon = "?";
@@ -299,18 +300,18 @@ function render() {
   const waiting = !cpText && committed && selected.shadow;
   input.setAttribute("aria-invalid", String(!!cpText && tone === "invalid"));
   $(".decision-column > .section-heading").hidden = waiting;
-  $(".appraisal-tip").hidden = !valid;
+  $(".appraisal-tip").hidden = !valid || alreadyPerfect;
   $("#decision").className = `decision ${tone}`;
   const percentage = valid
     ? matches.length === 1
-      ? chance(matches[0]!.summary)
+      ? chance(matches[0]!.summary, false, alreadyPerfect)
       : analysis.sameChance
-        ? chance(matches[0]!.summary, true)
-        : `<div class="context-chances">${matches.map((c) => `<section><h3>${contextLabel(c)}</h3>${chance(c.summary)}${needsClarification ? `<button class="clarify" data-clarify="${c.id}">${contextLabel(c)} →</button>` : ""}</section>`).join("")}<p class="field-note">${t("separate")}</p></div>`
+        ? chance(matches[0]!.summary, true, alreadyPerfect)
+        : `<div class="context-chances">${matches.map((c) => `<section><h3>${contextLabel(c)}</h3>${chance(c.summary, false, alreadyPerfect)}${needsClarification ? `<button class="clarify" data-clarify="${c.id}">${contextLabel(c)} →</button>` : ""}</section>`).join("")}<p class="field-note">${t("separate")}</p></div>`
     : "";
   $("#decision").innerHTML = waiting
     ? `<p class="empty-message">${t("empty")}</p>`
-    : `<div class="decision-top"><span class="decision-icon" aria-hidden="true">${icon}</span><span class="eyebrow">${t("resultEyebrow")}</span></div><h2>${title}</h2>${percentage}<p>${copy}</p>${valid ? `<div class="result-context"><strong>${escape(nameOf(selected))} · ${language === "de" ? "WP" : "CP"} ${escape(cpText)}</strong><span>${matches.length === 1 ? `${t("compatible")}: ${contextLabel(matches[0]!)}` : t("both")}</span></div><details class="result-details"><summary>${t("details")}</summary>${matches.map((c) => `<section class="context-calculation"><h3>${contextText(c)}</h3><p>${t("equalRolls")}</p>${matches.length > 1 ? `<p>${t("matching", { good: c.summary.good, total: c.summary.total })} · ${formatPercent(c.summary.odds)}</p>` : ""}<p class="original-perfect"><strong>${t("already")}: ${formatPercent(c.summary.combos.filter(isOriginalPerfect).length / c.summary.total)}</strong><br>${t("originalCount", { good: c.summary.combos.filter(isOriginalPerfect).length, total: c.summary.total })}. ${t("alreadyHint")}</p>${spreads(c.summary)}</section>`).join("")}</details>` : ""}`;
+    : `<div class="decision-top"><span class="decision-icon" aria-hidden="true">${icon}</span><span class="eyebrow">${t("resultEyebrow")}</span></div><h2>${title}</h2>${percentage}<p>${copy}</p>${valid && alreadyPerfect ? `<p class="field-note battle-note">${t("battleNote")}</p>` : ""}${valid ? `<div class="result-context"><strong>${escape(nameOf(selected))} · ${language === "de" ? "WP" : "CP"} ${escape(cpText)}</strong><span>${matches.length === 1 ? `${t("compatible")}: ${contextLabel(matches[0]!)}` : t("both")}</span></div><details class="result-details"><summary>${t("details")}</summary>${matches.map((c) => `<section class="context-calculation"><h3>${contextText(c)}</h3><p>${t("equalRolls")}</p>${matches.length > 1 ? `<p>${t("matching", { good: c.summary.good, total: c.summary.total })} · ${formatPercent(c.summary.odds)}</p>` : ""}<p class="original-perfect"><strong>${t("already")}: ${formatPercent(c.summary.combos.filter(isOriginalPerfect).length / c.summary.total)}</strong><br>${t("originalCount", { good: c.summary.combos.filter(isOriginalPerfect).length, total: c.summary.total })}. ${t("alreadyHint")}</p>${spreads(c.summary)}</section>`).join("")}</details>` : ""}`;
   $("#decision")
     .querySelectorAll<HTMLButtonElement>("[data-clarify]")
     .forEach((b) =>
@@ -341,8 +342,9 @@ function render() {
     );
   if (committed) updateUrl();
 }
-function chance(summary: CpSummary, common = false) {
-  return `<section class="chance-panel" aria-label="${t("chanceLabel")}"><strong class="chance-value">${formatPercent(summary.odds)}</strong><div><span>${t("chanceLabel")}</span><small>${common ? t("sameChance") : t("matching", { good: summary.good, total: summary.total })}</small></div></section>`;
+function chance(summary: CpSummary, common = false, alreadyPerfect = false) {
+  const label = t(alreadyPerfect ? "alreadyChanceLabel" : "chanceLabel");
+  return `<section class="chance-panel" aria-label="${label}"><strong class="chance-value">${formatPercent(summary.odds)}</strong><div><span>${label}</span><small>${common ? t("sameChance") : t("matching", { good: summary.good, total: summary.total })}</small></div></section>`;
 }
 function isOriginalPerfect(c: { a: number; d: number; s: number }) {
   return c.a === 15 && c.d === 15 && c.s === 15;
@@ -480,6 +482,9 @@ function setView(next: string) {
   view = next;
   $("#check-view").hidden = view !== "check";
   $("#reference-view").hidden = view !== "reference";
+  const skip = document.querySelector<HTMLAnchorElement>(".skip")!;
+  skip.href = view === "reference" ? "#reference-heading" : "#decision";
+  skip.textContent = t(view === "reference" ? "skipReference" : "skip");
   document
     .querySelectorAll<HTMLButtonElement>("[data-view]")
     .forEach((b) =>
@@ -493,6 +498,12 @@ function setView(next: string) {
 document
   .querySelectorAll<HTMLButtonElement>("[data-view]")
   .forEach((b) => b.addEventListener("click", () => setView(b.dataset.view!)));
+document.querySelector<HTMLAnchorElement>(".skip")!.addEventListener("click", event => {
+  event.preventDefault();
+  const target = $(view === "reference" ? "#reference-heading" : "#decision");
+  target.focus({ preventScroll: true });
+  target.scrollIntoView({ block: "start" });
+});
 try {
   document.documentElement.dataset.theme =
     localStorage.getItem("hundo-check-theme") ?? "system";

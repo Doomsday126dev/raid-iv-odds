@@ -1,0 +1,15 @@
+{
+  "baseline": "330ad4bf",
+  "title": "Every match can purify to a hundo",
+  "skip": {
+    "href": "#decision",
+    "focus": "BODY",
+    "targetHidden": true,
+    "referenceHeadingPresent": true
+  },
+  "focus": {
+    "ambiguous": "false",
+    "focused": true,
+    "color": "rgb(166, 55, 37)"
+  }
+}
