@@ -1569,3 +1569,10 @@ html[lang="ja"] .view-tabs button {
   .theme-button { grid-column: 2; grid-row: 1; }
 }
 html[lang="de"] .decision h2 { hyphens: auto; }
+
+/* Keyboard focus is a high-contrast square around the control; ambiguity stays a red oval around the digits. */
+.cp-reference:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 0;
+}
