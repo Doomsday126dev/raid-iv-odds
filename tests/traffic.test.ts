@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { trafficRequest, trafficOrigin, createTrafficRecorder, type TrafficContext } from "../src/traffic-core.ts";
+import { trafficRequest, trafficOrigin, createTrafficRecorder, normalizeScreenWidth, readScreenWidth, type TrafficContext } from "../src/traffic-core.ts";
 const context: TrafficContext = { hostname: "doomsday126dev.github.io", pathname: "/raid-iv-odds/", online: true, automated: false, framed: false, privacyOptOut: false };
 test("traffic sends only static page labels, with no query, token, title or referrer input", () => {
   const privateContext = { ...context, search: "?cp=61&pokemon=PRIVATE_INPUT&share=PRIVATE_CAPABILITY", hash: "#PRIVATE_DEX_TOKEN", referrer: "https://example.test/dex/PRIVATE_TOKEN", title: "PRIVATE_COLLECTION" };
@@ -38,4 +38,18 @@ test("recorder sends once per document and does not retry failures or log values
   assert.equal(calls.length, 1);
   const throwing = createTrafficRecorder((() => { throw Error("blocked"); }) as typeof fetch);
   assert.doesNotThrow(() => throwing(request));
+});
+
+test("screen width is the only additional field, and unavailable values are omitted", () => {
+ for (const width of [320, 1440, 32767, 393.4]) {
+  const u = new URL(trafficRequest("sample-site", "checker", {...context, screenWidth:width})!.url);
+  assert.equal(u.searchParams.get("s"), String(Math.round(width)));
+  assert.deepEqual([...u.searchParams.keys()], ["p","t","r","s"]);
+ }
+ for (const width of [undefined,null,"1440",NaN,Infinity,-1,0,0.5,32768,{},true]) {
+  assert.equal(normalizeScreenWidth(width),null);
+  assert.equal(new URL(trafficRequest("sample-site", "checker", {...context,screenWidth:width})!.url).searchParams.has("s"),false);
+ }
+ assert.equal(readScreenWidth(() => {throw Error("blocked");}), null);
+ assert.equal(readScreenWidth(() => 390),390);
 });

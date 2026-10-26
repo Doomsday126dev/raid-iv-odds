@@ -58,7 +58,7 @@ try {
           expect(requests.length).toBe(2);
           for(const [index,{url,headers}] of requests.entries()) {
             const parsed=new URL(url);
-            expect([...parsed.searchParams]).toEqual([['p',index===0?'/':'/advanced'],['t',index===0?'HundoCheck':'HundoCheck advanced'],['r','']]);
+            expect([...parsed.searchParams]).toEqual([['p',index===0?'/':'/advanced'],['t',index===0?'HundoCheck':'HundoCheck advanced'],['r',''],['s',String(width)]]);
             expect(headers.referer).toBeUndefined();expect(headers.cookie).toBeUndefined();
             expect(JSON.stringify({url,headers})).not.toContain('PRIVATE');
           }
