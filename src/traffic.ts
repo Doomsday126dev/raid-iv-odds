@@ -1,5 +1,5 @@
 import config from "./traffic-config.json";
-import { createTrafficRecorder, trafficRequest, type TrafficPage } from "./traffic-core";
+import { createTrafficRecorder, trafficRequest, readScreenWidth, type TrafficPage } from "./traffic-core";
 const record = createTrafficRecorder((...args) => fetch(...args));
 let initialized = false;
 export function recordTraffic(page: TrafficPage): void {
@@ -10,6 +10,7 @@ export function recordTraffic(page: TrafficPage): void {
     document.removeEventListener("visibilitychange", attempt);
     document.removeEventListener("prerenderingchange", attempt);
     record(trafficRequest(config.siteCode, page, {
+      screenWidth: readScreenWidth(() => window.screen?.width),
       hostname: location.hostname,
       pathname: location.pathname,
       online: navigator.onLine,

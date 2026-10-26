@@ -11,6 +11,7 @@ export function trafficOrigin(siteCode: unknown): string | null {
   return validSiteCode(siteCode) ? `https://${siteCode}.goatcounter.com` : null;
 }
 export type TrafficContext = {
+  screenWidth?: unknown;
   hostname: string;
   pathname: string;
   online: boolean;
@@ -30,6 +31,8 @@ export function trafficRequest(siteCode: unknown, page: TrafficPage, context: Tr
   url.searchParams.set("p", definition.path);
   url.searchParams.set("t", definition.title);
   url.searchParams.set("r", "");
+  const width = normalizeScreenWidth(context.screenWidth);
+  if (width !== null) url.searchParams.set("s", String(width));
   return {
     url: url.href,
     options: {
@@ -46,4 +49,13 @@ export function createTrafficRecorder(send: typeof fetch) {
     // Best effort only: no offline queue, retries, persistent IDs, or error logs.
     try { void send(request.url, request.options).catch(() => {}); } catch { /* Optional traffic never blocks the app. */ }
   };
+}
+
+/** Width only, in CSS pixels; no height, scale or viewport fingerprint. */
+export function normalizeScreenWidth(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) && value >= 1 && value <= 32767
+    ? Math.round(value) : null;
+}
+export function readScreenWidth(read: () => unknown): number | null {
+  try { return normalizeScreenWidth(read()); } catch { return null; }
 }
